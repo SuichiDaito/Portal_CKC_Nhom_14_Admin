@@ -20,7 +20,7 @@ class _ButtonLogin extends State<ButtonLogin> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => widget.onPressed,
+      onPressed: () => widget.onPressed(),
       child: Text(
         widget.nameButton,
         style: StyleOfWidget.textStyle1(

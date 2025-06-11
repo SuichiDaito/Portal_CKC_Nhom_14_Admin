@@ -27,22 +27,30 @@ class ModelConverter implements Converter {
     var contentType = response.headers[contentTypeKey];
     var body = response.body;
     debugPrint("Body decodeJson: $body");
+
     if (contentType != null && contentType.contains(jsonHeaders)) {
       body = utf8.decode(response.bodyBytes);
     }
+
     try {
-      List<dynamic> mapData = json.decode(body);
-      if (mapData.isNotEmpty) {
-        List<Comment> comment = mapData
-            .map((comment) => Comment.fromJson(comment))
-            .toList();
-        return response.copyWith<BodyType>(body: comment as BodyType);
+      final decoded = json.decode(body);
+
+      // Trả về List nếu là List
+      if (decoded is List) {
+        return response.copyWith<BodyType>(body: decoded as BodyType);
       }
+
+      // Trả về Map nếu là Map
+      if (decoded is Map<String, dynamic>) {
+        return response.copyWith<BodyType>(body: decoded as BodyType);
+      }
+
+      // Trường hợp khác (số, chuỗi,...)
+      return response.copyWith<BodyType>(body: decoded as BodyType);
     } catch (e) {
-      chopperLogger.warning(e);
+      chopperLogger.warning('❌ JSON decode error: $e');
       return response.copyWith<BodyType>(body: body);
     }
-    return body;
   }
 
   // Response<BodyType> decodeJsonGogo<BodyType, InnerType>(Response response) {

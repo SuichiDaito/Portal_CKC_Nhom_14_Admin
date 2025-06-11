@@ -1,3 +1,3 @@
 class ApiString {
-  static String urlApi = 'https://jsonplaceholder.typicode.com';
+  static String urlApi = 'http://127.0.0.1:8000/api';
 }

@@ -2,10 +2,13 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/main.dart';
 import 'package:portal_ckc/presentation/pages/demo.dart';
 import 'package:portal_ckc/presentation/pages/page_demo.dart';
+import 'package:portal_ckc/presentation/pages/page_login_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_thongtin_admin.dart';
 
 class RouteName {
   static final route = GoRouter(
     initialLocation: '/',
+    debugLogDiagnostics: true,
     routes: [
       GoRoute(
         path: '/',
@@ -29,6 +32,14 @@ class RouteName {
       // ),
       GoRoute(path: '/demo', builder: (context, state) => Demo()),
       GoRoute(path: '/page/demo', builder: (context, state) => PageDemo()),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const PageLoginAdmin(),
+      ),
+      GoRoute(
+        path: '/admin/info',
+        builder: (context, state) => const PageThongtinAdmin(),
+      ),
     ],
   );
 }
