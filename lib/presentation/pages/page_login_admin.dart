@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/admin/admin_bloc.dart';
 import 'package:portal_ckc/bloc/admin/admin_event.dart';
 import 'package:portal_ckc/bloc/admin/admin_state.dart';
-import 'package:portal_ckc/presentation/pages/page_thongtin_admin.dart';
 
 class PageLoginAdmin extends StatefulWidget {
   const PageLoginAdmin({super.key});
@@ -17,6 +16,8 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
   final _formKey = GlobalKey<FormState>();
   final _taiKhoanController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+
   void adminLogin(BuildContext context) {
     final taiKhoan = _taiKhoanController.text.trim();
     final password = _passwordController.text.trim();
@@ -35,84 +36,247 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double a = screenHeight - (screenHeight + 50);
     return Scaffold(
-      backgroundColor: Colors.blue[50],
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8)],
-            ),
-            child: Form(
-              key: _formKey,
-              child: BlocConsumer<AdminBloc, AdminState>(
-                listener: (context, state) {
-                  if (state is AdminLoaded) {
-                    print('✅ Đăng nhập thành công');
-                    context.go('/admin/info');
-                  } else if (state is AdminError) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.message)));
-                  }
-                },
-
-                builder: (context, state) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Đăng nhập quản trị viên',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _taiKhoanController,
-                        decoration: const InputDecoration(
-                          labelText: 'Tài khoản',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Nhập tài khoản'
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Mật khẩu',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Nhập mật khẩu'
-                            : null,
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: state is AdminLoading
-                              ? null
-                              : () => adminLogin(context),
-                          child: state is AdminLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                )
-                              : const Text('Đăng nhập'),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+      body: Stack(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.45,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
               ),
             ),
           ),
+          SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 45,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(
+                      left: 24,
+                      bottom: 24,
+                      right: 24,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            width: 48,
+                            height: 48,
+                            // fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'TRƯỜNG CAO ĐẲNG KỸ\nTHUẬT CAO THẮNG',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            height: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Cổng thông tin nội bộ\nHệ thống quản lý đào tạo Trường Cao\nThắng',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(flex: 55),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Transform.translate(
+              offset: Offset(0, a),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 32),
+                  padding: const EdgeInsets.all(24),
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: BlocConsumer<AdminBloc, AdminState>(
+                      listener: (context, state) {
+                        if (state is AdminLoaded) {
+                          context.go('/admin/home');
+                        } else if (state is AdminError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'Giảng Viên Đăng Nhập',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF333333),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Email
+                            TextFormField(
+                              controller: _taiKhoanController,
+                              style: const TextStyle(fontSize: 14),
+                              decoration: InputDecoration(
+                                labelText: 'Email giảng viên',
+                                prefixIcon: const Icon(Icons.person_outline),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                  ? 'Nhập email giảng viên'
+                                  : null,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Password
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: !_isPasswordVisible,
+                              style: const TextStyle(fontSize: 14),
+                              decoration: InputDecoration(
+                                labelText: 'Mật khẩu',
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _isPasswordVisible
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPasswordVisible = !_isPasswordVisible;
+                                    });
+                                  },
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                  ? 'Nhập mật khẩu'
+                                  : null,
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Login button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: state is AdminLoading
+                                    ? null
+                                    : () => adminLogin(context),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF2196F3),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: state is AdminLoading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Đăng Nhập',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // Forgot password
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text(
+                                'Quên mật khẩu?',
+                                style: TextStyle(color: Color(0xFF2196F3)),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      // Footer cố định ở dưới cùng
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(16),
+        child: const Text(
+          'Nhóm: 14_NgọcCẩm_NgọcTrang\nCopyright © 2025',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Color(0xFF666666), fontSize: 12),
         ),
       ),
     );

@@ -1,15 +1,38 @@
+import 'package:portal_ckc/api/model/admin_vaitro.dart';
+
 class User {
   final int id;
   final int idHoSo;
   final int idBoMon;
+  final String taiKhoan;
+  final int trangThai;
+  final HoSo? hoSo;
+  final List<Role> roles;
 
-  User({required this.id, required this.idHoSo, required this.idBoMon});
+  User({
+    required this.id,
+    required this.idHoSo,
+    required this.idBoMon,
+    required this.taiKhoan,
+    required this.trangThai,
+    this.hoSo,
+    required this.roles,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    var roleList = <Role>[];
+    if (json['roles'] != null) {
+      roleList = (json['roles'] as List).map((e) => Role.fromJson(e)).toList();
+    }
+
     return User(
       id: json['id'],
       idHoSo: json['id_ho_so'],
       idBoMon: json['id_bo_mon'],
+      taiKhoan: json['tai_khoan'] ?? '',
+      trangThai: json['trang_thai'] ?? 0,
+      hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : null,
+      roles: (json['roles'] ?? []).map<Role>((e) => Role.fromJson(e)).toList(),
     );
   }
 }
@@ -18,6 +41,7 @@ class HoSo {
   final int id;
   final String hoTen;
   final String email;
+  final String password;
   final String soDienThoai;
   final String ngaySinh;
   final String gioiTinh;
@@ -29,6 +53,7 @@ class HoSo {
     required this.id,
     required this.hoTen,
     required this.email,
+    required this.password,
     required this.soDienThoai,
     required this.ngaySinh,
     required this.gioiTinh,
@@ -42,6 +67,7 @@ class HoSo {
       id: json['id'],
       hoTen: json['ho_ten'] ?? '',
       email: json['email'] ?? '',
+      password: json['password'] ?? '',
       soDienThoai: json['so_dien_thoai'] ?? '',
       ngaySinh: json['ngay_sinh'] ?? '',
       gioiTinh: json['gioi_tinh'] ?? '',
@@ -52,76 +78,22 @@ class HoSo {
   }
 }
 
-class BoMon {
-  final String tenBoMon;
-  final NganhHoc? nganhHoc;
+class LoginResponse {
+  final String token;
+  final User user;
+  final String message;
 
-  BoMon({required this.tenBoMon, this.nganhHoc});
+  LoginResponse({
+    required this.token,
+    required this.user,
+    required this.message,
+  });
 
-  factory BoMon.fromJson(Map<String, dynamic> json) {
-    return BoMon(
-      tenBoMon: json['ten_bo_mon'] ?? '',
-      nganhHoc: json['nganhHoc'] != null
-          ? NganhHoc.fromJson(json['nganhHoc'])
-          : null,
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
+      token: json['token'] ?? '',
+      user: User.fromJson(json['user']),
+      message: json['message'] ?? '',
     );
   }
 }
-
-class NganhHoc {
-  final String tenNganh;
-  final Khoa? khoa;
-
-  NganhHoc({required this.tenNganh, this.khoa});
-
-  factory NganhHoc.fromJson(Map<String, dynamic> json) {
-    return NganhHoc(
-      tenNganh: json['ten_nganh'] ?? '',
-      khoa: json['khoa'] != null ? Khoa.fromJson(json['khoa']) : null,
-    );
-  }
-}
-
-class Khoa {
-  final String tenKhoa;
-
-  Khoa({required this.tenKhoa});
-
-  factory Khoa.fromJson(Map<String, dynamic> json) {
-    return Khoa(tenKhoa: json['ten_khoa'] ?? '');
-  }
-}
-
-// class AdminLoginResponse {
-//   final String token;
-//   final User user;
-//   final String message;
-
-//   AdminLoginResponse({
-//     required this.token,
-//     required this.user,
-//     required this.message,
-//   });
-
-//   factory AdminLoginResponse.fromJson(Map<String, dynamic> json) {
-//     return AdminLoginResponse(
-//       token: json['token'] ?? '',
-//       user: User.fromJson(json['user']),
-//       message: json['message'] ?? '',
-//     );
-//   }
-// }
-
-// class LoginResponse {
-//   final String token;
-//   final User user;
-
-//   LoginResponse({required this.token, required this.user});
-
-//   factory LoginResponse.fromJson(Map<String, dynamic> json) {
-//     return LoginResponse(
-//       token: json['token'],
-//       user: User.fromJson(json['user']),
-//     );
-//   }
-// }
