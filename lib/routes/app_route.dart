@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/main.dart';
-import 'package:portal_ckc/presentation/pages/DashboardAdminLayout.dart';
-import 'package:portal_ckc/presentation/pages/demo.dart';
-import 'package:portal_ckc/presentation/pages/page_demo.dart';
-import 'package:portal_ckc/presentation/pages/page_doimatkhau_admin.dart';
+import 'package:portal_ckc/presentation/pages/dashboard_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_change_password_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_login_admin.dart';
-import 'package:portal_ckc/presentation/pages/page_quanlyphong_admin.dart';
-import 'package:portal_ckc/presentation/pages/page_solenlop_admin.dart';
-import 'package:portal_ckc/presentation/pages/page_thongtin_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_management_group_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_class_book_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_info_admin.dart';
 
 class RouteName {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -25,8 +23,6 @@ class RouteName {
         path: '/',
         builder: (context, state) => MyHomePage(title: "My Home Page Screen"),
       ),
-      GoRoute(path: '/demo', builder: (context, state) => Demo()),
-      GoRoute(path: '/page/demo', builder: (context, state) => PageDemo()),
       GoRoute(
         path: '/login',
         builder: (context, state) => const PageLoginAdmin(),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portal_ckc/bloc/admin/admin_bloc.dart';
-import 'package:portal_ckc/bloc/admin/admin_event.dart';
-import 'package:portal_ckc/bloc/admin/admin_state.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/event/admin_event.dart';
+import 'package:portal_ckc/bloc/state/admin_state.dart';
 
 class PageLoginAdmin extends StatefulWidget {
   const PageLoginAdmin({super.key});

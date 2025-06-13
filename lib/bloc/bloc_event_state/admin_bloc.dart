@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/model/admin_thongtin.dart';
 import 'package:portal_ckc/api/services/admin_service.dart';
-import 'package:portal_ckc/bloc/admin/admin_event.dart';
-import 'package:portal_ckc/bloc/admin/admin_state.dart';
+import 'package:portal_ckc/bloc/event/admin_event.dart';
+import 'package:portal_ckc/bloc/state/admin_state.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   final AdminService service;

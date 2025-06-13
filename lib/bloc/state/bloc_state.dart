@@ -1,17 +1,16 @@
 import 'package:chopper/chopper.dart';
 import 'package:portal_ckc/api/model/comment.dart';
 
-abstract class Data {}
+abstract class BlocState {}
 
-class LoadingData extends Data {}
+class LoadingData extends BlocState {}
 
-class LoadedData extends Data {
+class LoadedData extends BlocState {
   final Response<List<Comment>> comments;
   LoadedData(this.comments);
 }
 
-class ErroData extends Data {
+class ErroData extends BlocState {
   final String message;
   ErroData(this.message);
 }
-

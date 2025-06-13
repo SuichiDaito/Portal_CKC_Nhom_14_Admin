@@ -1,15 +1,15 @@
 import 'package:portal_ckc/api/controller/call_api.dart';
-import 'package:portal_ckc/bloc/data/bloc_data.dart';
-import 'package:portal_ckc/bloc/data/bloc_event.dart';
+import 'package:portal_ckc/bloc/state/bloc_state.dart';
+import 'package:portal_ckc/bloc/event/bloc_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BlocImplement extends Bloc<BlocEvent, Data> {
+class BlocImplement extends Bloc<BlocEvent, BlocState> {
   BlocImplement() : super(LoadingData()) {
     on<FetchData>(_onFetchData);
     on<RefreshData>(_onRefreshData);
   }
 
-  Future<void> _onFetchData(FetchData event, Emitter<Data> emit) async {
+  Future<void> _onFetchData(FetchData event, Emitter<BlocState> emit) async {
     try {
       final comment = await CallApi.postServices.getComments();
       emit(LoadedData(comment));
@@ -18,7 +18,7 @@ class BlocImplement extends Bloc<BlocEvent, Data> {
     }
   }
 
-  Future<void> _onRefreshData(RefreshData event, Emitter<Data> emit) async {
+  Future<void> _onRefreshData(RefreshData event, Emitter<BlocState> emit) async {
     try {
       final comment = await CallApi.postServices.getComments();
       emit(LoadedData(comment));

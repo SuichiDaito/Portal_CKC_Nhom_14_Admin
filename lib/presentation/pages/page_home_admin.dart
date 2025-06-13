@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portal_ckc/bloc/admin/admin_bloc.dart';
-import 'package:portal_ckc/bloc/admin/admin_state.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/state/admin_state.dart';
 
 class PageHomeAdmin extends StatelessWidget {
   const PageHomeAdmin({super.key});
