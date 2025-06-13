@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -17,6 +19,7 @@ import 'package:portal_ckc/routes/app_route.dart';
 
 void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
+  // HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -44,25 +47,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp.router(
-//       routerConfig: RouteName.route,
-//       debugShowCheckedModeBanner: false,
-//       title: 'Portal_CKC',
-//       localizationsDelegates: AppLocalizations.localizationsDelegates,
-//       supportedLocales: AppLocalizations.supportedLocales,
-//       theme: ThemeData(
-//         textTheme: GoogleFonts.robotoTextTheme(),
-//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-//       ),
-//     );
-//   }
-// }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -187,48 +171,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// class _MyHomePageState extends State<MyHomePage> {
+// class MyHttpOverrides extends HttpOverrides {
 //   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider<BlocImplement>(
-//       create: (_) => BlocImplement()..add(FetchData()),
-//       child: Scaffold(
-//         appBar: AppBar(
-//           backgroundColor: Theme.of(context!).colorScheme.inversePrimary,
-//           title: Text(widget.title),
-//         ),
-//         body: BlocBuilder<BlocImplement, Data>(
-//           builder: (context, state) {
-//             if (state is LoadingData) {
-//               return Center(child: CircularProgressIndicator());
-//             } else if (state is LoadedData) {
-//               final data = state.comments.body;
-//               return RefreshIndicator(
-//                 child: ListView.builder(
-//                   itemCount: data!.length,
-//                   itemBuilder: (context, index) {
-//                     return Column(
-//                       children: [
-//                         ListTile(title: Text('Id: ${data[index].id}')),
-//                         ButtonLogin(
-//                           nameButton: 'Login',
-//                           onPressed: () => {context.go('/page/demo')},
-//                         ),
-//                       ],
-//                     );
-//                   },
-//                 ),
-//                 onRefresh: () async {
-//                   context.read<BlocImplement>().add(RefreshData());
-//                 },
-//               );
-//             } else if (state is ErroData) {
-//               return Center(child: Text("Error: ${state.message}"));
-//             }
-//             return Text('NOT FOUND | 404');
-//           },
-//         ),
-//       ),
-//     );
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
 //   }
 // }
