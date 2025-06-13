@@ -4,15 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
 
-class DashboardAdminLayout extends StatefulWidget {
+class DashboardAdminPage extends StatefulWidget {
   final Widget child;
-  const DashboardAdminLayout({required this.child, super.key});
+  const DashboardAdminPage({required this.child, super.key});
 
   @override
-  State<DashboardAdminLayout> createState() => _DashboardAdminLayoutState();
+  State<DashboardAdminPage> createState() => _DashboardAdminLayoutState();
 }
 
-class _DashboardAdminLayoutState extends State<DashboardAdminLayout> {
+class _DashboardAdminLayoutState extends State<DashboardAdminPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override

@@ -35,7 +35,7 @@ class RouteName {
       /// 🔁 ShellRoute dùng `shellNavigatorKey` static
       ShellRoute(
         navigatorKey: shellNavigatorKey,
-        builder: (context, state, child) => DashboardAdminLayout(child: child),
+        builder: (context, state, child) => DashboardAdminPage(child: child),
         routes: [
           GoRoute(
             path: '/admin/home',
