@@ -7,6 +7,8 @@ import 'package:portal_ckc/api/controller/call_api.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/services/admin_service.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/admin_room_bloc.dart';
+import 'package:portal_ckc/bloc/event/admin_room_event.dart';
 import 'package:portal_ckc/bloc/state/bloc_state.dart';
 import 'package:portal_ckc/bloc/event/bloc_event.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bloc_example.dart';
@@ -29,6 +31,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => BlocImplement()..add(FetchData())),
         BlocProvider(create: (_) => AdminBloc()),
+        BlocProvider(
+          create: (_) => RoomBloc(CallApiAdmin.adminService)..add(FetchRooms()),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: RouteName.route,
@@ -78,107 +83,131 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.blue,
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: screenHeight),
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFF8E44AD), // tím ánh hồng
+            Color.fromARGB(255, 16, 7, 190), // xanh đen
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: screenHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 48,
+                    ),
                     width: double.infinity,
-                    color: const Color(0xFF2196F3),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 40),
                         Image.asset(
                           'assets/images/logo.png',
-                          width: 100,
-                          height: 100,
+                          width: 120,
+                          height: 120,
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'TRƯỜNG CAO ĐẲNG KỸ THUẬT CAO THẮNG',
+                          'Cao đẳng Kỹ thuật Cao Thắng',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 12),
                         const Text(
-                          'Cổng thông tin nội bộ\nHệ thống quản lý đào tạo Trường Cao Thắng',
+                          'Hệ thống quản lý đào tạo\nCổng thông tin nội bộ',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, color: Colors.white),
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Color(0xFFDBEAFE),
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    padding: const EdgeInsets.all(0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Center(
+
+                  const SizedBox(height: 36),
+
+                  // Login card
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          ElevatedButton(
+                          const Text(
+                            'Đăng nhập hệ thống',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
                             onPressed: () {
                               GoRouter.of(context).go('/login');
                             },
+                            icon: const Icon(Icons.login),
+                            label: const Text('Giảng viên đăng nhập'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue, // Nền xanh
-                              foregroundColor: Colors.white, // Chữ trắng
+                              backgroundColor: const Color(
+                                0xFF6D28D9,
+                              ), // tím đậm
+                              foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 24,
                                 vertical: 16,
                               ),
                               textStyle: const TextStyle(fontSize: 16),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  8,
-                                ), // Bo góc vừa phải
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text('Giảng viên đăng nhập'),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
 
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Nhom_14_NgocCan_NgocTrang Copyright © 2025',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  const Spacer(),
+
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 24, top: 40),
+                    child: Text(
+                      'Nhom_14_NgocCan_NgocTrang\nCopyright © 2025',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

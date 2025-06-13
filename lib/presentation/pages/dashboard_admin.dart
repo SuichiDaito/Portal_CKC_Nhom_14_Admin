@@ -94,8 +94,8 @@ class _DashboardAdminLayoutState extends State<DashboardAdminPage> {
                     ),
                     _SidebarItem(
                       icon: Icons.calendar_today, // 🗓️ lịch tuần
-                      title: "Lịch tuần",
-                      route: '/admin/lichtuan',
+                      title: "Lịch dạy",
+                      route: '/admin/lichday',
                     ),
                     _SidebarItem(
                       icon: Icons.groups, // 👥 lớp chủ nhiệm
@@ -141,7 +141,7 @@ class _DashboardAdminLayoutState extends State<DashboardAdminPage> {
                     _SidebarItem(
                       icon: Icons.view_list, // 📚 lớp học phần
                       title: "Quản lý lớp học phần",
-                      route: '/admin/quanlylophocphan',
+                      route: '/admin/lophocphan',
                     ),
                     _SidebarItem(
                       icon: Icons.settings, // ⚙️ cập nhật tham số

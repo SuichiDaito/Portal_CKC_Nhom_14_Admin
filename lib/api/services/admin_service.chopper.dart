@@ -32,4 +32,11 @@ final class _$AdminService extends AdminService {
     final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<Map<String, dynamic>>> getRooms() {
+    final Uri $url = Uri.parse('/admin/phong');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
 }

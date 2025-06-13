@@ -12,4 +12,6 @@ abstract class AdminService extends ChopperService {
 
   @Get(path: '/show/{id}')
   Future<Response> getUserDetail(@Path('id') int id);
+  @Get(path: '/phong') // ✅ Thêm dòng này
+  Future<Response<Map<String, dynamic>>> getRooms();
 }

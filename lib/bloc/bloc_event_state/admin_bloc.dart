@@ -4,6 +4,7 @@ import 'package:portal_ckc/api/model/admin_thongtin.dart';
 import 'package:portal_ckc/api/services/admin_service.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   final AdminService service;
@@ -32,6 +33,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           if (body.containsKey('user')) {
             final userJson = body['user'] as Map<String, dynamic>;
             final user = User.fromJson(userJson);
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', body['token']);
 
             emit(AdminLoaded(user));
           } else {
