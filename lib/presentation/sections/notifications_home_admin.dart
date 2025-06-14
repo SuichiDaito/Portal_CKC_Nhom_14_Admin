@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 import 'package:portal_ckc/presentation/sections/card/notification_card.dart';
 
 class NotificationsHomeAdmin extends StatefulWidget {
@@ -18,11 +20,12 @@ class NotificationsHomeAdmin extends StatefulWidget {
 class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
   final list = [
     NotificationCard(
-      title: '🎉 Chào mừng bạn!',
+      title: '🎉 Chào mừng bạn!78687',
       content: 'Cảm ơn bạn đã đăng ký. Hãy khám phá ứng dụng ngay!',
       date: '14/06/2025',
       bgColor: Colors.orange[100]!,
       buttonColor: Colors.orange,
+      onPressed: () {},
     ),
     NotificationCard(
       title: '🎉 Chào mừng bạn!',
@@ -30,6 +33,7 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
       date: '14/06/2025',
       bgColor: Colors.blue[100]!,
       buttonColor: Colors.blue,
+      onPressed: () {},
     ),
   ];
   @override
@@ -38,7 +42,7 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Thông báo mới nhất',
+          '${widget.typeNotification}',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -61,8 +65,18 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
                     date: list[index].date,
                     bgColor: list[index].bgColor,
                     buttonColor: list[index].buttonColor,
+                    onPressed: () {
+                      context.go(
+                        '/notifications/detail',
+                        extra: {
+                          'title': list[index].title,
+                          'content': list[index].content,
+                          'date': list[index].date,
+                        },
+                      );
+                    },
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 15),
                 ],
               );
             },

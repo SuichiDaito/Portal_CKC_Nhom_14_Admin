@@ -13,7 +13,7 @@ import 'package:portal_ckc/bloc/event/bloc_event.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bloc_example.dart';
 import 'package:portal_ckc/l10n/app_localizations.dart';
 import 'package:portal_ckc/api/model/comment.dart';
-import 'package:portal_ckc/presentation/sections/button_login.dart';
+import 'package:portal_ckc/presentation/sections/button/button_login.dart';
 import 'package:portal_ckc/routes/app_route.dart';
 
 void main() {

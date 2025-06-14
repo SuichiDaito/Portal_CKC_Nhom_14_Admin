@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 import 'package:portal_ckc/presentation/sections/grid_app_home_admin.dart';
 import 'package:portal_ckc/presentation/sections/header_home_admin_section.dart';
 import 'package:portal_ckc/presentation/sections/notifications_home_admin.dart';
@@ -7,10 +9,10 @@ import 'package:portal_ckc/presentation/sections/user_profile_card_home_admin.da
 
 class MainLayoutHomeAdminPage extends StatefulWidget {
   const MainLayoutHomeAdminPage({super.key});
-  State<MainLayoutHomeAdminPage> createState() => _MainLayoutHomeAdminSection();
+  State<MainLayoutHomeAdminPage> createState() => _MainLayoutHomeAdminPage();
 }
 
-class _MainLayoutHomeAdminSection extends State<MainLayoutHomeAdminPage> {
+class _MainLayoutHomeAdminPage extends State<MainLayoutHomeAdminPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(

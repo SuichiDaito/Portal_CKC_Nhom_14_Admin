@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class NotificationDetailPageNew extends StatefulWidget {
+class NotificationDetailPage extends StatefulWidget {
   final String title;
   final String content;
   final String date;
-  const NotificationDetailPageNew({
+  const NotificationDetailPage({
     Key? key,
     required this.title,
     required this.content,
@@ -12,11 +13,10 @@ class NotificationDetailPageNew extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<NotificationDetailPageNew> createState() =>
-      _NotificationDetailPageState();
+  State<NotificationDetailPage> createState() => _NotificationDetailPageState();
 }
 
-class _NotificationDetailPageState extends State<NotificationDetailPageNew> {
+class _NotificationDetailPageState extends State<NotificationDetailPage> {
   final TextEditingController _commentController = TextEditingController();
   final List<Comment> _comments = [];
 
@@ -50,8 +50,8 @@ class _NotificationDetailPageState extends State<NotificationDetailPageNew> {
         ),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => context.go('/notifications'),
       ),
       title: const Text(
         'Chi Tiết Thông Báo',
@@ -149,7 +149,7 @@ class _NotificationDetailPageState extends State<NotificationDetailPageNew> {
                     Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
                     const SizedBox(width: 4),
                     Text(
-                      '15/06/2025 - 10:30',
+                      widget.date,
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ],

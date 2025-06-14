@@ -27,7 +27,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
       '/home/admin',
       '/apps',
       '/notifications',
-      '/admin/infomation/user',
+      '/admin/information/user',
     ];
     if (index < routes.length) {
       context.go(routes[index]);
