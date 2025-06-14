@@ -25,7 +25,7 @@ class _ButtonLogin extends State<ButtonLogin> {
       child: Text(
         widget.nameButton,
         style: StyleOfWidget.textStyle1(
-          fs: 16.sp,
+          fs: 16,
           fw: FontWeight.bold,
           clr: Colors.black,
         ),

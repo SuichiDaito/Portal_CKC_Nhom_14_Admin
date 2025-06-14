@@ -11,26 +11,39 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   String selectedFilter = 'Tất cả';
-  int _selectedIndex = 1; // Notifications tab selected
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        backgroundColor: Colors.blue[600],
+        backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.go('/admin/home'),
-        ),
-        title: Text(
-          'Thông báo',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.blue[100],
+              child: Icon(Icons.person, color: Colors.blue[700]),
+            ),
+            SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Nguyễn Văn B',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Trưởng khoa CNTT',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
       body: Column(
@@ -105,12 +118,11 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
   Widget _buildFilterTabs() {
-    final filters = ['Tất cả', 'Khoa', 'Lớp', 'GV'];
+    final filters = ['Tất cả', 'Khoa', 'Lớp', 'Giảng viên'];
 
     return Container(
       color: Colors.white,
@@ -119,7 +131,7 @@ class _NotificationPageState extends State<NotificationPage> {
         children: filters.map((filter) {
           final isSelected = selectedFilter == filter;
           return Padding(
-            padding: EdgeInsets.only(right: 8),
+            padding: EdgeInsets.only(right: 12),
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -246,45 +258,6 @@ class _NotificationPageState extends State<NotificationPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      selectedItemColor: Colors.blue[600],
-      unselectedItemColor: Colors.grey[500],
-      currentIndex: _selectedIndex,
-      onTap: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.assignment), label: 'Học tập'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
-          label: 'Thông báo',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Tìm kiếm'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Cá nhân'),
-      ],
-    );
-  }
-}
-
-class NotificationApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Admin Notifications',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: NotificationPage(),
     );
   }
 }

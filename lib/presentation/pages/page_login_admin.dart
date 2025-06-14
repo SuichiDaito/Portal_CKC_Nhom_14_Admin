@@ -144,7 +144,8 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
                     child: BlocConsumer<AdminBloc, AdminState>(
                       listener: (context, state) {
                         if (state is AdminLoaded) {
-                          context.go('/admin/home');
+                          // context.go('/admin/home');
+                          GoRouter.of(context).go('/home/admin');
                         } else if (state is AdminError) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(state.message)),
