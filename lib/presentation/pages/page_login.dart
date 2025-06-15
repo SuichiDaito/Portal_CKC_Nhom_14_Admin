@@ -40,10 +40,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AdminBloc>(
-      create: (_) => AdminBloc(),
-      child: _buildFormLogin(),
-    );
+    return _buildFormLogin();
   }
 
   Widget _buildFormLogin() {
@@ -214,7 +211,9 @@ class _LoginScreenState extends State<LoginScreen>
         padding: EdgeInsets.all(20),
         child: BlocConsumer<AdminBloc, AdminState>(
           listener: (context, state) {
+            print('📌 [Listener] State: $state');
             if (state is AdminLoaded) {
+              print('✅ Thành công, chuyển trang');
               context.go('/home/admin');
             } else if (state is AdminError) {
               ScaffoldMessenger.of(context).showSnackBar(
