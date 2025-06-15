@@ -13,7 +13,6 @@ class UserDetailInformationPage extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Header with avatar and basic info
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             child: Column(children: [AccountInfoSection()]),

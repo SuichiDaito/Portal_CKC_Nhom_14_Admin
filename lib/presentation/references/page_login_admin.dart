@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
+import 'package:portal_ckc/constant/string.dart';
+import 'package:portal_ckc/constant/string.dart';
 
 class PageLoginAdmin extends StatefulWidget {
   const PageLoginAdmin({super.key});
@@ -165,7 +167,6 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
                               ),
                             ),
                             const SizedBox(height: 24),
-
                             // Email
                             TextFormField(
                               controller: _taiKhoanController,
@@ -274,8 +275,8 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
       bottomNavigationBar: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(16),
-        child: const Text(
-          'Nhóm: 14_NgọcCẩm_NgọcTrang\nCopyright © 2025',
+        child: Text(
+          BottomBarString.copyRight,
           textAlign: TextAlign.center,
           style: TextStyle(color: Color(0xFF666666), fontSize: 12),
         ),

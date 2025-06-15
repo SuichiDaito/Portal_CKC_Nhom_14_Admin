@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/main.dart';
 import 'package:portal_ckc/presentation/pages/appbar_bottombar/page_app_bar.dart';
+import 'package:portal_ckc/presentation/pages/page_login.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_user_detail_information.dart';
 import 'package:portal_ckc/presentation/pages/page_main_layout_home_admin.dart';
@@ -29,10 +30,7 @@ class RouteName {
     initialLocation: '/login',
     debugLogDiagnostics: true,
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const PageLoginAdmin(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
 
       /// 🔁 ShellRoute dùng `shellNavigatorKey` static
       /// use for home_admin, applications, notifications and user.

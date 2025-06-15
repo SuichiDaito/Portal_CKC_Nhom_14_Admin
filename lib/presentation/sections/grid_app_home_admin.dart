@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class GridAppHomeAdmin extends StatefulWidget {
   const GridAppHomeAdmin({super.key});
+  @override
   State<GridAppHomeAdmin> createState() => _GridAppHomeAdmin();
 }
 

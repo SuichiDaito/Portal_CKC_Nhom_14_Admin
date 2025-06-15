@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ButtonLogOutInUser extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(

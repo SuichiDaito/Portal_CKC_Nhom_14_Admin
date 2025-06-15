@@ -34,6 +34,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
             final user = User.fromJson(userJson);
 
             emit(AdminLoaded(user));
+            print('AdminBloc: Emitted AdminLoaded'); // Debug log
           } else {
             emit(AdminError('Phản hồi không hợp lệ: Không có key "user"'));
           }
