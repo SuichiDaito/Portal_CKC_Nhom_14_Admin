@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
+import 'package:portal_ckc/bloc/state/admin_bloc_state.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
 import 'package:portal_ckc/gen/assets.gen.dart';
 
@@ -209,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
-        child: BlocConsumer<AdminBloc, AdminState>(
+        child: BlocConsumer<AdminBloc, AdminBlocState>(
           listener: (context, state) {
             print('📌 [Listener] State: $state');
             if (state is AdminLoaded) {
