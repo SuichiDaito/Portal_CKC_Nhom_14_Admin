@@ -3,7 +3,6 @@ import 'package:portal_ckc/presentation/sections/button/button_change_password_i
 import 'package:portal_ckc/presentation/sections/button/button_edit_information_in_user.dart';
 import 'package:portal_ckc/presentation/sections/button/button_log_out_in_user.dart';
 import 'package:portal_ckc/presentation/sections/user_infomation_detail.dart';
-import 'package:portal_ckc/presentation/sections/user_profile_card_home_admin.dart';
 
 class UserDetailInformationPage extends StatelessWidget {
   const UserDetailInformationPage({Key? key}) : super(key: key);

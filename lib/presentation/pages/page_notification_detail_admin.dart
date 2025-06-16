@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/comment.dart';
 import 'package:portal_ckc/presentation/sections/card/notification_detail_card.dart';
 import 'package:portal_ckc/presentation/sections/notification_comment_section.dart';
-import 'package:portal_ckc/presentation/sections/notification_detail_comment_item.dart';
-import 'package:portal_ckc/presentation/sections/textfield/comment_input_text_field.dart';
 
 class NotificationDetailPage extends StatefulWidget {
   final String title;
