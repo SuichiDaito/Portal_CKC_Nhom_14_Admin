@@ -232,7 +232,7 @@ class ApplicationsAdminPage extends StatelessWidget {
         icon: Icons.list_alt,
         title: 'Danh sách lớp học phần',
         color: Colors.teal,
-        value: 'lop_hoc_phan',
+        value: 'class_roster_admin',
       ),
       _FeatureItem(
         icon: Icons.event_seat,

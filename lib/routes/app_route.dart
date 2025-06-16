@@ -5,6 +5,7 @@ import 'package:portal_ckc/presentation/pages/appbar_bottombar/page_app_bar.dart
 import 'package:portal_ckc/presentation/pages/page_class_book_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_management_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_class_roster_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_conduct_evaluation_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_login.dart';
 import 'package:portal_ckc/presentation/pages/page_meeting_minutes_admin.dart';
@@ -98,9 +99,10 @@ class RouteName {
         path: '/admin/conduct_evaluation_admin',
         builder: (context, state) => PageConductEvaluationAdmin(),
       ),
+
       GoRoute(
-        path: '/admin/meeting_minutes_admin',
-        builder: (context, state) => PageMeetingMinutesAdmin(),
+        path: '/admin/class_roster_admin',
+        builder: (context, state) => PageClassRosterAdmin(),
       ),
       GoRoute(
         path: '/admin/report_detail_admin',
