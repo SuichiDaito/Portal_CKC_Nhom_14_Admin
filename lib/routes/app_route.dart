@@ -7,10 +7,13 @@ import 'package:portal_ckc/presentation/pages/page_class_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_roster_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_conduct_evaluation_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_course_section_student_list.dart';
 import 'package:portal_ckc/presentation/pages/page_login.dart';
 import 'package:portal_ckc/presentation/pages/page_meeting_minutes_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_report_detail_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_exam_schedule_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_teaching_schedule_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_user_detail_information.dart';
 import 'package:portal_ckc/presentation/pages/page_main_layout_home_admin.dart';
 import 'package:portal_ckc/presentation/references/dashboard_admin.dart';
@@ -103,6 +106,23 @@ class RouteName {
       GoRoute(
         path: '/admin/class_roster_admin',
         builder: (context, state) => PageClassRosterAdmin(),
+      ),
+      GoRoute(
+        path: '/admin/meeting_minutes_admin',
+        builder: (context, state) => PageMeetingMinutesAdmin(),
+      ),
+      GoRoute(
+        path: '/admin/teaching_schedule_admin',
+        builder: (context, state) => PageTeachingScheduleAdmin(),
+      ),
+
+      GoRoute(
+        path: '/admin/course_student_list',
+        builder: (context, state) => PageCourseSectionStudentList(),
+      ),
+      GoRoute(
+        path: '/admin/exam_schedule_admin',
+        builder: (context, state) => PageExamScheduleAdmin(),
       ),
       GoRoute(
         path: '/admin/report_detail_admin',

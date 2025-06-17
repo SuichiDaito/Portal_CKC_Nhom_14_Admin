@@ -1,5 +1,6 @@
 // screens/class_list_screen.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/presentation/sections/card/class_roster_class_item_card.dart';
 import 'package:portal_ckc/presentation/sections/card/class_roster_teacher_info_card.dart';
 import 'package:portal_ckc/presentation/sections/class_roster_filter_section.dart';
@@ -116,6 +117,10 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Đóng'),
+          ),
+          TextButton(
+            onPressed: () => context.push('/admin/course_student_list'),
+            child: const Text('Xem chi tiết'),
           ),
         ],
       ),

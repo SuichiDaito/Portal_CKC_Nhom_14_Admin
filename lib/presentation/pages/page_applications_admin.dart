@@ -238,13 +238,13 @@ class ApplicationsAdminPage extends StatelessWidget {
         icon: Icons.event_seat,
         title: 'Lịch gác thi',
         color: Colors.deepPurple,
-        value: 'gac_thi',
+        value: 'exam_schedule_admin',
       ),
       _FeatureItem(
         icon: Icons.schedule,
         title: 'Lịch giảng dạy',
         color: Colors.orange,
-        value: 'lich_giang_day',
+        value: 'teaching_schedule_admin',
       ),
       _FeatureItem(
         icon: Icons.calendar_today,
