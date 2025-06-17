@@ -55,6 +55,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
         padding: const EdgeInsets.all(16),
         child: Text(
           BottomBarString.copyRight,
+
           textAlign: TextAlign.center,
           style: TextStyle(color: Color(0xFF666666), fontSize: 12),
         ),
