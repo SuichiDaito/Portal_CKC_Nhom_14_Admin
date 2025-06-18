@@ -7,6 +7,7 @@ class CustomButton extends StatelessWidget {
   final Color textColor;
   final EdgeInsetsGeometry padding;
   final BorderRadiusGeometry borderRadius;
+  final bool isEnabled;
 
   const CustomButton({
     Key? key,
@@ -16,14 +17,17 @@ class CustomButton extends StatelessWidget {
     this.textColor = Colors.white,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
+    this.isEnabled = true, // Mặc định là bật
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: isEnabled ? onPressed : null, // Disable if not enabled
       style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
+        backgroundColor: isEnabled
+            ? backgroundColor
+            : Colors.grey.shade400, // Màu khi disable
         padding: padding,
         shape: RoundedRectangleBorder(borderRadius: borderRadius),
       ),
