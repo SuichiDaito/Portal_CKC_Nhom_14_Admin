@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
 class ApplicationsAdminPage extends StatelessWidget {
   const ApplicationsAdminPage({Key? key}) : super(key: key);
@@ -94,6 +95,7 @@ class ApplicationsAdminPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final feature = gridItems[index];
               return _buildFeatureCard(context, feature);
+              return _buildFeatureCard(context, feature);
             },
           ),
         ],
@@ -102,8 +104,11 @@ class ApplicationsAdminPage extends StatelessWidget {
   }
 
   Widget _buildFeatureCard(context, _FeatureItem feature) {
+  Widget _buildFeatureCard(context, _FeatureItem feature) {
     return GestureDetector(
       onTap: () {
+        GoRouter.of(context).push('/admin/${feature.value}');
+
         GoRouter.of(context).push('/admin/${feature.value}');
 
         print('Tapped on ${feature.title}');
@@ -162,11 +167,19 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Điểm rèn luyện',
         color: Colors.blue,
         value: '',
+        value: '',
       ),
       _FeatureItem(
         icon: Icons.notifications,
         title: 'Thông báo',
         color: Colors.orange,
+        value: '',
+        value: '',
+      ),
+      _FeatureItem(
+        icon: Icons.videocam,
+        title: 'KPKP',
+        color: Colors.green,
         value: '',
       ),
       _FeatureItem(
@@ -180,11 +193,19 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'SKCH',
         color: Colors.purple,
         value: 'SKCH',
+        value: 'SKCH',
       ),
       _FeatureItem(
         icon: Icons.calendar_today,
         title: 'Lịch học',
         color: Colors.red,
+        value: '',
+        value: '',
+      ),
+      _FeatureItem(
+        icon: Icons.folder,
+        title: 'Tài liệu',
+        color: Colors.teal,
         value: '',
       ),
       _FeatureItem(
@@ -198,6 +219,13 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Thời khóa biểu',
         color: Colors.indigo,
         value: '',
+        value: '',
+      ),
+      _FeatureItem(
+        icon: Icons.star,
+        title: 'Đánh giá',
+        color: Colors.amber,
+        value: '',
       ),
       _FeatureItem(
         icon: Icons.star,
@@ -210,6 +238,7 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Bài tập',
         color: Colors.deepOrange,
         value: '',
+        value: '',
       ),
     ];
   }
@@ -221,14 +250,25 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Quản lý lớp chủ nhiệm',
         color: Colors.blueAccent,
         value: 'class_management_admin',
+        icon: Icons.class_,
+        title: 'Quản lý lớp chủ nhiệm',
+        color: Colors.blueAccent,
+        value: 'class_management_admin',
       ),
       _FeatureItem(
         icon: Icons.menu_book,
         title: 'Sổ lên lớp',
+        icon: Icons.menu_book,
+        title: 'Sổ lên lớp',
         color: Colors.green,
+        value: 'class_book_admin',
         value: 'class_book_admin',
       ),
       _FeatureItem(
+        icon: Icons.list_alt,
+        title: 'Danh sách lớp học phần',
+        color: Colors.teal,
+        value: 'class_roster_admin',
         icon: Icons.list_alt,
         title: 'Danh sách lớp học phần',
         color: Colors.teal,
@@ -239,10 +279,16 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Lịch gác thi',
         color: Colors.deepPurple,
         value: 'exam_schedule_admin',
+        icon: Icons.event_seat,
+        title: 'Lịch gác thi',
+        color: Colors.deepPurple,
+        value: 'exam_schedule_admin',
       ),
       _FeatureItem(
         icon: Icons.schedule,
         title: 'Lịch giảng dạy',
+        color: Colors.orange,
+        value: 'teaching_schedule_admin',
         color: Colors.orange,
         value: 'teaching_schedule_admin',
       ),
@@ -297,11 +343,19 @@ class ApplicationsAdminPage extends StatelessWidget {
     ];
   }
 }
+}
 
 class _FeatureItem {
   final IconData icon;
   final String title;
   final Color color;
+  final value;
+  _FeatureItem({
+    required this.icon,
+    required this.title,
+    required this.color,
+    required this.value,
+  });
   final value;
   _FeatureItem({
     required this.icon,

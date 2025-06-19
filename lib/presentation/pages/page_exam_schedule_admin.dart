@@ -67,6 +67,7 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
   final String teacherName = "TS. Nguyễn Văn An";
   final String teacherId = "GV001";
   final String department = "Khoa Công Nghệ Thông Tin";
+<<<<<<< HEAD
   void _showPrintDialog() {
     showDialog(
       context: context,
@@ -81,6 +82,8 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
       ),
     );
   }
+=======
+>>>>>>> origin/develop
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +104,7 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         elevation: 0,
+<<<<<<< HEAD
         actions: [
           IconButton(
             icon: Icon(Icons.print),
@@ -108,6 +112,8 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
             tooltip: 'In lịch gác thi',
           ),
         ],
+=======
+>>>>>>> origin/develop
       ),
       body: Container(
         decoration: BoxDecoration(

@@ -159,40 +159,39 @@ class _DashboardAdminLayoutState extends State<DashboardAdminPage> {
               ),
             ),
           ),
+          appBar: AppBar(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  hoTen,
+                  style: const TextStyle(color: Colors.black, fontSize: 14),
+                ),
+                Text(
+                  '($chucVu)',
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+            backgroundColor: const Color.fromARGB(255, 228, 230, 231),
+            foregroundColor: Colors.black,
+            leading: IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Chưa có thông báo nào")),
+                  );
+                },
+              ),
+            ],
+          ),
 
-          // appBar: AppBar(
-          //   title: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(
-          //         hoTen,
-          //         style: const TextStyle(color: Colors.black, fontSize: 14),
-          //       ),
-          //       Text(
-          //         '($chucVu)',
-          //         style: const TextStyle(color: Colors.grey, fontSize: 12),
-          //       ),
-          //     ],
-          //   ),
-          //   backgroundColor: const Color.fromARGB(255, 228, 230, 231),
-          //   foregroundColor: Colors.black,
-          //   leading: IconButton(
-          //     icon: const Icon(Icons.menu),
-          //     onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          //   ),
-          //   actions: [
-          //     IconButton(
-          //       icon: const Icon(Icons.notifications),
-          //       onPressed: () {
-          //         ScaffoldMessenger.of(context).showSnackBar(
-          //           const SnackBar(content: Text("Chưa có thông báo nào")),
-          //         );
-          //       },
-          //     ),
-          //   ],
-          // ),
           body: widget.child,
-          bottomNavigationBar: BottomApp(),
         );
       },
     );
@@ -249,47 +248,5 @@ class PageHomeAdminEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(child: Text("Chào mừng bạn đến với trang Admin"));
-  }
-}
-
-class BottomApp extends StatefulWidget {
-  const BottomApp({super.key});
-  State<BottomApp> createState() => _BottomApp();
-}
-
-class _BottomApp extends State<BottomApp> {
-  int _selectedIndex = 0;
-
-  void _handleNavigation(int index) {
-    final routes = ['/home/admin', '/apps', '/notifications', '/profile'];
-    if (index < routes.length) {
-      context.go(routes[index]);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      selectedItemColor: Colors.blue[600],
-      unselectedItemColor: Colors.grey[500],
-      currentIndex: _selectedIndex,
-      onTap: (index) {
-        setState(() {
-          _selectedIndex = index;
-          _handleNavigation(index);
-        });
-      },
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-        BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Ứng dụng'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
-          label: 'Thông báo',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Cá nhân'),
-      ],
-    );
   }
 }

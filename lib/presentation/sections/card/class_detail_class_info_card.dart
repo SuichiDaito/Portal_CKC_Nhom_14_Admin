@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+=======
+>>>>>>> origin/develop
 
 class ClassInfoCard extends StatelessWidget {
   final String className;
   final int studentCount;
   final String secretaryName;
   final String teacherName;
+<<<<<<< HEAD
   final List<SinhVien> studentList;
   final void Function(String) onSelectSecretary;
+=======
+  final void Function(String) onSelectSecretary; // thay vì VoidCallback
+>>>>>>> origin/develop
 
   const ClassInfoCard({
     super.key,
@@ -15,7 +22,10 @@ class ClassInfoCard extends StatelessWidget {
     required this.studentCount,
     required this.secretaryName,
     required this.teacherName,
+<<<<<<< HEAD
     required this.studentList,
+=======
+>>>>>>> origin/develop
     required this.onSelectSecretary,
   });
 
@@ -39,11 +49,15 @@ class ClassInfoCard extends StatelessWidget {
           children: [
             const Text(
               'Thông Tin Lớp Chủ Nhiệm',
+<<<<<<< HEAD
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
+=======
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+>>>>>>> origin/develop
             ),
             const SizedBox(height: 12),
             _buildInfoRow('Tên lớp:', className),
@@ -101,6 +115,7 @@ class ClassInfoCard extends StatelessWidget {
   }
 
   void _showSecretarySelectionDialog(BuildContext context) {
+<<<<<<< HEAD
     final selectableStudents = studentList
         .where((sv) => sv.trangThai == 0)
         .toList();
@@ -153,6 +168,30 @@ class ClassInfoCard extends StatelessWidget {
               );
             },
           ),
+=======
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chọn Thư ký mới'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Nguyễn Văn A'),
+              onTap: () {
+                Navigator.pop(context);
+                onSelectSecretary('2012345'); // ID mới của thư ký
+              },
+            ),
+            ListTile(
+              title: const Text('Trần Thị B'),
+              onTap: () {
+                Navigator.pop(context);
+                onSelectSecretary('2012346');
+              },
+            ),
+          ],
+>>>>>>> origin/develop
         ),
       ),
     );

@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:portal_ckc/api/model/admin_lop.dart';
 
 Widget buildClassListSection({
   required List<Lop> classList,
   required Function(Lop) onTapClass,
+=======
+import 'package:portal_ckc/presentation/sections/card/class_management_card.dart';
+
+Widget buildClassListSection({
+  required List<ClassInfo> classList,
+  required Function(ClassInfo) onTapClass,
+>>>>>>> origin/develop
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,14 +37,21 @@ Widget buildClassListSection({
   );
 }
 
+<<<<<<< HEAD
 Widget _buildClassCard(Lop classInfo, Function(Lop) onTap) {
+=======
+Widget _buildClassCard(ClassInfo classInfo, Function(ClassInfo) onTap) {
+>>>>>>> origin/develop
   return Card(
     elevation: 3,
     margin: const EdgeInsets.only(bottom: 12),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     child: InkWell(
       onTap: () => onTap(classInfo),
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/develop
       borderRadius: BorderRadius.circular(10),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -47,7 +62,11 @@ Widget _buildClassCard(Lop classInfo, Function(Lop) onTap) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
+<<<<<<< HEAD
                   classInfo.tenLop,
+=======
+                  classInfo.className,
+>>>>>>> origin/develop
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -64,7 +83,11 @@ Widget _buildClassCard(Lop classInfo, Function(Lop) onTap) {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
+<<<<<<< HEAD
                     classInfo.nienKhoa.tenNienKhoa,
+=======
+                    classInfo.course,
+>>>>>>> origin/develop
                     style: const TextStyle(
                       color: Color(0xFF1976D2),
                       fontSize: 12,
@@ -77,9 +100,18 @@ Widget _buildClassCard(Lop classInfo, Function(Lop) onTap) {
             const SizedBox(height: 12),
             Row(
               children: [
+<<<<<<< HEAD
                 _buildClassInfoItem(Icons.groups, 'Sĩ số: ${classInfo.siSo}'),
                 const SizedBox(width: 20),
                 // _buildClassInfoItem(Icons.schedule, classInfo.),
+=======
+                _buildClassInfoItem(
+                  Icons.groups,
+                  'Sĩ số: ${classInfo.studentCount}',
+                ),
+                const SizedBox(width: 20),
+                _buildClassInfoItem(Icons.schedule, classInfo.semester),
+>>>>>>> origin/develop
               ],
             ),
           ],

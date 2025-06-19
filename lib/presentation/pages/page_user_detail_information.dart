@@ -7,7 +7,10 @@ import 'package:portal_ckc/presentation/sections/button/button_change_password_i
 import 'package:portal_ckc/presentation/sections/button/button_edit_information_in_user.dart';
 import 'package:portal_ckc/presentation/sections/button/button_log_out_in_user.dart';
 import 'package:portal_ckc/presentation/sections/user_infomation_detail.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
+=======
+>>>>>>> origin/develop
 
 class UserDetailInformationPage extends StatefulWidget {
   const UserDetailInformationPage({Key? key}) : super(key: key);
