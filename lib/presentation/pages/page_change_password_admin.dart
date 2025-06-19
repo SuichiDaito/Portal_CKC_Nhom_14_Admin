@@ -16,7 +16,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
   final _formKey = GlobalKey<FormState>();
   final oldPassCtrl = TextEditingController();
   final newPassCtrl = TextEditingController();
-  final confirmPassCtrl = TextEditingController();n
+  final confirmPassCtrl = TextEditingController();
 
   bool isLoading = false;
 

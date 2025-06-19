@@ -28,9 +28,4 @@ class FetchStudentList extends AdminEvent {
   final int lopId;
 
   FetchStudentList(this.lopId);
-=======
-class FetchAdminDetail extends AdminEvent {
-  final int userId;
-
-  FetchAdminDetail({required this.userId});
 }
