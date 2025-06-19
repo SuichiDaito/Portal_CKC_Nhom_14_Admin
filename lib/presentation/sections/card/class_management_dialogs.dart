@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:portal_ckc/api/model/admin_lop.dart';
+
 import 'package:portal_ckc/presentation/sections/card/class_management_card.dart';
 
 void showClassListDialog(
@@ -20,7 +22,7 @@ void showClassListDialog(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Danh Sách Lớp Chi Tiết',
+              'Chi Tiết Danh Sách Lớp',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
