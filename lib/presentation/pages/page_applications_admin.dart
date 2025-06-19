@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:go_router/go_router.dart';
 
 class ApplicationsAdminPage extends StatelessWidget {
   const ApplicationsAdminPage({Key? key}) : super(key: key);
@@ -95,7 +94,6 @@ class ApplicationsAdminPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final feature = gridItems[index];
               return _buildFeatureCard(context, feature);
-              return _buildFeatureCard(context, feature);
             },
           ),
         ],
@@ -104,11 +102,8 @@ class ApplicationsAdminPage extends StatelessWidget {
   }
 
   Widget _buildFeatureCard(context, _FeatureItem feature) {
-  Widget _buildFeatureCard(context, _FeatureItem feature) {
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).push('/admin/${feature.value}');
-
         GoRouter.of(context).push('/admin/${feature.value}');
 
         print('Tapped on ${feature.title}');
@@ -167,19 +162,11 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Điểm rèn luyện',
         color: Colors.blue,
         value: '',
-        value: '',
       ),
       _FeatureItem(
         icon: Icons.notifications,
         title: 'Thông báo',
         color: Colors.orange,
-        value: '',
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.videocam,
-        title: 'KPKP',
-        color: Colors.green,
         value: '',
       ),
       _FeatureItem(
@@ -193,19 +180,11 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'SKCH',
         color: Colors.purple,
         value: 'SKCH',
-        value: 'SKCH',
       ),
       _FeatureItem(
         icon: Icons.calendar_today,
         title: 'Lịch học',
         color: Colors.red,
-        value: '',
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.folder,
-        title: 'Tài liệu',
-        color: Colors.teal,
         value: '',
       ),
       _FeatureItem(
@@ -219,13 +198,6 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Thời khóa biểu',
         color: Colors.indigo,
         value: '',
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.star,
-        title: 'Đánh giá',
-        color: Colors.amber,
-        value: '',
       ),
       _FeatureItem(
         icon: Icons.star,
@@ -238,7 +210,6 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Bài tập',
         color: Colors.deepOrange,
         value: '',
-        value: '',
       ),
     ];
   }
@@ -250,35 +221,20 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Quản lý lớp chủ nhiệm',
         color: Colors.blueAccent,
         value: 'class_management_admin',
-        icon: Icons.class_,
-        title: 'Quản lý lớp chủ nhiệm',
-        color: Colors.blueAccent,
-        value: 'class_management_admin',
       ),
       _FeatureItem(
-        icon: Icons.menu_book,
-        title: 'Sổ lên lớp',
         icon: Icons.menu_book,
         title: 'Sổ lên lớp',
         color: Colors.green,
         value: 'class_book_admin',
-        value: 'class_book_admin',
       ),
       _FeatureItem(
         icon: Icons.list_alt,
         title: 'Danh sách lớp học phần',
         color: Colors.teal,
         value: 'class_roster_admin',
-        icon: Icons.list_alt,
-        title: 'Danh sách lớp học phần',
-        color: Colors.teal,
-        value: 'class_roster_admin',
       ),
       _FeatureItem(
-        icon: Icons.event_seat,
-        title: 'Lịch gác thi',
-        color: Colors.deepPurple,
-        value: 'exam_schedule_admin',
         icon: Icons.event_seat,
         title: 'Lịch gác thi',
         color: Colors.deepPurple,
@@ -289,73 +245,69 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Lịch giảng dạy',
         color: Colors.orange,
         value: 'teaching_schedule_admin',
-        color: Colors.orange,
-        value: 'teaching_schedule_admin',
       ),
       _FeatureItem(
         icon: Icons.calendar_today,
         title: 'Quản lý lịch tuần',
         color: Colors.cyan,
-        value: 'schedule_management_admin',
+        value: 'lich_tuan',
       ),
       _FeatureItem(
         icon: Icons.school,
-        title: 'Phân công lớp học phần',
+        title: 'Quản lý lớp học phần',
         color: Colors.lightGreen,
-        value: 'course_assignment_admin',
+        value: 'quan_ly_lhp',
+      ),
+      _FeatureItem(
+        icon: Icons.timelapse,
+        title: 'Quản lý lịch học',
+        color: Colors.pink,
+        value: 'lich_hoc',
       ),
       _FeatureItem(
         icon: Icons.alarm,
         title: 'Quản lý lịch thi',
         color: Colors.redAccent,
-        value: 'exam_schedule_groupe_admin',
+        value: 'lich_thi',
       ),
       _FeatureItem(
         icon: Icons.meeting_room,
         title: 'Quản lý phòng học',
         color: Colors.deepOrange,
-        value: 'room_management_admin',
+        value: 'management_group_admin',
       ),
       _FeatureItem(
         icon: Icons.person,
         title: 'Quản lý sinh viên',
         color: Colors.indigo,
-        value: 'student_management_admin',
+        value: 'sinh_vien',
       ),
       _FeatureItem(
         icon: Icons.description,
         title: 'Quản lý cấp giấy tờ',
         color: Colors.brown,
-        value: 'decument_request_management_admin',
+        value: 'cap_giay_to',
       ),
       _FeatureItem(
-        icon: Icons.person_2,
-        title: 'Quản lý giảng viên',
+        icon: Icons.settings,
+        title: 'Quản lý tham số',
         color: Colors.blueGrey,
-        value: 'teacher_management_admin',
+        value: 'tham_so',
       ),
       _FeatureItem(
         icon: Icons.security,
-        title: 'Khởi tạo năm học',
+        title: 'Quản lý phân quyền',
         color: Colors.grey,
-        value: 'academic_year_management',
+        value: 'phan_quyen',
       ),
     ];
   }
-}
 }
 
 class _FeatureItem {
   final IconData icon;
   final String title;
   final Color color;
-  final value;
-  _FeatureItem({
-    required this.icon,
-    required this.title,
-    required this.color,
-    required this.value,
-  });
   final value;
   _FeatureItem({
     required this.icon,

@@ -17,7 +17,7 @@ class PageThongtinAdmin extends StatelessWidget {
           builder: (context, state) {
             if (state is AdminLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is AdminSuccess) {
+            } else if (state is AdminLoaded) {
               final user = state.user;
               final hoSo = user.hoSo;
 

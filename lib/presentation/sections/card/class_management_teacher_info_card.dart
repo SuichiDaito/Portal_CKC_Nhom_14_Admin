@@ -61,15 +61,9 @@ class TeacherInfoCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-<<<<<<< HEAD
-            _buildInfoRow(Icons.badge, 'Mã GV: ', 'GV00${teacherId}'),
-            const SizedBox(height: 8),
-            _buildInfoRow(Icons.school, 'Bộ môn: ', department),
-=======
             _buildInfoRow(Icons.badge, 'Mã GV:', teacherId),
             const SizedBox(height: 8),
             _buildInfoRow(Icons.school, 'Khoa:', department),
->>>>>>> origin/develop
           ],
         ),
       ),
@@ -85,10 +79,7 @@ class TeacherInfoCard extends StatelessWidget {
           label,
           style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
-<<<<<<< HEAD
-=======
         const SizedBox(width: 8),
->>>>>>> origin/develop
         Text(
           value,
           style: const TextStyle(

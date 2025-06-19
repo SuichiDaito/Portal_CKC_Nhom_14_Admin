@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class UserProfileCardHomeAdmin extends StatefulWidget {
   final String nameUser;
-  final String idTeacher;
+  final String idStudent;
   final String email;
   const UserProfileCardHomeAdmin({
     super.key,
     required this.nameUser,
-    required this.idTeacher,
+    required this.idStudent,
     required this.email,
   });
   State<UserProfileCardHomeAdmin> createState() => _UserCardHomeAdmin();
@@ -62,7 +61,7 @@ class _UserCardHomeAdmin extends State<UserProfileCardHomeAdmin> {
           ),
           SizedBox(height: 8),
           Text(
-            'Mã giảng viên: GV00${widget.idTeacher}',
+            'Mã sinh viên: ${widget.idStudent}',
             style: TextStyle(
               color: Colors.white.withOpacity(0.9),
               fontSize: 14,
@@ -80,9 +79,7 @@ class _UserCardHomeAdmin extends State<UserProfileCardHomeAdmin> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    context.push('/admin/class_book_admin');
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white.withOpacity(0.2),
                     foregroundColor: Colors.white,
@@ -91,15 +88,13 @@ class _UserCardHomeAdmin extends State<UserProfileCardHomeAdmin> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text('Sổ lên lớp'),
+                  child: Text('Kết quả học tập'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    context.go('/admin/information/user');
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white.withOpacity(0.2),
                     foregroundColor: Colors.white,
