@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/sections/card/class_management_card.dart';
+import 'package:portal_ckc/api/model/admin_lop.dart';
 
 Widget buildClassListSection({
-  required List<ClassInfo> classList,
-  required Function(ClassInfo) onTapClass,
+  required List<Lop> classList,
+  required Function(Lop) onTapClass,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,13 +29,14 @@ Widget buildClassListSection({
   );
 }
 
-Widget _buildClassCard(ClassInfo classInfo, Function(ClassInfo) onTap) {
+Widget _buildClassCard(Lop classInfo, Function(Lop) onTap) {
   return Card(
     elevation: 3,
     margin: const EdgeInsets.only(bottom: 12),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     child: InkWell(
       onTap: () => onTap(classInfo),
+
       borderRadius: BorderRadius.circular(10),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -46,7 +47,7 @@ Widget _buildClassCard(ClassInfo classInfo, Function(ClassInfo) onTap) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  classInfo.className,
+                  classInfo.tenLop,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -63,7 +64,7 @@ Widget _buildClassCard(ClassInfo classInfo, Function(ClassInfo) onTap) {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    classInfo.course,
+                    classInfo.nienKhoa.tenNienKhoa,
                     style: const TextStyle(
                       color: Color(0xFF1976D2),
                       fontSize: 12,
@@ -76,12 +77,9 @@ Widget _buildClassCard(ClassInfo classInfo, Function(ClassInfo) onTap) {
             const SizedBox(height: 12),
             Row(
               children: [
-                _buildClassInfoItem(
-                  Icons.groups,
-                  'Sĩ số: ${classInfo.studentCount}',
-                ),
+                _buildClassInfoItem(Icons.groups, 'Sĩ số: ${classInfo.siSo}'),
                 const SizedBox(width: 20),
-                _buildClassInfoItem(Icons.schedule, classInfo.semester),
+                // _buildClassInfoItem(Icons.schedule, classInfo.),
               ],
             ),
           ],

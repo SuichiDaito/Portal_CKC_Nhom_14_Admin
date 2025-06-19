@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/main.dart';
 import 'package:portal_ckc/presentation/pages/appbar_bottombar/page_app_bar.dart';
 import 'package:portal_ckc/presentation/pages/page_academic_year_management.dart';
@@ -102,10 +103,18 @@ class RouteName {
         path: '/admin/class_management_admin',
         builder: (context, state) => PageClassManagementAdmin(),
       ),
+      // GoRoute(
+      //   path: '/admin/class_detail_admin',
+      //   builder: (context, state) => PageClassDetailAdmin(),
+      // ),
       GoRoute(
         path: '/admin/class_detail_admin',
-        builder: (context, state) => PageClassDetailAdmin(),
+        builder: (context, state) {
+          final lop = state.extra as Lop; // ✅ lấy dữ liệu Lop truyền sang
+          return PageClassDetailAdmin(lop: lop);
+        },
       ),
+
       GoRoute(
         path: '/admin/conduct_evaluation_admin',
         builder: (context, state) => PageConductEvaluationAdmin(),

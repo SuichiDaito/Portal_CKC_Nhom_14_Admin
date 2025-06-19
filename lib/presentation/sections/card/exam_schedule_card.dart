@@ -449,7 +449,7 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
                 children: const [
                   Icon(Icons.list_alt, color: Colors.grey),
                   SizedBox(width: 8),
-                  Text('Chọn một mục...', style: TextStyle(color: Colors.grey)),
+                  Text('====', style: TextStyle(color: Colors.grey)),
                 ],
               ),
               items: items.map((item) {

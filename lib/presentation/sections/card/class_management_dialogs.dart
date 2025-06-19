@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/presentation/sections/card/class_management_card.dart';
 
 void showClassListDialog(
   BuildContext context,
-  List<ClassInfo> classList,
-  Function(ClassInfo) onTapClass,
+  List<Lop> classList,
+  Function(Lop) onTapClass,
 ) {
   showDialog(
     context: context,
@@ -36,7 +37,7 @@ void showClassListDialog(
                     leading: CircleAvatar(
                       backgroundColor: const Color(0xFF1976D2),
                       child: Text(
-                        classInfo.className.substring(4, 6),
+                        classInfo.tenLop.substring(4, 6),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -44,16 +45,17 @@ void showClassListDialog(
                       ),
                     ),
                     title: Text(
-                      classInfo.className,
+                      classInfo.tenLop,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(
-                      '${classInfo.studentCount} sinh viên - ${classInfo.course}',
-                    ),
+                    subtitle: Text('${classInfo.siSo} sinh viên '),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push('/admin/class_detail_admin');
+                      context.push(
+                        '/admin/class_detail_admin',
+                        extra: classInfo,
+                      ); // lop là đối tượng Lop
                     },
                   );
                 },
@@ -76,29 +78,32 @@ void showClassListDialog(
   );
 }
 
-void showClassDetailsDialog(BuildContext context, ClassInfo classInfo) {
+void showClassDetailsDialog(BuildContext context, Lop classInfo) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(
-        'Thông tin lớp ${classInfo.className}',
+        'Thông tin lớp ${classInfo.tenLop}',
         style: const TextStyle(color: Color(0xFF1976D2)),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow('Tên lớp:', classInfo.className),
-          _buildDetailRow('Sĩ số:', '${classInfo.studentCount} sinh viên'),
-          _buildDetailRow('Khóa:', classInfo.course),
-          _buildDetailRow('Học kỳ:', classInfo.semester),
+          _buildDetailRow('Tên lớp:', classInfo.tenLop),
+          _buildDetailRow('Sĩ số:', '${classInfo.siSo} sinh viên'),
+          _buildDetailRow('Khóa:', classInfo.nienKhoa.tenNienKhoa),
         ],
       ),
       actions: [
         TextButton(
           child: const Text('Xem Chi Tiết'),
           onPressed: () {
-            GoRouter.of(context).push('/admin/class_detail_admin');
+            Navigator.pop(context);
+            context.push(
+              '/admin/class_detail_admin',
+              extra: classInfo,
+            ); // lop là đối tượng Lop
           },
         ),
         TextButton(
