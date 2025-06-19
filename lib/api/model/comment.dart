@@ -2,27 +2,25 @@ import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable()
 class Comment {
-  final int postId;
-  final int id;
-  final String name;
-  final String email;
-  final String body;
+  final String userName;
+  final String content;
+  final String timestamp;
 
   Comment({
-    required this.postId,
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.body,
+    required this.userName,
+    required this.content,
+    required this.timestamp,
   });
-
-  factory Comment.fromJson(Map<String, dynamic> json) {
-    return Comment(
-      postId: json['postId'],
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      body: json['body'],
-    );
-  }
 }
+
+//   // factory Comment.fromJson(Map<String, dynamic> json) {
+//   //   return Comment(
+//   //     postId: json['postId'],
+//   //     id: json['id'],
+//   //     name: json['name'],
+//   //     email: json['email'],
+//   //     body: json['body'],
+//   //   );
+//   // }
+// }
+

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
+import 'package:portal_ckc/constant/string.dart';
 
 class PageDoimatkhauAdmin extends StatefulWidget {
   const PageDoimatkhauAdmin({super.key});
@@ -15,11 +16,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
   final _formKey = GlobalKey<FormState>();
   final oldPassCtrl = TextEditingController();
   final newPassCtrl = TextEditingController();
-  final confirmPassCtrl = TextEditingController();Stack(
-    children: [
-      
-    ]
-  )
+  final confirmPassCtrl = TextEditingController();n
 
   bool isLoading = false;
 
@@ -56,8 +53,8 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
       bottomNavigationBar: Container(
         color: const Color.fromARGB(255, 239, 236, 236),
         padding: const EdgeInsets.all(16),
-        child: const Text(
-          'Nhóm: 14_NgọcCẩm_NgọcTrang\nCopyright © 2025',
+        child: Text(
+          BottomBarString.copyRight,
           textAlign: TextAlign.center,
           style: TextStyle(color: Color(0xFF666666), fontSize: 12),
         ),

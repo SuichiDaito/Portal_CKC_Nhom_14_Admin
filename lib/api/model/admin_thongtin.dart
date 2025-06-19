@@ -1,37 +1,39 @@
+
+import 'package:portal_ckc/api/model/admin_ho_so.dart';
+import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 import 'package:portal_ckc/api/model/admin_vaitro.dart';
 
 class User {
   final int id;
-  final int idHoSo;
-  final int idBoMon;
+  final int? idHoSo; // ✅ Cho phép null
+  final int? idBoMon;
   final String taiKhoan;
   final int trangThai;
   final HoSo? hoSo;
+  final BoMon? boMon;
   final List<Role> roles;
 
   User({
     required this.id,
-    required this.idHoSo,
-    required this.idBoMon,
+    this.idHoSo,
+    this.idBoMon,
     required this.taiKhoan,
     required this.trangThai,
     this.hoSo,
+    this.boMon,
     required this.roles,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    var roleList = <Role>[];
-    if (json['roles'] != null) {
-      roleList = (json['roles'] as List).map((e) => Role.fromJson(e)).toList();
-    }
 
     return User(
       id: json['id'],
-      idHoSo: json['id_ho_so'],
+      idHoSo: json['id_ho_so'] is int ? json['id_ho_so'] : null,
       idBoMon: json['id_bo_mon'],
       taiKhoan: json['tai_khoan'] ?? '',
       trangThai: json['trang_thai'] ?? 0,
       hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : null,
+      boMon: json['bo_mon'] != null ? BoMon.fromJson(json['bo_mon']) : null,
       roles: (json['roles'] ?? []).map<Role>((e) => Role.fromJson(e)).toList(),
     );
   }
