@@ -1,0 +1,21 @@
+class LopWithSinhVienResponse {
+  final bool success;
+  final Lop lop;
+  final List<SinhVien> sinhViens;
+
+  LopWithSinhVienResponse({
+    required this.success,
+    required this.lop,
+    required this.sinhViens,
+  });
+
+  factory LopWithSinhVienResponse.fromJson(Map<String, dynamic> json) {
+    return LopWithSinhVienResponse(
+      success: json['success'] ?? false,
+      lop: Lop.fromJson(json['lop']),
+      sinhViens: (json['sinh_viens'] as List)
+          .map((e) => SinhVien.fromJson(e))
+          .toList(),
+    );
+  }
+}

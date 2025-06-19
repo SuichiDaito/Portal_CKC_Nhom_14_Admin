@@ -216,7 +216,10 @@ class _LoginScreenState extends State<LoginScreen>
               Center(child: CircularProgressIndicator());
             } else if (state is AdminLoaded) {
               print('✅ Thành công, chuyển trang');
-              context.go('/home/admin');
+              final user = state.user;
+
+              // ✅ Điều hướng kèm user.id
+              context.go('/home/admin', extra: user.id);
             } else if (state is AdminError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

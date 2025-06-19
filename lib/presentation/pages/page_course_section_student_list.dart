@@ -1,6 +1,9 @@
 // screens/student_list_screen.dart
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
 import 'package:go_router/go_router.dart';
+>>>>>>> origin/develop
 import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_student_score_item_section.dart';
 
@@ -108,7 +111,11 @@ class _PageCourseSectionStudentListState
           ),
           ElevatedButton(
             onPressed: () {
+<<<<<<< HEAD
+              Navigator.pop(context);
+=======
               context.pop(true);
+>>>>>>> origin/develop
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
