@@ -16,7 +16,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
   final _formKey = GlobalKey<FormState>();
   final oldPassCtrl = TextEditingController();
   final newPassCtrl = TextEditingController();
-  final confirmPassCtrl = TextEditingController();
+  final confirmPassCtrl = TextEditingController();n
 
   bool isLoading = false;
 
@@ -55,7 +55,6 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
         padding: const EdgeInsets.all(16),
         child: Text(
           BottomBarString.copyRight,
-
           textAlign: TextAlign.center,
           style: TextStyle(color: Color(0xFF666666), fontSize: 12),
         ),
