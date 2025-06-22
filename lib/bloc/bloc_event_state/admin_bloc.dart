@@ -8,7 +8,7 @@ import 'package:portal_ckc/bloc/state/admin_state.dart';
 class AdminBloc extends Bloc<AdminEvent, AdminState> {
   final AdminService service;
 
-  AdminBloc() : service = CallApiAdmin.adminService, super(AdminInitial()) {
+  AdminBloc() : service = CallApiStudent.adminService, super(AdminInitial()) {
     on<AdminLoginEvent>(_onLogin);
     on<FetchAdminDetail>(_onFetchDetail);
   }
