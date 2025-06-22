@@ -8,6 +8,13 @@ import 'package:portal_ckc/api/controller/call_api.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/services/admin_service.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nganh_khoa_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/phong_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/role_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/sinh_vien_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/user_bloc.dart';
 import 'package:portal_ckc/bloc/state/bloc_state.dart';
 import 'package:portal_ckc/bloc/event/bloc_event.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bloc_example.dart';
@@ -30,6 +37,13 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => BlocImplement()..add(FetchData())),
         BlocProvider(create: (_) => AdminBloc()),
+        BlocProvider(create: (_) => PhongBloc()),
+        BlocProvider(create: (_) => SinhVienBloc()),
+        BlocProvider(create: (_) => UserBloc()),
+        BlocProvider(create: (_) => NienKhoaHocKyBloc()),
+        BlocProvider(create: (_) => LopBloc()),
+        BlocProvider(create: (_) => NganhKhoaBloc()),
+        BlocProvider(create: (_) => RoleBloc()),
       ],
       child: MaterialApp.router(
         routerConfig: RouteName.route,

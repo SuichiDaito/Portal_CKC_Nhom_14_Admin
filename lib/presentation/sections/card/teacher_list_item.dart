@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/pages/page_teacher_management_admin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 
 class TeacherListItem extends StatelessWidget {
-  final Teacher teacher;
+  final User teacher;
   final VoidCallback onDetailPressed;
   final VoidCallback onResetPasswordPressed;
 
@@ -14,29 +14,18 @@ class TeacherListItem extends StatelessWidget {
     required this.onResetPasswordPressed,
   }) : super(key: key);
 
-  String _getPositionText(TeacherPosition position) {
-    switch (position) {
-      case TeacherPosition.dean:
-        return 'Trưởng khoa';
-      case TeacherPosition.viceDean:
-        return 'Phó khoa';
-      case TeacherPosition.lecturer:
-        return 'Giảng viên';
-      case TeacherPosition.staff:
-        return 'Nhân viên';
-    }
-  }
-
-  Color _getPositionColor(TeacherPosition position) {
-    switch (position) {
-      case TeacherPosition.dean:
+  Color _getRoleColor(String? roleName) {
+    switch (roleName?.toLowerCase()) {
+      case 'trưởng khoa':
         return Colors.red.shade700;
-      case TeacherPosition.viceDean:
+      case 'phó khoa':
         return Colors.orange.shade700;
-      case TeacherPosition.lecturer:
+      case 'giảng viên':
         return Colors.blue.shade700;
-      case TeacherPosition.staff:
+      case 'nhân viên':
         return Colors.green.shade700;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -50,80 +39,41 @@ class TeacherListItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '${teacher.faculty}',
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Divider(color: Colors.grey, thickness: 1, height: 20),
-            const SizedBox(height: 4),
-            Text(
-              'Bộ môn: ${teacher.department}',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Mã giảng viên: ${teacher.teacherCode}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Họ và tên: ${teacher.fullName}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
             Row(
               children: [
-                const Text(
-                  'Chức vụ:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                const Icon(Icons.person, color: Colors.blue),
                 const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getPositionColor(teacher.position).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: _getPositionColor(teacher.position),
-                    ),
-                  ),
-                  child: Text(
-                    _getPositionText(teacher.position),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _getPositionColor(teacher.position),
-                    ),
+                Text(
+                  teacher.hoSo!.hoTen,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            Divider(),
+            _buildInfoRow(
+              Icons.school,
+              'Khoa',
+              teacher.boMon?.nganhHoc?.khoa?.tenKhoa,
+            ),
+            const SizedBox(height: 8),
+            _buildInfoRow(Icons.group, 'Bộ môn', teacher.boMon?.tenBoMon),
+            const SizedBox(height: 8),
+            _buildInfoRow(Icons.badge, 'Mã giảng viên', 'GV00${teacher.id}'),
+            const SizedBox(height: 8),
+            // _buildInfoRow(Icons.person, 'Họ và tên', teacher.hoSo?.hoTen),
+            // const SizedBox(height: 8),
+            _buildRoleRow(
+              Icons.work,
+              'Chức vụ',
+              teacher.roles != null && teacher.roles!.isNotEmpty
+                  ? teacher.roles![0].name
+                  : 'Không rõ',
+            ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -151,6 +101,62 @@ class TeacherListItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String? value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.blueGrey, size: 20),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 100,
+          child: Text(
+            '$label:',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(value ?? '—', style: const TextStyle(fontSize: 15)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoleRow(IconData icon, String label, String? roleName) {
+    final color = _getRoleColor(roleName);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, color: Colors.blueGrey, size: 20),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 100,
+          child: Text(
+            '$label:',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: color),
+          ),
+          child: Text(
+            roleName ?? 'Không rõ',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

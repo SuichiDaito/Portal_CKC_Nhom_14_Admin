@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portal_ckc/api/model/admin_thongtin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthEvent {}
