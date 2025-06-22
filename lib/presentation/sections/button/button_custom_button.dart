@@ -18,6 +18,7 @@ class CustomButton extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
     this.isEnabled = true, // Mặc định là bật
+
   }) : super(key: key);
 
   @override

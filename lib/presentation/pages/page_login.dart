@@ -7,6 +7,7 @@ import 'package:portal_ckc/bloc/state/admin_state.dart';
 import 'package:portal_ckc/gen/assets.gen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -212,7 +213,9 @@ class _LoginScreenState extends State<LoginScreen>
         child: BlocConsumer<AdminBloc, AdminState>(
           listener: (context, state) {
             print('📌 [Listener] State: $state');
-            if (state is AdminLoaded) {
+            if (state is AdminLoading) {
+              Center(child: CircularProgressIndicator());
+            } else if (state is AdminLoaded) {
               print('✅ Thành công, chuyển trang');
               final user = state.user;
 
@@ -517,34 +520,34 @@ class _LoginScreenState extends State<LoginScreen>
       AdminLoginEvent(taiKhoan: account, password: password),
     );
     // TODO: Implement admin login logic
-    // _showToast('Đăng nhập thành công!', isError: false);
+    _showToast('Đăng nhập thành công!', isError: false);
   }
 
-  // void _showToast(String message, {bool isError = true}) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Row(
-  //         children: [
-  //           Icon(
-  //             isError ? Icons.error : Icons.check_circle,
-  //             color: Colors.white,
-  //             size: 20,
-  //           ),
-  //           SizedBox(width: 12),
-  //           Expanded(
-  //             child: Text(
-  //               message,
-  //               style: TextStyle(color: Colors.white, fontSize: 16),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       backgroundColor: isError ? Colors.red[600] : Colors.green[600],
-  //       duration: Duration(seconds: 3),
-  //       behavior: SnackBarBehavior.floating,
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-  //       margin: EdgeInsets.all(16),
-  //     ),
-  //   );
-  // }
+  void _showToast(String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              isError ? Icons.error : Icons.check_circle,
+              color: Colors.white,
+              size: 20,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: isError ? Colors.red[600] : Colors.green[600],
+        duration: Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.all(16),
+      ),
+    );
+  }
 }

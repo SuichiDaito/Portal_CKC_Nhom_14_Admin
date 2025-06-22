@@ -1,5 +1,6 @@
 // screens/student_list_screen.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_student_score_item_section.dart';
 
@@ -107,7 +108,7 @@ class _PageCourseSectionStudentListState
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop(true);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
