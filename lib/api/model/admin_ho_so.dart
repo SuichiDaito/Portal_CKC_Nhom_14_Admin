@@ -39,4 +39,18 @@ class HoSo {
       anh: json['anh'] ?? '',
     );
   }
+  factory HoSo.empty() {
+    return HoSo(
+      hoTen: '',
+      email: '',
+      soDienThoai: '',
+      ngaySinh: '',
+      id: 0,
+      password: '',
+      gioiTinh: '',
+      cccd: '',
+      diaChi: '',
+      anh: '',
+    );
+  }
 }
