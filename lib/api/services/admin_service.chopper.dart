@@ -124,4 +124,21 @@ final class _$AdminService extends AdminService {
     final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<dynamic>> getDanhSachGiayXacNhan() {
+    final Uri $url = Uri.parse('/admin/giay-xac-nhan');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> confirmMultipleGiayXacNhan(
+    Map<String, dynamic> body,
+  ) {
+    final Uri $url = Uri.parse('/admin/giay-xac-nhan');
+    final $body = body;
+    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
 }

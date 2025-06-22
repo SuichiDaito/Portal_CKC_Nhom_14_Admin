@@ -60,4 +60,12 @@ abstract class AdminService extends ChopperService {
   //API LẤY DANH SÁCH vai trò
   @Get(path: '/roles')
   Future<Response> getDanhSachVaiTro();
+  //API LẤY DANH SÁCH GIẤY XÁC NHẬN
+  @Get(path: '/giay-xac-nhan')
+  Future<Response> getDanhSachGiayXacNhan();
+  // PUT: Xác nhận hàng loạt giấy xác nhận
+  @Put(path: '/giay-xac-nhan')
+  Future<Response> confirmMultipleGiayXacNhan(
+    @Body() Map<String, dynamic> body,
+  );
 }

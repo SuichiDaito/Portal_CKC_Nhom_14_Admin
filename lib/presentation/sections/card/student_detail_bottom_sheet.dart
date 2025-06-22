@@ -125,7 +125,6 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
 
             const SizedBox(height: 10),
 
-            _buildInfoTile(Icons.class_, 'Lớp', widget.student.lop.tenLop),
             _buildInfoTile(Icons.badge, 'MSSV', widget.student.maSv),
             _buildInfoTile(
               Icons.person,
