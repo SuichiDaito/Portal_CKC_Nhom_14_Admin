@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
+import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
+import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_class_info_display.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_copy_card.dart';
@@ -17,10 +21,9 @@ class PageScheduleManagementAdmin extends StatefulWidget {
 
 class _PageScheduleManagementAdminState
     extends State<PageScheduleManagementAdmin> {
-  final List<DropdownItem> _schoolYears = [
-    DropdownItem(value: '2023-2024', label: '2023-2024', icon: Icons.school),
-    DropdownItem(value: '2024-2025', label: '2024-2025', icon: Icons.school),
-  ];
+  List<DropdownItem> _schoolYears = [];
+  DropdownItem? _selectedSchoolYear;
+  bool _isSchoolYearLoaded = false;
 
   final List<DropdownItem> _weeks = List.generate(
     15,
@@ -49,7 +52,6 @@ class _PageScheduleManagementAdminState
     ),
   ];
 
-  DropdownItem? _selectedSchoolYear;
   DropdownItem? _selectedWeek;
   DropdownItem? _selectedDepartment;
   DropdownItem? _selectedLecturer;
@@ -76,10 +78,10 @@ class _PageScheduleManagementAdminState
   @override
   void initState() {
     super.initState();
-    _selectedSchoolYear = _schoolYears.first;
     _selectedWeek = _weeks.first;
     _selectedDepartment = _departments.first;
     _selectedLecturer = _lecturers.first;
+    context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
   }
 
   void _handleScheduleUpdate(
@@ -163,16 +165,62 @@ class _PageScheduleManagementAdminState
                     Row(
                       children: [
                         Expanded(
-                          child: DropdownSelector(
-                            label: 'Niên khóa',
-                            selectedItem: _selectedSchoolYear,
-                            items: _schoolYears,
-                            onChanged: (item) {
-                              setState(() {
-                                _selectedSchoolYear = item;
-                              });
-                            },
-                          ),
+                          child:
+                              BlocBuilder<
+                                NienKhoaHocKyBloc,
+                                NienKhoaHocKyState
+                              >(
+                                builder: (context, state) {
+                                  if (state is NienKhoaHocKyLoading) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+
+                                  if (state is NienKhoaHocKyLoaded) {
+                                    if (!_isSchoolYearLoaded) {
+                                      _schoolYears = state.nienKhoas.map((nk) {
+                                        final name =
+                                            '${nk.namBatDau}-${nk.namKetThuc}';
+                                        return DropdownItem(
+                                          value: nk.id.toString(),
+                                          label: name,
+                                          icon: Icons.school,
+                                        );
+                                      }).toList();
+
+                                      _selectedSchoolYear =
+                                          _schoolYears.isNotEmpty
+                                          ? _schoolYears.first
+                                          : null;
+                                      _isSchoolYearLoaded = true;
+                                    }
+
+                                    return DropdownSelector(
+                                      label: 'Niên khóa',
+                                      selectedItem:
+                                          _selectedSchoolYear ??
+                                          (_schoolYears.isNotEmpty
+                                              ? _schoolYears.first
+                                              : null),
+                                      items: _schoolYears,
+                                      onChanged: (item) {
+                                        setState(() {
+                                          _selectedSchoolYear = item;
+                                        });
+                                      },
+                                    );
+                                  }
+
+                                  if (state is NienKhoaHocKyError) {
+                                    return Text(
+                                      'Lỗi tải niên khóa: ${state.message}',
+                                    );
+                                  }
+
+                                  return const SizedBox();
+                                },
+                              ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(

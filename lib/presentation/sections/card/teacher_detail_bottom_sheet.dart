@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/presentation/pages/page_teacher_management_admin.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
 
 class TeacherDetailBottomSheet extends StatefulWidget {
-  final Teacher teacher;
-  final ValueChanged<Teacher> onUpdatePosition; // Callback khi cập nhật chức vụ
+  final User teacher;
+  final ValueChanged<User> onUpdatePosition;
 
   const TeacherDetailBottomSheet({
     Key? key,
@@ -15,7 +16,7 @@ class TeacherDetailBottomSheet extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TeacherDetailBottomSheetState createState() =>
+  State<TeacherDetailBottomSheet> createState() =>
       _TeacherDetailBottomSheetState();
 }
 
@@ -26,7 +27,7 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _selectedPosition = widget.teacher.position;
+    _selectedPosition = TeacherPosition.lecturer;
   }
 
   String _getPositionText(TeacherPosition position) {
@@ -39,6 +40,8 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
         return 'Giảng viên';
       case TeacherPosition.staff:
         return 'Nhân viên';
+      case TeacherPosition.director:
+        return 'Trưởng phòng';
     }
   }
 
@@ -52,6 +55,8 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
         return Colors.blue.shade700;
       case TeacherPosition.staff:
         return Colors.green.shade700;
+      case TeacherPosition.director:
+        return Colors.pink;
     }
   }
 
@@ -60,7 +65,7 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
       return DropdownItem(
         value: position.toString(),
         label: _getPositionText(position),
-        icon: Icons.keyboard_option_key,
+        icon: Icons.badge,
       );
     }).toList();
   }
@@ -79,138 +84,150 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    final user = widget.teacher;
 
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Thông tin chi tiết giáo viên',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close, color: Colors.grey),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const Divider(),
-          _buildInfoRow('Khoa:', widget.teacher.faculty),
-          _buildInfoRow('Bộ môn:', widget.teacher.department),
-          _buildInfoRow('Mã GV:', widget.teacher.teacherCode),
-          _buildInfoRow('Tên GV:', widget.teacher.fullName),
-          _buildInfoRow(
-            'Email:',
-            widget.teacher.email.isEmpty
-                ? 'Chưa cập nhật'
-                : widget.teacher.email,
-          ),
-          _buildInfoRow(
-            'SĐT:',
-            widget.teacher.phoneNumber.isEmpty
-                ? 'Chưa cập nhật'
-                : widget.teacher.phoneNumber,
-          ),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                'Chức vụ:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(width: 10),
-              if (!_isEditingPosition)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getPositionColor(
-                      widget.teacher.position,
-                    ).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: _getPositionColor(widget.teacher.position),
-                    ),
-                  ),
-                  child: Text(
-                    _getPositionText(widget.teacher.position),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: _getPositionColor(widget.teacher.position),
-                    ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(20.0),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Thông tin chi tiết giáo viên',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
                   ),
                 ),
-              if (_isEditingPosition)
-                Expanded(
-                  child: DropdownSelector(
-                    label: '',
-                    selectedItem: _getPositionOptions().firstWhere(
-                      (item) => item.value == _selectedPosition.toString(),
-                    ),
-                    items: _getPositionOptions(),
-                    onChanged: (item) {
-                      if (item != null) {
-                        setState(() {
-                          _selectedPosition = TeacherPosition.values.firstWhere(
-                            (e) => e.toString() == item.value,
-                          );
-                        });
-                      }
-                    },
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.grey),
+                  onPressed: () => Navigator.pop(context),
                 ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Align(
-            alignment: Alignment.centerRight,
-            child: CustomButton(
-              text: _isEditingPosition ? 'Lưu chức vụ' : 'Sửa chức vụ',
-              onPressed: () {
-                setState(() {
-                  if (_isEditingPosition) {
-                    _savePosition();
-                  } else {
-                    _isEditingPosition = true;
-                  }
-                });
-              },
-              backgroundColor: _isEditingPosition
-                  ? Colors.green
-                  : Colors.blueAccent,
+              ],
             ),
-          ),
-          const SizedBox(height: 10),
-        ],
+            const Divider(),
+            _buildInfoRow(
+              Icons.school,
+              'Khoa:',
+              user.boMon!.nganhHoc!.khoa!.tenKhoa,
+            ),
+            _buildInfoRow(Icons.account_tree, 'Bộ môn:', user.boMon!.tenBoMon),
+            _buildInfoRow(Icons.badge, 'Mã GV:', "GV00\${user.id}"),
+            _buildInfoRow(Icons.person, 'Tên GV:', user.hoSo!.hoTen),
+            _buildInfoRow(
+              Icons.email,
+              'Email:',
+              user.hoSo!.email.isEmpty ? 'Chưa cập nhật' : user.hoSo!.email,
+            ),
+            _buildInfoRow(
+              Icons.phone,
+              'SĐT:',
+              user.hoSo!.soDienThoai.isEmpty
+                  ? 'Chưa cập nhật'
+                  : user.hoSo!.soDienThoai,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Chức vụ:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (!_isEditingPosition)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getPositionColor(
+                        _selectedPosition,
+                      ).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: _getPositionColor(_selectedPosition),
+                      ),
+                    ),
+                    child: Text(
+                      _getPositionText(_selectedPosition),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: _getPositionColor(_selectedPosition),
+                      ),
+                    ),
+                  ),
+                if (_isEditingPosition)
+                  Expanded(
+                    child: DropdownSelector(
+                      label: '',
+                      selectedItem: _getPositionOptions().firstWhere(
+                        (item) => item.value == _selectedPosition.toString(),
+                      ),
+                      items: _getPositionOptions(),
+                      onChanged: (item) {
+                        if (item != null) {
+                          setState(() {
+                            _selectedPosition = TeacherPosition.values
+                                .firstWhere((e) => e.toString() == item.value);
+                          });
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerRight,
+              child: CustomButton(
+                text: _isEditingPosition ? 'Lưu chức vụ' : 'Sửa chức vụ',
+                onPressed: () {
+                  setState(() {
+                    if (_isEditingPosition) {
+                      _savePosition();
+                    } else {
+                      _isEditingPosition = true;
+                    }
+                  });
+                },
+                backgroundColor: _isEditingPosition
+                    ? Colors.green
+                    : Colors.blueAccent,
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(icon, size: 20, color: Colors.blueAccent),
+          const SizedBox(width: 8),
           SizedBox(
-            width: 120,
+            width: 100,
             child: Text(
               label,
               style: const TextStyle(

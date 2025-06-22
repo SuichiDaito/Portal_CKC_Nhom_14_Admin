@@ -1,13 +1,14 @@
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 
+enum StudentStatus { active, inactive, graduated, suspended }
+
 class SinhVien {
   final int id;
   final String maSv;
-  final int idLop;
-  final int idHoSo;
-  final int chucVu;
-  final String matKhau;
+  final int? idLop;
+  final int? idHoSo;
+  final int? chucVu;
   final int trangThai;
   final HoSo hoSo;
   final Lop lop;
@@ -15,10 +16,9 @@ class SinhVien {
   SinhVien({
     required this.id,
     required this.maSv,
-    required this.idLop,
-    required this.idHoSo,
-    required this.chucVu,
-    required this.matKhau,
+    this.idLop,
+    this.idHoSo,
+    this.chucVu,
     required this.trangThai,
     required this.hoSo,
     required this.lop,
@@ -26,15 +26,14 @@ class SinhVien {
 
   factory SinhVien.fromJson(Map<String, dynamic> json) {
     return SinhVien(
-      id: json['id'],
-      maSv: json['ma_sv'],
+      id: json['id'] ?? 0,
+      maSv: json['ma_sv'] ?? '',
       idLop: json['id_lop'],
       idHoSo: json['id_ho_so'],
       chucVu: json['chuc_vu'],
-      matKhau: json['mat_khau'],
-      trangThai: json['trang_thai'],
-      hoSo: HoSo.fromJson(json['ho_so']),
-      lop: Lop.fromJson(json['lop']),
+      trangThai: json['trang_thai'] ?? 0,
+      hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : HoSo.empty(),
+      lop: json['lop'] != null ? Lop.fromJson(json['lop']) : Lop.empty(),
     );
   }
 }

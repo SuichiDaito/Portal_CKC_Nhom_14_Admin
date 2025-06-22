@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/pages/page_teacher_management_admin.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/role_bloc.dart';
+import 'package:portal_ckc/bloc/event/role_event.dart';
+import 'package:portal_ckc/bloc/state/role_state.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 
 class FilterButtonsRowTeacher extends StatelessWidget {
@@ -12,53 +16,64 @@ class FilterButtonsRowTeacher extends StatelessWidget {
     required this.onFilterChanged,
   }) : super(key: key);
 
-  String _getPositionText(TeacherPosition position) {
-    switch (position) {
-      case TeacherPosition.dean:
-        return 'Trưởng khoa';
-      case TeacherPosition.viceDean:
-        return 'Phó khoa';
-      case TeacherPosition.lecturer:
-        return 'Giảng viên';
-      case TeacherPosition.staff:
-        return 'Nhân viên';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildFilterButton('Tất cả', null),
-            const SizedBox(width: 8),
-            _buildFilterButton(
-              _getPositionText(TeacherPosition.dean),
-              TeacherPosition.dean,
+    return BlocBuilder<RoleBloc, RoleState>(
+      builder: (context, state) {
+        if (state is RoleLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is RoleLoaded) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
             ),
-            const SizedBox(width: 8),
-            _buildFilterButton(
-              _getPositionText(TeacherPosition.viceDean),
-              TeacherPosition.viceDean,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _buildFilterButton('Tất cả', null),
+                  const SizedBox(width: 8),
+                  ...state.roles
+                      .where((role) => _mapRoleIdToPosition(role.id) != null)
+                      .map((role) {
+                        final position = _mapRoleIdToPosition(role.id);
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: _buildFilterButton(role.name, position),
+                        );
+                      })
+                      .toList(),
+                ],
+              ),
             ),
-            const SizedBox(width: 8),
-            _buildFilterButton(
-              _getPositionText(TeacherPosition.lecturer),
-              TeacherPosition.lecturer,
-            ),
-            const SizedBox(width: 8),
-            _buildFilterButton(
-              _getPositionText(TeacherPosition.staff),
-              TeacherPosition.staff,
-            ),
-          ],
-        ),
-      ),
+          );
+        } else if (state is RoleError) {
+          return Center(child: Text('Lỗi: \${state.message}'));
+        } else {
+          context.read<RoleBloc>().add(FetchRolesEvent());
+          return const SizedBox.shrink();
+        }
+      },
     );
+  }
+
+  TeacherPosition? _mapRoleIdToPosition(int id) {
+    switch (id) {
+      case 1:
+        return TeacherPosition.director; // trưởng phòng đào tạo
+      case 2:
+        return TeacherPosition.dean; // trưởng khoa
+      case 3:
+        return TeacherPosition.viceDean; // trưởng bộ môn
+      case 4:
+        return TeacherPosition.staff; // trưởng phòng CTSV
+      case 5:
+        return TeacherPosition.lecturer; // giảng viên
+      default:
+        return null;
+    }
   }
 
   Widget _buildFilterButton(String text, TeacherPosition? position) {

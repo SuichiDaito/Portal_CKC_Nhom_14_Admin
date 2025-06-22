@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_thongtin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 
 class AccountInfoSection extends StatelessWidget {
   final User user;
