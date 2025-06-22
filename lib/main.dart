@@ -8,6 +8,7 @@ import 'package:portal_ckc/api/controller/call_api.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/services/admin_service.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/giay_xac_nhan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nganh_khoa_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => LopBloc()),
         BlocProvider(create: (_) => NganhKhoaBloc()),
         BlocProvider(create: (_) => RoleBloc()),
+        BlocProvider(create: (_) => DangKyGiayBloc()),
       ],
       child: MaterialApp.router(
         routerConfig: RouteName.route,

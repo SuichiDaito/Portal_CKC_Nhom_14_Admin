@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:portal_ckc/api/model/admin_giay_xac_nhan.dart';
 import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
 
 class DocumentRequestListItem extends StatelessWidget {
@@ -12,20 +13,8 @@ class DocumentRequestListItem extends StatelessWidget {
     required this.request,
     required this.onSelected,
     required this.onConfirm,
+    required this.isSelected,
   }) : super(key: key);
-
-  String _getDocumentTypeText(DocumentType type) {
-    switch (type) {
-      case DocumentType.transcript:
-        return 'Bảng điểm';
-      case DocumentType.certificate:
-        return 'Giấy chứng nhận';
-      case DocumentType.recommendationLetter:
-        return 'Thư giới thiệu';
-      case DocumentType.other:
-        return 'Giấy tờ khác';
-    }
-  }
 
   Color _getStatusColor(DocumentRequestStatus status) {
     switch (status) {
@@ -45,6 +34,8 @@ class DocumentRequestListItem extends StatelessWidget {
     }
   }
 
+  final bool isSelected;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -59,11 +50,9 @@ class DocumentRequestListItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (request.status ==
-                    DocumentRequestStatus
-                        .pending) // Chỉ hiện checkbox cho yêu cầu chưa xác nhận
+                if (request.status == DocumentRequestStatus.pending)
                   Checkbox(
-                    value: request.isSelectedForAction,
+                    value: isSelected,
                     onChanged: onSelected,
                     activeColor: Colors.blueAccent,
                   ),
@@ -87,17 +76,20 @@ class DocumentRequestListItem extends StatelessWidget {
                           color: Colors.black87,
                         ),
                       ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Loại giấy: ${request.documentName}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Loại giấy: ${_getDocumentTypeText(request.documentType)}',
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               children: [
                 const Text(
@@ -124,27 +116,22 @@ class DocumentRequestListItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (request.status ==
-                    DocumentRequestStatus
-                        .pending) // Chỉ hiện nút xác nhận cho yêu cầu chưa xác nhận
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton.icon(
-                        onPressed: onConfirm,
-                        icon: const Icon(Icons.check, size: 18),
-                        label: const Text('Xác nhận'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                if (request.status == DocumentRequestStatus.pending)
+                  const Spacer(),
+                if (request.status == DocumentRequestStatus.pending)
+                  ElevatedButton.icon(
+                    onPressed: onConfirm,
+                    icon: const Icon(Icons.check, size: 18),
+                    label: const Text('Xác nhận'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
