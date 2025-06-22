@@ -1,10 +1,10 @@
 // 📁 student_list.dart
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/pages/page_class_detail_admin.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class StudentList extends StatelessWidget {
-  final List<Student> studentList;
-  final void Function(Student) onTapStudent;
+  final List<SinhVien> studentList;
+  final void Function(SinhVien) onTapStudent;
 
   const StudentList({
     super.key,
@@ -45,39 +45,37 @@ class StudentList extends StatelessWidget {
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: const Color(0xFF1976D2),
-              child: Text(
-                student.id.substring(student.id.length - 2),
-                style: const TextStyle(color: Colors.white),
+              child: Icon(
+                Icons.school, // 🎓 biểu tượng học sinh
+                color: Colors.white,
+                size: 24,
               ),
             ),
+
             title: Text(
-              student.name,
+              student.hoSo.hoTen,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                Text("MSSV: ${student.id}"),
-                Text(
-                  "Chức vụ: ${student.role.isNotEmpty ? student.role : "Không có"}",
-                ),
+                Text("MSSV: ${student.maSv}"),
+                Text("Chức vụ: ${student.chucVu == 0 ? 'Thư ký' : 'Không có'}"),
               ],
             ),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: student.status == 'Đang học'
+                color: student.trangThai == 0
                     ? Colors.green[50]
                     : Colors.red[50],
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                student.status,
+                'Trạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[student.trangThai] ?? 'Không rõ'}',
                 style: TextStyle(
-                  color: student.status == 'Đang học'
-                      ? Colors.green
-                      : Colors.red,
+                  color: student.trangThai == 0 ? Colors.green : Colors.red,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),

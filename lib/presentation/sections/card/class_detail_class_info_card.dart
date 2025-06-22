@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class ClassInfoCard extends StatelessWidget {
   final String className;
   final int studentCount;
   final String secretaryName;
   final String teacherName;
-  final void Function(String) onSelectSecretary; // thay vì VoidCallback
+  final List<SinhVien> studentList;
+  final void Function(String) onSelectSecretary;
 
   const ClassInfoCard({
     super.key,
@@ -13,6 +15,7 @@ class ClassInfoCard extends StatelessWidget {
     required this.studentCount,
     required this.secretaryName,
     required this.teacherName,
+    required this.studentList,
     required this.onSelectSecretary,
   });
 
@@ -36,7 +39,11 @@ class ClassInfoCard extends StatelessWidget {
           children: [
             const Text(
               'Thông Tin Lớp Chủ Nhiệm',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 12),
             _buildInfoRow('Tên lớp:', className),
@@ -94,28 +101,59 @@ class ClassInfoCard extends StatelessWidget {
   }
 
   void _showSecretarySelectionDialog(BuildContext context) {
+
+    final selectableStudents = studentList
+        .where((sv) => sv.trangThai == 0)
+        .toList();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Chọn Thư ký mới'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text('Nguyễn Văn A'),
-              onTap: () {
-                Navigator.pop(context);
-                onSelectSecretary('2012345'); // ID mới của thư ký
-              },
+        backgroundColor: Colors.white, // Nền trắng
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Center(
+          child: Text(
+            'Chọn Thư ký mới',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Color(0xFF1976D2),
             ),
-            ListTile(
-              title: const Text('Trần Thị B'),
-              onTap: () {
-                Navigator.pop(context);
-                onSelectSecretary('2012346');
-              },
-            ),
-          ],
+            textAlign: TextAlign.center, // Căn giữa dòng nếu xuống hàng
+          ),
+        ),
+        content: SizedBox(
+          height: 300,
+          width: 300,
+          child: ListView.separated(
+            itemCount: selectableStudents.length,
+            separatorBuilder: (_, __) => const Divider(height: 8),
+            itemBuilder: (context, index) {
+              final sv = selectableStudents[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: const Color(0xFF1976D2),
+                  child: Text(
+                    sv.hoSo.hoTen.substring(0, 1).toUpperCase(),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+                title: Text(
+                  sv.hoSo.hoTen,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text("MSSV: ${sv.maSv}"),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                tileColor: Colors.grey[100],
+                onTap: () {
+                  Navigator.pop(context);
+                  onSelectSecretary(sv.maSv);
+                },
+              );
+            },
+          ),
         ),
       ),
     );

@@ -67,6 +67,20 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
   final String teacherName = "TS. Nguyễn Văn An";
   final String teacherId = "GV001";
   final String department = "Khoa Công Nghệ Thông Tin";
+  void _showPrintDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => PrintScheduleDialog(
+        fromWeek: 1,
+        toWeek: 1,
+        onPrint: (from, to) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('In lịch từ $from đến $to')));
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +101,14 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         elevation: 0,
+
+        actions: [
+          IconButton(
+            icon: Icon(Icons.print),
+            onPressed: _showPrintDialog,
+            tooltip: 'In lịch gác thi',
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

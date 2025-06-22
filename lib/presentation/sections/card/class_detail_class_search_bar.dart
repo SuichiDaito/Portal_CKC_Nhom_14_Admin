@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class ClassSearchBar extends StatelessWidget {
   final String searchQuery;
   final String selectedStatus;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onStatusChanged;
-
+  final List<SinhVien> studentList;
   const ClassSearchBar({
     super.key,
     required this.searchQuery,
     required this.selectedStatus,
     required this.onSearchChanged,
     required this.onStatusChanged,
+    required this.studentList,
   });
 
   @override
@@ -47,8 +49,10 @@ class ClassSearchBar extends StatelessWidget {
               child: SizedBox(
                 height: 48,
                 child: ElevatedButton.icon(
-                  onPressed: () =>
-                      context.push('/admin/conduct_evaluation_admin'),
+                  onPressed: () => context.push(
+                    '/admin/conduct_evaluation_admin',
+                    extra: studentList,
+                  ),
                   icon: const Icon(Icons.edit, size: 18),
                   label: const Text('Nhập điểm'),
                   style: ElevatedButton.styleFrom(
