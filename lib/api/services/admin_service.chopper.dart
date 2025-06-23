@@ -91,7 +91,7 @@ final class _$AdminService extends AdminService {
 
   @override
   Future<Response<dynamic>> fetchDiemRenLuyen(int idLop, int thoiGian) {
-    final Uri $url = Uri.parse('/admin/admin/nhap-diem-ren-luyen/${idLop}');
+    final Uri $url = Uri.parse('/admin/lop-chu-nhiem/nhap-diem-rl/${idLop}');
     final Map<String, dynamic> $params = <String, dynamic>{
       'thoi_gian': thoiGian,
     };
@@ -140,5 +140,21 @@ final class _$AdminService extends AdminService {
     final $body = body;
     final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
     return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<Map<String, dynamic>>> getLopHocPhanList() {
+    final Uri $url = Uri.parse('/admin/diem-mon-hoc');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
+  Future<Response<Map<String, dynamic>>> getDanhSachSinhVienLopHocPhan(
+    int idLopHocPhan,
+  ) {
+    final Uri $url = Uri.parse('/admin/diem-mon-hoc/${idLopHocPhan}');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
 }

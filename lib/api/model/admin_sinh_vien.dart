@@ -37,3 +37,18 @@ class SinhVien {
     );
   }
 }
+
+class StudentWithScore {
+  final SinhVien sinhVien;
+  String conductScore;
+  bool isSelected;
+
+  StudentWithScore({
+    required this.sinhVien,
+    this.conductScore = '-',
+    this.isSelected = false,
+  });
+
+  String get id => sinhVien.maSv;
+  String get name => sinhVien.hoSo.hoTen;
+}

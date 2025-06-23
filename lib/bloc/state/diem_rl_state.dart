@@ -5,7 +5,7 @@ abstract class DiemRLState {}
 class DiemRLLoading extends DiemRLState {}
 
 class DiemRLLoaded extends DiemRLState {
-  final DiemRenLuyenResponse data;
+  final NhapDiemRLResponse data;
 
   DiemRLLoaded(this.data);
 }
@@ -15,3 +15,5 @@ class DiemRLError extends DiemRLState {
 
   DiemRLError(this.message);
 }
+
+class DiemRLInitial extends DiemRLState {}

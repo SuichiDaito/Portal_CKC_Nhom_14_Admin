@@ -6,7 +6,7 @@ class ClassInfo {
   final String className;
   final int totalStudents;
   final String subject;
-  final int totalCredits;
+  final String totalCredits;
 
   ClassInfo({
     required this.className,
@@ -121,7 +121,7 @@ class ClassListStudenInforClassSection extends StatelessWidget {
           const SizedBox(height: 12),
           _buildInfoCard(
             icon: Icons.credit_card,
-            title: 'Tổng số tín chỉ',
+            title: 'Chương trình đào tạo',
             value: '${classInfo.totalCredits}',
             fullWidth: true,
           ),

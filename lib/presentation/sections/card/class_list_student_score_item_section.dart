@@ -1,14 +1,15 @@
 // sections/student_item_section.dart
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien_lhp.dart';
+// import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_student_grade_input_section.dart';
 
 class StudentItemSection extends StatefulWidget {
-  final Student student;
+  final SinhVienLopHocPhan student;
   final bool showCheckbox;
   final bool isGradeInputMode;
-  final Function(Student, bool) onCheckboxChanged;
-  final Function(Student, StudentGrade) onGradeSubmit;
+  final Function(SinhVienLopHocPhan, bool) onCheckboxChanged;
+  final Function(SinhVienLopHocPhan) onGradeSubmit;
 
   const StudentItemSection({
     Key? key,
@@ -25,27 +26,33 @@ class StudentItemSection extends StatefulWidget {
 
 class _StudentItemSectionState extends State<StudentItemSection> {
   bool _isGradeExpanded = false;
+  String _getStatusText(int statusCode) {
+    switch (statusCode) {
+      case 0:
+        return 'Đang học';
+      case 1:
+        return 'Nghỉ học';
+      default:
+        return 'Không rõ';
+    }
+  }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'hoạt động':
+  Color _getStatusColor(int statusCode) {
+    switch (statusCode) {
+      case 0:
         return Colors.green;
-      case 'tạm nghỉ':
-        return Colors.orange;
-      case 'đã nghỉ':
+      case 1:
         return Colors.red;
       default:
         return Colors.grey;
     }
   }
 
-  IconData _getStatusIcon(String status) {
-    switch (status.toLowerCase()) {
-      case 'hoạt động':
+  IconData _getStatusIcon(int statusCode) {
+    switch (statusCode) {
+      case 0:
         return Icons.check_circle;
-      case 'tạm nghỉ':
-        return Icons.pause_circle;
-      case 'đã nghỉ':
+      case 1:
         return Icons.cancel;
       default:
         return Icons.help_outline;
@@ -54,6 +61,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
 
   @override
   Widget build(BuildContext context) {
+    final statusCode = widget.student.sinhVien.trangThai ?? 0;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: 2,
@@ -100,7 +108,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  widget.student.studentId,
+                                  widget.student.sinhVien.maSv,
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -116,7 +124,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: _getStatusColor(
-                                    widget.student.status,
+                                    widget.student.sinhVien.trangThai,
                                   ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -124,20 +132,22 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      _getStatusIcon(widget.student.status),
+                                      _getStatusIcon(
+                                        widget.student.sinhVien.trangThai,
+                                      ),
                                       size: 12,
                                       color: _getStatusColor(
-                                        widget.student.status,
+                                        widget.student.sinhVien.trangThai,
                                       ),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      widget.student.status,
+                                      _getStatusText(statusCode),
                                       style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w500,
                                         color: _getStatusColor(
-                                          widget.student.status,
+                                          widget.student.sinhVien.trangThai,
                                         ),
                                       ),
                                     ),
@@ -148,7 +158,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            widget.student.fullName,
+                            widget.student.sinhVien.hoSo.hoTen,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -175,7 +185,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                       ),
                   ],
                 ),
-                if (widget.student.grade != null &&
+                if (widget.student.diemChuyenCan != null &&
                     !_isGradeExpanded &&
                     !widget.isGradeInputMode)
                   Container(
@@ -208,7 +218,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                           ],
                         ),
                         Text(
-                          'Tổng kết: ${widget.student.grade!.finalScore.toStringAsFixed(1)}',
+                          'Tổng kết: ${widget.student.diemTongKet!.toStringAsFixed(1)}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.green.shade700,
@@ -221,16 +231,24 @@ class _StudentItemSectionState extends State<StudentItemSection> {
               ],
             ),
           ),
-          if (_isGradeExpanded ||
-              (widget.isGradeInputMode && widget.student.isSelected))
-            GradeInputSection(
-              student: widget.student,
-              onGradeSubmit: (grade) =>
-                  widget.onGradeSubmit(widget.student, grade),
-              isExpanded:
-                  _isGradeExpanded ||
-                  (widget.isGradeInputMode && widget.student.isSelected),
-            ),
+          GradeInputSection(
+            student: widget.student,
+            onGradeSubmit: (updatedStudent) {
+              setState(() {
+                widget.student.diemChuyenCan = updatedStudent.diemChuyenCan;
+                widget.student.diemQuaTrinh = updatedStudent.diemQuaTrinh;
+                widget.student.diemThi = updatedStudent.diemThi;
+                widget.student.diemTongKet = updatedStudent.diemTongKet;
+                widget.student.diemLyThuyet = updatedStudent.diemLyThuyet;
+              });
+
+              widget.onGradeSubmit(widget.student);
+            },
+
+            isExpanded:
+                _isGradeExpanded ||
+                (widget.isGradeInputMode && widget.student.isSelected),
+          ),
         ],
       ),
     );

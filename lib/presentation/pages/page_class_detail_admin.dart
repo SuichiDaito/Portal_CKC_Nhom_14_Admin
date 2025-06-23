@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
@@ -66,7 +69,58 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
             final studentList = state.sinhViens;
             // Tìm sinh viên là thư ký (chucVu == 0)
             final currentSecretary = studentList.firstWhere(
-              (s) => s.chucVu == 0,
+              (s) => s.chucVu == 1,
+              orElse: () => SinhVien(
+                id: -1,
+                chucVu: 0,
+                maSv: '',
+                trangThai: 0,
+                hoSo: HoSo(
+                  id: -1,
+                  hoTen: 'Không có thư ký',
+                  email: '',
+                  password: '',
+                  soDienThoai: '',
+                  ngaySinh: '',
+                  gioiTinh: '',
+                  cccd: '',
+                  diaChi: '',
+                  anh: '',
+                ),
+                lop: Lop(
+                  id: -1,
+                  tenLop: '',
+                  idNienKhoa: -1,
+                  idGvcn: -1,
+                  siSo: 0,
+                  nienKhoa: NienKhoa(
+                    id: -1,
+                    tenNienKhoa: '',
+                    namBatDau: '',
+                    namKetThuc: '',
+                    trangThai: 0,
+                    hocKys: [],
+                  ),
+                  giangVien: User(
+                    id: -1,
+                    hoSo: HoSo(
+                      id: -1,
+                      hoTen: '',
+                      email: '',
+                      password: '',
+                      soDienThoai: '',
+                      ngaySinh: '',
+                      gioiTinh: '',
+                      cccd: '',
+                      diaChi: '',
+                      anh: '',
+                    ),
+                    taiKhoan: '',
+                    trangThai: 0,
+                    roles: [],
+                  ),
+                ),
+              ),
             );
 
             final filteredStudents = studentList.where((student) {
@@ -106,6 +160,8 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                     onStatusChanged: (value) =>
                         setState(() => selectedStatus = value),
                     studentList: filteredStudents,
+                    idClass: widget.lop.id,
+                    idNienKhoa: widget.lop.idNienKhoa,
                   ),
                   const SizedBox(height: 16),
                   StudentList(
@@ -116,7 +172,7 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                         builder: (_) => AlertDialog(
                           title: const Text('Thông tin sinh viên'),
                           content: Text(
-                            'Tên: ${sv.hoSo.hoTen}\nMSSV: ${sv.maSv}\nChức vụ: ${sv.chucVu == 0 ? 'Thư ký' : 'Không có'}\nTrạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[sv.trangThai] ?? 'Không rõ'}',
+                            'Tên: ${sv.hoSo.hoTen}\nMSSV: ${sv.maSv}\nChức vụ: ${sv.chucVu == 1 ? 'Thư ký' : 'Không có'}\nTrạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[sv.trangThai] ?? 'Không rõ'}',
                           ),
                           actions: [
                             TextButton(

@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/diem_rl_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/main.dart';
 import 'package:portal_ckc/presentation/pages/appbar_bottombar/page_app_bar.dart';
 import 'package:portal_ckc/presentation/pages/page_academic_year_management.dart';
@@ -8,6 +11,7 @@ import 'package:portal_ckc/presentation/pages/page_class_book_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_roster_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_class_roster_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_conduct_evaluation_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_section_student_list.dart';
@@ -103,6 +107,16 @@ class RouteName {
         path: '/admin/class_management_admin',
         builder: (context, state) => PageClassManagementAdmin(),
       ),
+      GoRoute(
+        path: '/admin/class_roster_detail_admin/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          return PageClassRosterDetailAdmin(
+            idLopHocPhan: id ?? 0,
+          ); // hoặc xử lý null phù hợp
+        },
+      ),
+
       // GoRoute(
       //   path: '/admin/class_detail_admin',
       //   builder: (context, state) => PageClassDetailAdmin(),
@@ -116,8 +130,21 @@ class RouteName {
       ),
 
       GoRoute(
-        path: '/admin/conduct_evaluation_admin',
-        builder: (context, state) => PageConductEvaluationAdmin(),
+        path: '/admin/conduct_evaluation_admin/:lopId/:idNienKhoa',
+        builder: (context, state) {
+          final lopId = int.parse(state.pathParameters['lopId']!);
+          final idNienKhoa = int.parse(state.pathParameters['idNienKhoa']!);
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => DiemRlBloc()),
+              BlocProvider(create: (_) => NienKhoaHocKyBloc()),
+            ],
+            child: PageConductEvaluationAdmin(
+              lopId: lopId,
+              idNienKhoa: idNienKhoa,
+            ),
+          );
+        },
       ),
 
       GoRoute(
@@ -162,9 +189,13 @@ class RouteName {
       ),
 
       GoRoute(
-        path: '/admin/course_student_list',
-        builder: (context, state) => PageCourseSectionStudentList(),
+        path: '/admin/course_student_list/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          return PageCourseSectionStudentList(idLopHocPhan: id ?? 0);
+        },
       ),
+
       GoRoute(
         path: '/admin/exam_schedule_admin',
         builder: (context, state) => PageExamScheduleAdmin(),

@@ -1,11 +1,10 @@
-// sections/grade_input_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien_lhp.dart';
 
 class GradeInputSection extends StatefulWidget {
-  final Student student;
-  final Function(StudentGrade) onGradeSubmit;
+  final SinhVienLopHocPhan student;
+  final Function(SinhVienLopHocPhan) onGradeSubmit;
   final bool isExpanded;
 
   const GradeInputSection({
@@ -24,14 +23,16 @@ class _GradeInputSectionState extends State<GradeInputSection>
   late AnimationController _animationController;
   late Animation<double> _animation;
   bool hasSubmitted = false;
-  double _clampScore(double value) {
-    return value.clamp(0.0, 10.0);
-  }
 
   final _attendanceController = TextEditingController();
   final _processController = TextEditingController();
   final _examController = TextEditingController();
   final _finalController = TextEditingController();
+  final _theoryController = TextEditingController(); // điểm lý thuyết
+
+  double _clampScore(double value) {
+    return value.clamp(0.0, 10.0);
+  }
 
   @override
   void initState() {
@@ -49,18 +50,19 @@ class _GradeInputSectionState extends State<GradeInputSection>
       _animationController.forward();
     }
 
-    // Initialize with existing grades if available
-    if (widget.student.grade != null) {
-      _attendanceController.text = widget.student.grade!.attendanceScore
-          .toString();
-      _processController.text = widget.student.grade!.processScore.toString();
-      _examController.text = widget.student.grade!.examScore.toString();
-      _finalController.text = widget.student.grade!.finalScore.toString();
-    }
+    // Set initial values if available
+    _attendanceController.text = (widget.student.diemChuyenCan ?? 0.0)
+        .toStringAsFixed(1);
+    _processController.text = (widget.student.diemQuaTrinh ?? 0.0)
+        .toStringAsFixed(1);
+    _examController.text = (widget.student.diemThi ?? 0.0).toStringAsFixed(1);
+    _finalController.text = (widget.student.diemTongKet ?? 0.0).toStringAsFixed(
+      1,
+    );
   }
 
   @override
-  void didUpdateWidget(GradeInputSection oldWidget) {
+  void didUpdateWidget(covariant GradeInputSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isExpanded && !oldWidget.isExpanded) {
       _animationController.forward();
@@ -83,19 +85,26 @@ class _GradeInputSectionState extends State<GradeInputSection>
     double attendance = double.tryParse(_attendanceController.text) ?? 0.0;
     double process = double.tryParse(_processController.text) ?? 0.0;
     double exam = double.tryParse(_examController.text) ?? 0.0;
-
     double finalScore = (attendance * 0.1) + (process * 0.3) + (exam * 0.6);
     _finalController.text = finalScore.toStringAsFixed(1);
   }
 
   void _submitGrade() {
-    StudentGrade grade = StudentGrade(
-      attendanceScore: double.tryParse(_attendanceController.text) ?? 0.0,
-      processScore: double.tryParse(_processController.text) ?? 0.0,
-      examScore: double.tryParse(_examController.text) ?? 0.0,
-      finalScore: double.tryParse(_finalController.text) ?? 0.0,
-    );
-    widget.onGradeSubmit(grade);
+    setState(() {
+      widget.student.diemChuyenCan =
+          double.tryParse(_attendanceController.text) ?? 0.0;
+      widget.student.diemQuaTrinh =
+          double.tryParse(_processController.text) ?? 0.0;
+      widget.student.diemThi = double.tryParse(_examController.text) ?? 0.0;
+      widget.student.diemLyThuyet =
+          double.tryParse(_theoryController.text) ?? 0.0;
+      widget.student.diemTongKet =
+          double.tryParse(_finalController.text) ?? 0.0;
+      _theoryController.text = (widget.student.diemLyThuyet ?? 0.0)
+          .toStringAsFixed(1);
+    });
+
+    widget.onGradeSubmit(widget.student); // ✅ truyền đúng kiểu
 
     setState(() {
       hasSubmitted = true;
@@ -103,9 +112,10 @@ class _GradeInputSectionState extends State<GradeInputSection>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('✅ Đã nộp điểm cho ${widget.student.fullName}'),
+        content: Text(
+          '✅ Đã nộp điểm cho ${widget.student.sinhVien.hoSo.hoTen}',
+        ),
         backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -130,7 +140,7 @@ class _GradeInputSectionState extends State<GradeInputSection>
                 Icon(Icons.grade, color: Colors.blue.shade700, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Nhập điểm - ${widget.student.fullName}',
+                  'Nhập điểm - ${widget.student.sinhVien.hoSo.hoTen}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue.shade800,
@@ -160,6 +170,23 @@ class _GradeInputSectionState extends State<GradeInputSection>
               ],
             ),
             const SizedBox(height: 12),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildGradeInput(
+                    'Lý thuyết',
+                    _theoryController,
+                    '(Tự chọn)',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: SizedBox(), // để giữ cân bằng layout
+                ),
+              ],
+            ),
+
             Row(
               children: [
                 Expanded(
@@ -182,7 +209,7 @@ class _GradeInputSectionState extends State<GradeInputSection>
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: hasSubmitted
-                        ? null // Vô hiệu hóa nếu đã nộp
+                        ? null
                         : () {
                             _calculateFinalScore();
                             _submitGrade();
@@ -251,7 +278,9 @@ class _GradeInputSectionState extends State<GradeInputSection>
               child: TextFormField(
                 controller: controller,
                 readOnly: isReadOnly,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
                     RegExp(r'^\d{0,2}(\.\d{0,1})?'),
