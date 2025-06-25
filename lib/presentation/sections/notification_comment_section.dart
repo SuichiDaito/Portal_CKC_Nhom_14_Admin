@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/api/model/comment.dart';
 import 'package:portal_ckc/presentation/sections/notification_detail_comment_item.dart';
 import 'package:portal_ckc/presentation/sections/textfield/comment_input_text_field.dart';
@@ -6,13 +7,13 @@ import 'package:portal_ckc/presentation/sections/textfield/comment_input_text_fi
 class NotificationCommentSection extends StatefulWidget {
   final String lengthComment;
   final TextEditingController commentController;
-  final Comment comment;
+  final List<ChiTietThongBao> comments;
   final Function onPressed;
   NotificationCommentSection({
     super.key,
     required this.lengthComment,
     required this.commentController,
-    required this.comment,
+    required this.comments,
     required this.onPressed,
   });
   @override
@@ -53,7 +54,7 @@ class CommentSection extends State<NotificationCommentSection> {
             commentController: widget.commentController,
             onPressed: () {},
           ),
-          NotificationCommentItem(comment: widget.comment),
+          NotificationCommentItem(comment: widget.comments),
           const SizedBox(height: 30),
         ],
       ),

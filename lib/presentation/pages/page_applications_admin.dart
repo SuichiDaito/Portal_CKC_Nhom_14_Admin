@@ -200,6 +200,12 @@ class ApplicationsAdminPage extends StatelessWidget {
         value: 'teacher_management_admin',
       ),
       _FeatureItem(
+        icon: Icons.book,
+        title: 'Quản lý sổ lên lớp',
+        color: Colors.pink,
+        value: 'class_list_book_admin',
+      ),
+      _FeatureItem(
         icon: Icons.security,
         title: 'Khởi tạo năm học',
         color: Colors.grey,

@@ -17,6 +17,7 @@ import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart'
 import 'package:portal_ckc/presentation/pages/page_course_section_student_list.dart';
 import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_grouped_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_list_class_book_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_login.dart';
 import 'package:portal_ckc/presentation/pages/page_meeting_minutes_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
@@ -94,6 +95,10 @@ class RouteName {
       GoRoute(
         path: '/admin/class_book_admin',
         builder: (context, state) => const PageClassBookAdmin(),
+      ),
+      GoRoute(
+        path: '/admin/class_list_book_admin',
+        builder: (context, state) => const PageListClassBookAdmin(),
       ),
       GoRoute(
         path: '/admin/management_group_admin',
@@ -211,18 +216,14 @@ class RouteName {
           return PageReportDetailAdmin(isApproved: args['isApproved'] as bool);
         },
       ),
-
       GoRoute(
-        path: '/notifications/detail',
+        path: '/notifications/detail/:id',
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return NotificationDetailPage(
-            title: data['title'],
-            content: data['content'],
-            date: data['date'],
-          );
+          final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+          return NotificationDetailPage(id: id); // ✅ Truyền ID
         },
       ),
+
       //NotificationDetailPage
     ],
   );

@@ -47,7 +47,7 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
                   bgColor: Colors.blue[100]!,
                   buttonColor: Colors.blue,
                   onPressed: () {
-                    context.push('/admin/thongbao/${tb.id}');
+                    context.push('/notifications/detail');
                   },
                 ),
                 SizedBox(height: 15),

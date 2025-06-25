@@ -234,4 +234,19 @@ final class _$AdminService extends AdminService {
     final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
+
+  @override
+  Future<Response<dynamic>> storePhieuLenLop(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('/admin/phieu-len-lop/store');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getPhieuLenLopAll() {
+    final Uri $url = Uri.parse('/admin/phieu-len-lop/all');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
 }

@@ -1,7 +1,6 @@
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 import 'package:portal_ckc/api/model/admin_vai_tro.dart';
-import 'package:portal_ckc/presentation/pages/page_teacher_management_admin.dart';
 
 enum TeacherPosition {
   director,
@@ -41,7 +40,9 @@ class User {
       trangThai: json['trang_thai'] ?? 0,
       hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : null,
       boMon: json['bo_mon'] != null ? BoMon.fromJson(json['bo_mon']) : null,
-      roles: (json['roles'] ?? []).map<Role>((e) => Role.fromJson(e)).toList(),
+      roles: (json['roles'] as List<dynamic>? ?? [])
+          .map((e) => Role.fromJson(e))
+          .toList(),
     );
   }
   User copyWith({
@@ -58,6 +59,19 @@ class User {
       id: id ?? this.id,
       taiKhoan: taiKhoan ?? this.taiKhoan,
       trangThai: trangThai ?? this.trangThai,
+      roles: [],
+    );
+  }
+
+  factory User.empty() {
+    return User(
+      id: 0,
+      idHoSo: null,
+      idBoMon: null,
+      taiKhoan: '',
+      trangThai: 0,
+      hoSo: null,
+      boMon: null,
       roles: [],
     );
   }

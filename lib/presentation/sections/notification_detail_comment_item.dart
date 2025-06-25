@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/api/model/comment.dart';
 
 class NotificationCommentItem extends StatefulWidget {
-  final Comment comment;
+  final List<ChiTietThongBao> comment;
   NotificationCommentItem({super.key, required this.comment});
   State<NotificationCommentItem> createState() => CommentItem();
 }
@@ -19,7 +20,7 @@ class CommentItem extends State<NotificationCommentItem> {
             radius: 18,
             backgroundColor: Colors.purple[100],
             child: Text(
-              widget.comment.userName[0].toUpperCase(),
+              widget.comment[0].sinhVien.hoSo.hoTen,
               style: TextStyle(
                 color: Colors.purple[700],
                 fontWeight: FontWeight.bold,
@@ -38,7 +39,7 @@ class CommentItem extends State<NotificationCommentItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.comment.userName,
+                    widget.comment[0].sinhVien.hoSo.hoTen,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF2D3748),
@@ -46,7 +47,7 @@ class CommentItem extends State<NotificationCommentItem> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.comment.content,
+                    "NoiDung",
                     style: const TextStyle(
                       color: Color(0xFF4A5568),
                       height: 1.4,
@@ -54,7 +55,7 @@ class CommentItem extends State<NotificationCommentItem> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.comment.timestamp,
+                    "ThoiGian",
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],

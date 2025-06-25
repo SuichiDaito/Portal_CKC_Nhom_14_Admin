@@ -1,5 +1,6 @@
 import 'package:portal_ckc/api/model/admin_chuong_trinh_dao_tao.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 
 class LopHocPhan {
   final int id;
@@ -12,6 +13,7 @@ class LopHocPhan {
   final int loaiMon;
   final int trangThai;
   final Lop lop;
+  final User? gv;
   final ChuongTrinhDaoTao chuongTrinhDaoTao;
   LopHocPhan({
     required this.id,
@@ -25,6 +27,7 @@ class LopHocPhan {
     required this.trangThai,
     required this.lop,
     required this.chuongTrinhDaoTao,
+    required this.gv,
   });
   factory LopHocPhan.fromJson(Map<String, dynamic> json) => LopHocPhan(
     id: json['id'] ?? 0,
@@ -36,11 +39,13 @@ class LopHocPhan {
     soLuongDangKy: json['so_luong_dang_ky'] ?? 0,
     loaiMon: json['loai_mon'] ?? 0,
     trangThai: json['trang_thai'] ?? 0,
-    lop: json['lop'] != null
-        ? Lop.fromJson(json['lop'])
-        : Lop.empty(), // xử lý null
+    lop: json['lop'] != null ? Lop.fromJson(json['lop']) : Lop.empty(),
+    gv: json['giang_vien'] != null
+        ? User.fromJson(json['giang_vien'])
+        : User.empty(),
+
     chuongTrinhDaoTao: json['chuong_trinh_dao_tao'] != null
         ? ChuongTrinhDaoTao.fromJson(json['chuong_trinh_dao_tao'])
-        : ChuongTrinhDaoTao.empty(), // xử lý null
+        : ChuongTrinhDaoTao.empty(),
   );
 }
