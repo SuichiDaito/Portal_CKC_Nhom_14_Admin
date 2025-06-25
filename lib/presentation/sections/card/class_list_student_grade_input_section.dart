@@ -6,12 +6,14 @@ class GradeInputSection extends StatefulWidget {
   final SinhVienLopHocPhan student;
   final Function(SinhVienLopHocPhan) onGradeSubmit;
   final bool isExpanded;
+  final bool isEditing;
 
   const GradeInputSection({
     Key? key,
     required this.student,
     required this.onGradeSubmit,
     this.isExpanded = false,
+    this.isEditing = false,
   }) : super(key: key);
 
   @override
@@ -22,21 +24,22 @@ class _GradeInputSectionState extends State<GradeInputSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  bool hasSubmitted = false;
 
   final _attendanceController = TextEditingController();
   final _processController = TextEditingController();
   final _examController = TextEditingController();
   final _finalController = TextEditingController();
-  final _theoryController = TextEditingController(); // điểm lý thuyết
+  final _theoryController = TextEditingController();
 
-  double _clampScore(double value) {
-    return value.clamp(0.0, 10.0);
-  }
+  bool _hasSubmitted = false;
+  bool _hasChangedSinceSubmit = false;
+
+  double _clampScore(double value) => value.clamp(0.0, 10.0);
 
   @override
   void initState() {
     super.initState();
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -46,18 +49,71 @@ class _GradeInputSectionState extends State<GradeInputSection>
       curve: Curves.easeInOut,
     );
 
-    if (widget.isExpanded) {
-      _animationController.forward();
-    }
+    if (widget.isExpanded) _animationController.forward();
 
-    // Set initial values if available
+    _setInitialValues();
+    _addListeners();
+  }
+
+  void _setInitialValues() {
     _attendanceController.text = (widget.student.diemChuyenCan ?? 0.0)
         .toStringAsFixed(1);
     _processController.text = (widget.student.diemQuaTrinh ?? 0.0)
         .toStringAsFixed(1);
     _examController.text = (widget.student.diemThi ?? 0.0).toStringAsFixed(1);
-    _finalController.text = (widget.student.diemTongKet ?? 0.0).toStringAsFixed(
-      1,
+    _theoryController.text = (widget.student.diemLyThuyet ?? 0.0)
+        .toStringAsFixed(1);
+    _calculateFinalScore(); // set initial tổng kết
+  }
+
+  void _addListeners() {
+    _attendanceController.addListener(_onScoreChanged);
+    _processController.addListener(_onScoreChanged);
+    _examController.addListener(_onScoreChanged);
+    _theoryController.addListener(_onScoreChanged);
+  }
+
+  void _onScoreChanged() {
+    _calculateFinalScore();
+    _hasChangedSinceSubmit = true;
+    _updateStudentData();
+  }
+
+  void _updateStudentData() {
+    widget.student.diemChuyenCan =
+        double.tryParse(_attendanceController.text) ?? 0.0;
+    widget.student.diemQuaTrinh =
+        double.tryParse(_processController.text) ?? 0.0;
+    widget.student.diemThi = double.tryParse(_examController.text) ?? 0.0;
+    widget.student.diemLyThuyet =
+        double.tryParse(_theoryController.text) ?? 0.0;
+  }
+
+  void _calculateFinalScore() {
+    double cc = double.tryParse(_attendanceController.text) ?? 0.0;
+    double qt = double.tryParse(_processController.text) ?? 0.0;
+    double thi = double.tryParse(_examController.text) ?? 0.0;
+
+    double finalScore = (cc * 0.1) + (qt * 0.3) + (thi * 0.6);
+    _finalController.text = finalScore.toStringAsFixed(1);
+    widget.student.diemTongKet = finalScore;
+  }
+
+  void _submitGrade() {
+    widget.onGradeSubmit(widget.student);
+
+    setState(() {
+      _hasSubmitted = true;
+      _hasChangedSinceSubmit = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '✅ Đã nộp điểm cho ${widget.student.sinhVien.hoSo.hoTen}',
+        ),
+        backgroundColor: Colors.green,
+      ),
     );
   }
 
@@ -78,46 +134,8 @@ class _GradeInputSectionState extends State<GradeInputSection>
     _processController.dispose();
     _examController.dispose();
     _finalController.dispose();
+    _theoryController.dispose();
     super.dispose();
-  }
-
-  void _calculateFinalScore() {
-    double attendance = double.tryParse(_attendanceController.text) ?? 0.0;
-    double process = double.tryParse(_processController.text) ?? 0.0;
-    double exam = double.tryParse(_examController.text) ?? 0.0;
-    double finalScore = (attendance * 0.1) + (process * 0.3) + (exam * 0.6);
-    _finalController.text = finalScore.toStringAsFixed(1);
-  }
-
-  void _submitGrade() {
-    setState(() {
-      widget.student.diemChuyenCan =
-          double.tryParse(_attendanceController.text) ?? 0.0;
-      widget.student.diemQuaTrinh =
-          double.tryParse(_processController.text) ?? 0.0;
-      widget.student.diemThi = double.tryParse(_examController.text) ?? 0.0;
-      widget.student.diemLyThuyet =
-          double.tryParse(_theoryController.text) ?? 0.0;
-      widget.student.diemTongKet =
-          double.tryParse(_finalController.text) ?? 0.0;
-      _theoryController.text = (widget.student.diemLyThuyet ?? 0.0)
-          .toStringAsFixed(1);
-    });
-
-    widget.onGradeSubmit(widget.student); // ✅ truyền đúng kiểu
-
-    setState(() {
-      hasSubmitted = true;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '✅ Đã nộp điểm cho ${widget.student.sinhVien.hoSo.hoTen}',
-        ),
-        backgroundColor: Colors.green,
-      ),
-    );
   }
 
   @override
@@ -153,82 +171,86 @@ class _GradeInputSectionState extends State<GradeInputSection>
             Row(
               children: [
                 Expanded(
-                  child: _buildGradeInput(
+                  child: _buildInput(
                     'Chuyên cần',
                     _attendanceController,
                     '(10%)',
+                    readOnly: !widget.isEditing,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildGradeInput(
+                  child: _buildInput(
                     'Quá trình',
                     _processController,
                     '(30%)',
+                    readOnly: !widget.isEditing,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _buildGradeInput(
+                  child: _buildInput(
                     'Lý thuyết',
                     _theoryController,
                     '(Tự chọn)',
+                    readOnly: !widget.isEditing,
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
-                  child: SizedBox(), // để giữ cân bằng layout
-                ),
+                const Expanded(child: SizedBox()),
               ],
             ),
-
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _buildGradeInput('Thi', _examController, '(60%)'),
+                  child: _buildInput(
+                    'Thi',
+                    _examController,
+                    '(60%)',
+                    readOnly: !widget.isEditing,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildGradeInput(
+                  child: _buildInput(
                     'Tổng kết',
                     _finalController,
                     '',
-                    isReadOnly: true,
+                    readOnly: true,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: hasSubmitted
-                        ? null
-                        : () {
-                            _calculateFinalScore();
-                            _submitGrade();
-                          },
-                    icon: const Icon(Icons.check, size: 18),
-                    label: Text(hasSubmitted ? 'Đã nộp' : 'Nộp điểm'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: hasSubmitted
-                          ? Colors.grey
-                          : Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
+            ElevatedButton.icon(
+              onPressed: _submitGrade,
+              icon: const Icon(Icons.check, size: 20),
+              label: const Text(
+                'Nộp điểm',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                 ),
-              ],
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade600,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                shadowColor: Colors.green.shade200,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
           ],
         ),
@@ -236,24 +258,12 @@ class _GradeInputSectionState extends State<GradeInputSection>
     );
   }
 
-  Widget _buildGradeInput(
+  Widget _buildInput(
     String label,
     TextEditingController controller,
     String hint, {
-    bool isReadOnly = false,
+    bool readOnly = false,
   }) {
-    void increase() {
-      double current = double.tryParse(controller.text) ?? 0.0;
-      current = _clampScore(current + 0.5);
-      controller.text = current.toStringAsFixed(1);
-    }
-
-    void decrease() {
-      double current = double.tryParse(controller.text) ?? 0.0;
-      current = _clampScore(current - 0.5);
-      controller.text = current.toStringAsFixed(1);
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -266,74 +276,24 @@ class _GradeInputSectionState extends State<GradeInputSection>
           ),
         ),
         const SizedBox(height: 4),
-        Row(
-          children: [
-            if (!isReadOnly)
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: decrease,
-                color: Colors.blue,
-              ),
-            Expanded(
-              child: TextFormField(
-                controller: controller,
-                readOnly: isReadOnly,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'^\d{0,2}(\.\d{0,1})?'),
-                  ),
-                ],
-                onChanged: (value) {
-                  double? input = double.tryParse(value);
-                  if (input != null && input > 10) {
-                    controller.text = '10.0';
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: hint,
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 12,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blue.shade300),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blue.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: Colors.blue.shade600,
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: isReadOnly ? Colors.grey.shade100 : Colors.white,
-                ),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: isReadOnly ? Colors.grey.shade600 : Colors.black87,
-                ),
-              ),
-            ),
-            if (!isReadOnly)
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: increase,
-                color: Colors.blue,
-              ),
+        TextFormField(
+          controller: controller,
+          readOnly: readOnly,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}(\.\d{0,1})?')),
           ],
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: readOnly ? Colors.grey.shade100 : Colors.white,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 10,
+            ),
+          ),
         ),
       ],
     );

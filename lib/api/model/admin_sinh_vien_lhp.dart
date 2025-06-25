@@ -44,3 +44,32 @@ class SinhVienLopHocPhan {
     diemTongKet = other.diemTongKet;
   }
 }
+
+class CapNhatDiemRequest {
+  final int idLopHocPhan;
+  final List<int> students;
+  final Map<int, double> diemChuyenCan;
+  final Map<int, double> diemQuaTrinh;
+  final Map<int, double> diemThi;
+  final Map<int, double> diemLyThuyet;
+
+  CapNhatDiemRequest({
+    required this.idLopHocPhan,
+    required this.students,
+    required this.diemChuyenCan,
+    required this.diemQuaTrinh,
+    required this.diemThi,
+    required this.diemLyThuyet,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_lop_hoc_phan': idLopHocPhan,
+      'students': students,
+      'diem_chuyen_can': diemChuyenCan.map((k, v) => MapEntry(k.toString(), v)),
+      'diem_qua_trinh': diemQuaTrinh.map((k, v) => MapEntry(k.toString(), v)),
+      'diem_thi': diemThi.map((k, v) => MapEntry(k.toString(), v)),
+      'diem_ly_thuyet': diemLyThuyet.map((k, v) => MapEntry(k.toString(), v)),
+    };
+  }
+}

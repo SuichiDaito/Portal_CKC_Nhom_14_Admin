@@ -49,33 +49,33 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
     });
   }
 
-  void _onClassTap(LopHocPhan lop) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Chi tiết lớp ${lop.lop?.tenLop ?? ''}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Môn: ${lop.tenHocPhan}'),
-            Text('Trạng thái: ${lop.trangThaiText}'),
-            Text('Số SV ĐK: ${lop.soLuongDangKy}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _onClassTap(LopHocPhan lop) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: Text('Chi tiết lớp ${lop.lop?.tenLop ?? ''}'),
+  //       content: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text('Môn: ${lop.tenHocPhan}'),
+  //           Text('Trạng thái: ${lop.trangThaiText}'),
+  //           Text('Số SV ĐK: ${lop.soLuongDangKy}'),
+  //         ],
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('Đóng'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('Đóng'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +161,7 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
                       return ClassItemCard(
                         onTap: () => context.push(
                           '/admin/course_student_list/${lop.id}',
-                        ), // 123 là id lớp học phần
+                        ),
 
                         classModel: lop,
                       );

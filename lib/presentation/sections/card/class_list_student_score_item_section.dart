@@ -1,7 +1,5 @@
-// sections/student_item_section.dart
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien_lhp.dart';
-// import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_student_grade_input_section.dart';
 
 class StudentItemSection extends StatefulWidget {
@@ -25,43 +23,38 @@ class StudentItemSection extends StatefulWidget {
 }
 
 class _StudentItemSectionState extends State<StudentItemSection> {
-  bool _isGradeExpanded = false;
+  bool _isGradeExpanded = true;
+  bool _isEditing = true;
+
   String _getStatusText(int statusCode) {
-    switch (statusCode) {
-      case 0:
-        return 'Đang học';
-      case 1:
-        return 'Nghỉ học';
-      default:
-        return 'Không rõ';
-    }
+    return switch (statusCode) {
+      0 => 'Đang học',
+      1 => 'Nghỉ học',
+      _ => 'Không rõ',
+    };
   }
 
   Color _getStatusColor(int statusCode) {
-    switch (statusCode) {
-      case 0:
-        return Colors.green;
-      case 1:
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+    return switch (statusCode) {
+      0 => Colors.green,
+      1 => Colors.red,
+      _ => Colors.grey,
+    };
   }
 
   IconData _getStatusIcon(int statusCode) {
-    switch (statusCode) {
-      case 0:
-        return Icons.check_circle;
-      case 1:
-        return Icons.cancel;
-      default:
-        return Icons.help_outline;
-    }
+    return switch (statusCode) {
+      0 => Icons.check_circle,
+      1 => Icons.cancel,
+      _ => Icons.help_outline,
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     final statusCode = widget.student.sinhVien.trangThai ?? 0;
+    final hasGrades = widget.student.diemTongKet != null;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: 2,
@@ -86,11 +79,11 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                             widget.student,
                             value ?? false,
                           );
+                          setState(() {
+                            _isGradeExpanded = !_isGradeExpanded;
+                          });
                         },
                         activeColor: Colors.blue.shade600,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
                       ),
                     Expanded(
                       child: Column(
@@ -124,31 +117,23 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: _getStatusColor(
-                                    widget.student.sinhVien.trangThai,
+                                    statusCode,
                                   ).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
-                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      _getStatusIcon(
-                                        widget.student.sinhVien.trangThai,
-                                      ),
+                                      _getStatusIcon(statusCode),
                                       size: 12,
-                                      color: _getStatusColor(
-                                        widget.student.sinhVien.trangThai,
-                                      ),
+                                      color: _getStatusColor(statusCode),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
                                       _getStatusText(statusCode),
                                       style: TextStyle(
                                         fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        color: _getStatusColor(
-                                          widget.student.sinhVien.trangThai,
-                                        ),
+                                        color: _getStatusColor(statusCode),
                                       ),
                                     ),
                                   ],
@@ -168,26 +153,23 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                         ],
                       ),
                     ),
-                    if (!widget.showCheckbox)
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isGradeExpanded = !_isGradeExpanded;
-                          });
-                        },
-                        icon: Icon(
-                          _isGradeExpanded
-                              ? Icons.expand_less
-                              : Icons.expand_more,
-                          color: Colors.blue.shade600,
-                        ),
-                        tooltip: 'Xem điểm',
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _isGradeExpanded = !_isGradeExpanded;
+                        });
+                      },
+                      icon: Icon(
+                        _isGradeExpanded
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        color: Colors.blue.shade600,
                       ),
+                      tooltip: 'Xem/Sửa điểm',
+                    ),
                   ],
                 ),
-                if (widget.student.diemChuyenCan != null &&
-                    !_isGradeExpanded &&
-                    !widget.isGradeInputMode)
+                if (hasGrades && !_isGradeExpanded)
                   Container(
                     margin: const EdgeInsets.only(top: 12),
                     padding: const EdgeInsets.all(12),
@@ -208,22 +190,14 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Đã có điểm',
+                              'Tổng kết: ${widget.student.diemTongKet?.toStringAsFixed(1) ?? "0"}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.green.shade700,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
-                        ),
-                        Text(
-                          'Tổng kết: ${widget.student.diemTongKet!.toStringAsFixed(1)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.green.shade700,
-                            fontWeight: FontWeight.bold,
-                          ),
                         ),
                       ],
                     ),
@@ -231,24 +205,27 @@ class _StudentItemSectionState extends State<StudentItemSection> {
               ],
             ),
           ),
-          GradeInputSection(
-            student: widget.student,
-            onGradeSubmit: (updatedStudent) {
-              setState(() {
-                widget.student.diemChuyenCan = updatedStudent.diemChuyenCan;
-                widget.student.diemQuaTrinh = updatedStudent.diemQuaTrinh;
-                widget.student.diemThi = updatedStudent.diemThi;
-                widget.student.diemTongKet = updatedStudent.diemTongKet;
-                widget.student.diemLyThuyet = updatedStudent.diemLyThuyet;
-              });
-
-              widget.onGradeSubmit(widget.student);
-            },
-
-            isExpanded:
-                _isGradeExpanded ||
-                (widget.isGradeInputMode && widget.student.isSelected),
-          ),
+          if (_isGradeExpanded)
+            Column(
+              children: [
+                GradeInputSection(
+                  student: widget.student,
+                  isExpanded: _isGradeExpanded,
+                  isEditing: true, // luôn cho phép sửa
+                  onGradeSubmit: (updatedStudent) {
+                    setState(() {
+                      widget.student
+                        ..diemChuyenCan = updatedStudent.diemChuyenCan
+                        ..diemQuaTrinh = updatedStudent.diemQuaTrinh
+                        ..diemThi = updatedStudent.diemThi
+                        ..diemLyThuyet = updatedStudent.diemLyThuyet
+                        ..diemTongKet = updatedStudent.diemTongKet;
+                    });
+                    widget.onGradeSubmit(updatedStudent);
+                  },
+                ),
+              ],
+            ),
         ],
       ),
     );

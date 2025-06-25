@@ -91,4 +91,51 @@ abstract class AdminService extends ChopperService {
   Future<Response<Map<String, dynamic>>> getDanhSachSinhVienLopHocPhan(
     @Path('id') int idLopHocPhan,
   );
+
+  // API CẬP NHẬT ĐIỂM MÔN HỌC CHO LỚP HỌC PHẦN
+  @Post(path: '/diem-mon-hoc/cap-nhat')
+  Future<Response<Map<String, dynamic>>> capNhatDiemMonHoc(
+    @Body() Map<String, dynamic> body,
+  );
+  // ================== 🔔 THÔNG BÁO ==================
+
+  // Lấy danh sách tất cả thông báo
+  @Get(path: '/thongbao')
+  Future<Response<Map<String, dynamic>>> getThongBaoList();
+
+  // Lấy chi tiết 1 thông báo
+  @Get(path: '/thongbao/{id}')
+  Future<Response<Map<String, dynamic>>> getThongBaoDetail(@Path('id') int id);
+
+  // Tạo mới thông báo
+  @Post(path: '/thongbao')
+  Future<Response<Map<String, dynamic>>> createThongBao(
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Cập nhật thông báo
+  @Put(path: '/thongbao/{id}')
+  Future<Response<Map<String, dynamic>>> updateThongBao(
+    @Path('id') int id,
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Xoá thông báo
+  @Delete(path: '/thongbao/{id}')
+  Future<Response> deleteThongBao(@Path('id') int id);
+
+  // Gửi thông báo tới sinh viên (theo danh sách lớp)
+  @Post(path: '/thongbao/send-to-student/{id}')
+  Future<Response<Map<String, dynamic>>> sendThongBaoToStudents(
+    @Path('id') int id,
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Xoá file đính kèm trong thông báo
+  @Delete(path: '/thongbao/file/{id}')
+  Future<Response> deleteFileInThongBao(@Path('id') int id);
+
+  // Lấy danh sách giá trị enum cấp trên
+  @Get(path: '/thongbao/get-data-cap-tren')
+  Future<Response<Map<String, dynamic>>> getCapTrenOptions();
 }
