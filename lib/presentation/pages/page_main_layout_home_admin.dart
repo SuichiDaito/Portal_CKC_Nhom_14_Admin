@@ -80,8 +80,8 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
               },
             ),
 
-            const SizedBox(height: 20),
-            GridAppHomeAdmin(),
+            // const SizedBox(height: 20),
+            // GridAppHomeAdmin(),
             const SizedBox(height: 20),
 
             // Bộ lọc thông báo
@@ -156,35 +156,47 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
   }
 
   Widget _buildFilterTabs() {
-    final filters = ['Tất cả', 'Khoa', 'Lớp', 'Giảng viên'];
-    return Row(
-      children: filters.map((filter) {
-        final isSelected = selectedFilter == filter;
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedFilter = filter;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.blue : Colors.grey[200],
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                filter,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black87,
-                  fontWeight: FontWeight.w500,
+    final filters = [
+      'Tất cả',
+      'Khoa',
+      'Lớp',
+      'Giảng viên',
+    ]; // bạn có thể thêm nhiều mục
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: filters.map((filter) {
+          final isSelected = selectedFilter == filter;
+          return Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedFilter = filter;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.blue : Colors.grey[200],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  filter,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 }

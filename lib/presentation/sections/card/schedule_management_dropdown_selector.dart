@@ -43,7 +43,14 @@ class DropdownSelector extends StatelessWidget {
                   children: [
                     Icon(item.icon, size: 20, color: Colors.blueAccent),
                     const SizedBox(width: 8),
-                    Text(item.label),
+                    Flexible(
+                      child: Text(
+                        item.label,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
                   ],
                 ),
               );

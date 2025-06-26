@@ -18,9 +18,32 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/giangvien/{id}')
   Future<Response> getUserDetail(@Path('id') int id);
 
+  // ✅ API Đổi mật khẩu cho giảng viên
+  @Put(path: '/doi-mat-khau')
+  Future<Response<Map<String, dynamic>>> changePassword(
+    @Body() Map<String, dynamic> body,
+  );
+
+  //=================PHÒNG=============
   //API LẤY DANH SÁCH PHÒNG
   @Get(path: '/phong')
   Future<Response<Map<String, dynamic>>> getRooms();
+
+  @Post(path: '/phong')
+  Future<Response<Map<String, dynamic>>> createRoom(
+    @Body() Map<String, dynamic> body,
+  );
+
+  @Put(path: '/phong/{id}')
+  Future<Response<Map<String, dynamic>>> updateRoom(
+    @Path('id') int id,
+    @Body() Map<String, dynamic> body,
+  );
+
+  @Get(path: '/phong/{id}')
+  Future<Response<Map<String, dynamic>>> getRoomDetail(@Path('id') int id);
+
+  //=================LỚP CHỦ NHIỆM==================
 
   //API LẤY DANH SÁCH LỚP CHỦ NHIỆM
   @Get(path: '/lop-chu-nhiem')
@@ -72,6 +95,7 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/roles')
   Future<Response> getDanhSachVaiTro();
 
+  //=================GIẤY XÁC NHẬN====================
   //API LẤY DANH SÁCH GIẤY XÁC NHẬN
   @Get(path: '/giay-xac-nhan')
   Future<Response> getDanhSachGiayXacNhan();
@@ -81,6 +105,8 @@ abstract class AdminService extends ChopperService {
   Future<Response> confirmMultipleGiayXacNhan(
     @Body() Map<String, dynamic> body,
   );
+
+  //==============LỚP HỌC PHẦN=====================
 
   //LẤY DANH SÁCH LỚP HỌC PHẦN CỦA GV HIỆN TẠI
   @Get(path: '/diem-mon-hoc')

@@ -15,6 +15,7 @@ class ApplicationsAdminPage extends StatelessWidget {
 
           // Section for Teachers
           _buildSection(
+            context: context,
             title: 'Dành cho Giảng viên',
             icon: Icons.person,
             iconColor: Colors.blue,
@@ -25,6 +26,7 @@ class ApplicationsAdminPage extends StatelessWidget {
           const SizedBox(height: 24),
 
           _buildSection(
+            context: context,
             title: 'Dành cho Admin',
             icon: Icons.school,
             iconColor: Colors.green,
@@ -44,6 +46,7 @@ class ApplicationsAdminPage extends StatelessWidget {
     required Color backgroundColor,
     required Color borderColor,
     required List<_FeatureItem> gridItems,
+    required BuildContext context,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -55,7 +58,7 @@ class ApplicationsAdminPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section Header
+          // Header
           Row(
             children: [
               Container(
@@ -77,20 +80,18 @@ class ApplicationsAdminPage extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 20),
 
-          // Grid View
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            itemCount: gridItems.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width > 400 ? 3 : 2,
               childAspectRatio: 1.1,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
             ),
-            itemCount: gridItems.length,
             itemBuilder: (context, index) {
               final feature = gridItems[index];
               return _buildFeatureCard(context, feature);

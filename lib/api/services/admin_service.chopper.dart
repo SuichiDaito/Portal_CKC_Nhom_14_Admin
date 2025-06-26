@@ -34,8 +34,44 @@ final class _$AdminService extends AdminService {
   }
 
   @override
+  Future<Response<Map<String, dynamic>>> changePassword(
+    Map<String, dynamic> body,
+  ) {
+    final Uri $url = Uri.parse('/admin/doi-mat-khau');
+    final $body = body;
+    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
   Future<Response<Map<String, dynamic>>> getRooms() {
     final Uri $url = Uri.parse('/admin/phong');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
+  Future<Response<Map<String, dynamic>>> createRoom(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('/admin/phong');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
+  Future<Response<Map<String, dynamic>>> updateRoom(
+    int id,
+    Map<String, dynamic> body,
+  ) {
+    final Uri $url = Uri.parse('/admin/phong/${id}');
+    final $body = body;
+    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
+  Future<Response<Map<String, dynamic>>> getRoomDetail(int id) {
+    final Uri $url = Uri.parse('/admin/phong/${id}');
     final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }

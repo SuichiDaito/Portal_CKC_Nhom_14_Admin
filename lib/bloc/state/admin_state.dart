@@ -18,13 +18,11 @@ class AdminSuccess extends AdminState {
   AdminSuccess(this.user);
 }
 
-//Load danh sách lớp chủ nhiệm
 class ClassListLoaded extends AdminState {
   final List<Lop> lops;
   ClassListLoaded(this.lops);
 }
 
-//load danh sách sv lớp cn
 class StudentListLoaded extends AdminState {
   final List<SinhVien> sinhViens;
 
@@ -41,4 +39,10 @@ class AdminLoginSuccess extends AdminState {
 class AdminError extends AdminState {
   final String message;
   AdminError(this.message);
+}
+
+class AdminSuccessMessage extends AdminState {
+  final String message;
+
+  AdminSuccessMessage(this.message);
 }
