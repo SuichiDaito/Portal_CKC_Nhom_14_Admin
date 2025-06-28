@@ -3,27 +3,27 @@ import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
 
 class HeaderFilterSection extends StatelessWidget {
   final String selectedMonth;
-  final int selectedNienKhoaId;
+  final String selectedYear;
   final List<String> months;
-  final List<NienKhoa> nienKhoas;
+  final List<String> years;
   final VoidCallback onToggleEdit;
   final VoidCallback onSave;
   final VoidCallback onReload;
   final ValueChanged<String?> onMonthChanged;
-  final ValueChanged<int?> onNienKhoaChanged;
+  final ValueChanged<String?> onYearChanged;
   final bool isEditing;
 
   const HeaderFilterSection({
     super.key,
     required this.selectedMonth,
-    required this.selectedNienKhoaId,
+    required this.selectedYear,
     required this.months,
-    required this.nienKhoas,
+    required this.years,
     required this.onToggleEdit,
     required this.onSave,
     required this.onReload,
     required this.onMonthChanged,
-    required this.onNienKhoaChanged,
+    required this.onYearChanged,
     required this.isEditing,
   });
 
@@ -84,24 +84,19 @@ class HeaderFilterSection extends StatelessWidget {
               ),
               const SizedBox(width: 24),
               const Text(
-                'Niên khóa:',
+                'Năm:',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(width: 8),
-              DropdownButton<int>(
+              DropdownButton<String>(
                 dropdownColor: Colors.blue,
-                value: selectedNienKhoaId,
-                onChanged: onNienKhoaChanged,
-                items: nienKhoas
-                    .map(
-                      (nk) => DropdownMenuItem<int>(
-                        value: nk.id,
-                        child: Text(nk.tenNienKhoa),
-                      ),
-                    )
+                value: selectedYear,
+                onChanged: onYearChanged,
+                items: years
+                    .map((y) => DropdownMenuItem(value: y, child: Text(y)))
                     .toList(),
                 style: const TextStyle(color: Colors.white),
                 iconEnabledColor: Colors.white,

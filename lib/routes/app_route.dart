@@ -186,8 +186,13 @@ class RouteName {
       ),
       GoRoute(
         path: '/admin/meeting_minutes_admin',
-        builder: (context, state) => PageMeetingMinutesAdmin(),
+        builder: (context, state) {
+          final lop =
+              state.extra as Lop; // đảm bảo đã truyền Lop từ màn hình trước
+          return PageMeetingMinutesAdmin(lop: lop);
+        },
       ),
+
       GoRoute(
         path: '/admin/teaching_schedule_admin',
         builder: (context, state) => PageTeachingScheduleAdmin(),
@@ -212,10 +217,14 @@ class RouteName {
       GoRoute(
         path: '/admin/report_detail_admin',
         builder: (context, state) {
-          final args = state.extra as Map<String, dynamic>;
-          return PageReportDetailAdmin(isApproved: args['isApproved'] as bool);
+          final extra = state.extra as Map<String, dynamic>; // ✅ đúng kiểu
+          final bienBanId = extra['bienBanId'] as int;
+          final lopId = extra['lopId'] as int;
+
+          return PageReportDetailAdmin(bienBanId: bienBanId, lopId: lopId);
         },
       ),
+
       GoRoute(
         path: '/notifications/detail/:id',
         builder: (context, state) {

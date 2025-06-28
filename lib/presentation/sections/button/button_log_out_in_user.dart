@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/auth_bloc.dart';
 
 class ButtonLogOutInUser extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        context.read<AuthBloc>().add(LoggedOut());
+        context.go('/login');
+      },
+
       icon: const Icon(Icons.logout),
       label: const Text('Đăng xuất'),
       style: ElevatedButton.styleFrom(

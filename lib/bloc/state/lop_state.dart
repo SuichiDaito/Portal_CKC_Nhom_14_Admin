@@ -21,3 +21,13 @@ class AllLopLoaded extends LopDetailState {
   final List<Lop> danhSachLop;
   AllLopLoaded(this.danhSachLop);
 }
+
+class ChangeStudentRoleSuccess extends LopDetailState {
+  final String message;
+  ChangeStudentRoleSuccess(this.message);
+}
+
+class ChangeStudentRoleFailed extends LopDetailState {
+  final String message;
+  ChangeStudentRoleFailed(this.message);
+}

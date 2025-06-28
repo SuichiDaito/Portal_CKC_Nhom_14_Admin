@@ -81,6 +81,7 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
       trangThai: _selectedStatus.index,
       hoSo: widget.student.hoSo,
       lop: widget.student.lop,
+      diemRenLuyens: [],
     );
 
     widget.onUpdateStatus(updatedStudent);
@@ -214,25 +215,24 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
 
             const SizedBox(height: 20),
 
-            Align(
-              alignment: Alignment.centerRight,
-              child: CustomButton(
-                text: _isEditingStatus ? 'Lưu trạng thái' : 'Sửa trạng thái',
-                onPressed: () {
-                  setState(() {
-                    if (_isEditingStatus) {
-                      _saveStatus();
-                    } else {
-                      _isEditingStatus = true;
-                    }
-                  });
-                },
-                backgroundColor: _isEditingStatus
-                    ? Colors.green
-                    : Colors.blueAccent,
-              ),
-            ),
-
+            // Align(
+            //   alignment: Alignment.centerRight,
+            //   child: CustomButton(
+            //     text: _isEditingStatus ? 'Lưu trạng thái' : 'Sửa trạng thái',
+            //     onPressed: () {
+            //       setState(() {
+            //         if (_isEditingStatus) {
+            //           _saveStatus();
+            //         } else {
+            //           _isEditingStatus = true;
+            //         }
+            //       });
+            //     },
+            //     backgroundColor: _isEditingStatus
+            //         ? Colors.green
+            //         : Colors.blueAccent,
+            //   ),
+            // ),
             const SizedBox(height: 10),
           ],
         ),

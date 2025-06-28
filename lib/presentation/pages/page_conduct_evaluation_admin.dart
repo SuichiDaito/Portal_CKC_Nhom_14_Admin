@@ -7,13 +7,14 @@ import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/bloc/event/diem_rl_event.dart';
 import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
 import 'package:portal_ckc/bloc/state/diem_rl_state.dart';
+import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 import 'package:portal_ckc/presentation/sections/bulk_action_section.dart';
 import 'package:portal_ckc/presentation/sections/header_filter_section.dart';
 import 'package:portal_ckc/presentation/sections/student_list_section.dart';
 
 class PageConductEvaluationAdmin extends StatefulWidget {
   final int lopId;
-  final int idNienKhoa; // <- thêm tham số này
+  final int idNienKhoa;
 
   const PageConductEvaluationAdmin({
     super.key,
@@ -52,7 +53,7 @@ class _PageConductEvaluationAdminState
       FetchDiemRenLuyen(
         widget.lopId,
         int.parse(selectedMonth),
-        // int.parse(selectedYear),
+        int.parse(selectedYear),
       ),
     );
     context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
@@ -65,6 +66,21 @@ class _PageConductEvaluationAdminState
         student.isSelected = selectAll;
       }
     });
+  }
+
+  String convertScoreToNumber(String score) {
+    switch (score) {
+      case 'A':
+        return '1';
+      case 'B':
+        return '2';
+      case 'C':
+        return '3';
+      case 'D':
+        return '4';
+      default:
+        return '1'; // mặc định là Tốt
+    }
   }
 
   void _toggleEditMode() {
@@ -80,32 +96,72 @@ class _PageConductEvaluationAdminState
   }
 
   void _saveScores() {
+    final selectedStudents = students
+        .where((s) => s.isSelected)
+        .map((s) => s.sinhVien.id)
+        .toList();
+
+    if (selectedStudents.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng chọn ít nhất 1 sinh viên')),
+      );
+      return;
+    }
+
+    context.read<DiemRlBloc>().add(
+      UpdateBulkDiemRenLuyen(
+        thoiGian: selectedMonth,
+        nam: selectedYear,
+        xepLoai: convertScoreToNumber(selectedScore),
+        selectedStudentIds: selectedStudents,
+      ),
+    );
+
     setState(() {
       isEditing = false;
+      selectAll = false;
       for (var s in students) {
         s.isSelected = false;
       }
-      selectAll = false;
+    });
+
+    // ✅ Gọi lại load dữ liệu sau khi cập nhật
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _reloadData();
     });
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Đã lưu điểm rèn luyện')));
+    ).showSnackBar(const SnackBar(content: Text('Đang cập nhật điểm...')));
   }
 
   void _onMonthChanged(String? value) {
     if (value == null) return;
-    setState(() => selectedMonth = value);
+    setState(() {
+      selectedMonth = value;
+      students = [];
+    });
     context.read<DiemRlBloc>().add(
-      FetchDiemRenLuyen(widget.lopId, int.parse(selectedMonth)),
+      FetchDiemRenLuyen(
+        widget.lopId,
+        int.parse(selectedMonth),
+        int.parse(selectedYear),
+      ),
     );
   }
 
   void _onYearChanged(String? value) {
     if (value == null) return;
-    setState(() => selectedYear = value);
+    setState(() {
+      selectedYear = value;
+      students = [];
+    });
     context.read<DiemRlBloc>().add(
-      FetchDiemRenLuyen(widget.lopId, int.parse(selectedMonth)),
+      FetchDiemRenLuyen(
+        widget.lopId,
+        int.parse(selectedMonth),
+        int.parse(selectedYear),
+      ),
     );
   }
 
@@ -158,9 +214,20 @@ class _PageConductEvaluationAdminState
   }
 
   void _onStudentScoreChanged(String? value, int index) {
+    if (value == null) return;
     setState(() {
-      students[index].conductScore = value ?? '-';
+      students[index].conductScore = value;
     });
+
+    context.read<DiemRlBloc>().add(
+      UpdateBulkDiemRenLuyen(
+        thoiGian: selectedMonth,
+        nam: selectedYear,
+        xepLoai: convertScoreToNumber(value),
+        selectedStudentIds: [students[index].sinhVien.id],
+      ),
+    );
+    isEditing = false;
   }
 
   void _applyScoreToSelected(String? value) {
@@ -177,7 +244,11 @@ class _PageConductEvaluationAdminState
 
   void _reloadData() {
     context.read<DiemRlBloc>().add(
-      FetchDiemRenLuyen(widget.lopId, int.parse(selectedMonth)),
+      FetchDiemRenLuyen(
+        widget.lopId,
+        int.parse(selectedMonth),
+        int.parse(selectedYear),
+      ),
     );
   }
 
@@ -194,84 +265,109 @@ class _PageConductEvaluationAdminState
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: BlocBuilder<DiemRlBloc, DiemRLState>(
-        builder: (context, state) {
-          if (state is DiemRLLoading) {
-            return const Center(child: CircularProgressIndicator());
+      body: BlocListener<NienKhoaHocKyBloc, NienKhoaHocKyState>(
+        listener: (context, state) {
+          if (state is NienKhoaHocKyLoaded) {
+            setState(() {
+              nienKhoaList = state.nienKhoas;
+              _updateYearsFromNienKhoa(selectedNienKhoaId);
+            });
           }
-
-          if (state is DiemRLError) {
-            return Center(child: Text(state.message));
-          }
-
-          if (state is DiemRLLoaded) {
-            final sinhViens = state.data.sinhViens;
-            if (students.isEmpty) {
-              students = sinhViens
-                  .map((sv) => StudentWithScore(sinhVien: sv))
-                  .toList();
+        },
+        child: BlocListener<DiemRlBloc, DiemRLState>(
+          listener: (context, state) {
+            if (state is DiemRLUpdateSuccess) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
+              _reloadData(); // Gọi lại sau khi update
+            } else if (state is DiemRLUpdateFailure) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.message)));
             }
-          }
-          if (selectedNienKhoaId == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          },
+          child: BlocBuilder<DiemRlBloc, DiemRLState>(
+            builder: (context, state) {
+              if (state is DiemRLLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          return Column(
-            children: [
-              HeaderFilterSection(
-                selectedMonth: selectedMonth,
-                selectedNienKhoaId: selectedNienKhoaId!,
-                months: months,
-                nienKhoas: nienKhoaList,
-                isEditing: isEditing,
-                onMonthChanged: _onMonthChanged,
-                onNienKhoaChanged: (id) {
-                  setState(() {
-                    selectedNienKhoaId = id;
-                  });
-                  _reloadData();
-                },
-                onToggleEdit: _toggleEditMode,
-                onSave: _saveScores,
-                onReload: _reloadData,
-              ),
+              if (state is DiemRLError) {
+                return Center(child: Text(state.message));
+              }
+              if (state is DiemRLLoaded) {
+                final sinhViens = state.data.sinhViens;
 
-              if (isEditing)
-                BulkActionSection(
-                  isEditing: isEditing,
-                  selectAll: selectAll,
-                  selectedScore: selectedScore,
-                  students: students,
-                  onSelectAll: _toggleSelectAll,
-                  onChangeScore: _applyScoreToSelected,
-                ),
+                if (students.isEmpty) {
+                  students = sinhViens
+                      .map((sv) => StudentWithScore.fromSinhVien(sv: sv))
+                      .toList()
+                      .cast<StudentWithScore>();
+                }
+              }
 
-              Expanded(
-                child: StudentListSection(
-                  students: students,
-                  isEditing: isEditing,
-                  onSelectChanged: _onStudentSelectChanged,
-                  onScoreChanged: _onStudentScoreChanged,
-                  getScoreLabel: _getScoreLabel,
-                ),
-              ),
+              if (selectedNienKhoaId == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final nienKhoaState = context.watch<NienKhoaHocKyBloc>().state;
+              if (nienKhoaState is NienKhoaHocKyLoaded) {
+                nienKhoaList = nienKhoaState.nienKhoas;
+                _updateYearsFromNienKhoa(widget.idNienKhoa);
+              }
+              return Column(
+                children: [
+                  HeaderFilterSection(
+                    selectedMonth: selectedMonth,
+                    selectedYear: selectedYear,
+                    months: months,
+                    years: years,
+                    isEditing: isEditing,
+                    onMonthChanged: _onMonthChanged,
+                    onYearChanged: _onYearChanged,
+                    onToggleEdit: _toggleEditMode,
+                    onSave: _saveScores,
+                    onReload: _reloadData,
+                  ),
 
-              Padding(
-                padding: const EdgeInsets.only(right: 16, bottom: 12),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Tháng $selectedMonth - Năm $selectedYear',
-                    style: const TextStyle(
-                      fontStyle: FontStyle.italic,
-                      color: Colors.blueGrey,
+                  if (isEditing)
+                    BulkActionSection(
+                      isEditing: isEditing,
+                      selectAll: selectAll,
+                      selectedScore: selectedScore,
+                      students: students,
+                      onSelectAll: _toggleSelectAll,
+                      onChangeScore: _applyScoreToSelected,
+                    ),
+
+                  Expanded(
+                    child: StudentListSection(
+                      students: students,
+                      isEditing: isEditing,
+                      onSelectChanged: _onStudentSelectChanged,
+                      onScoreChanged: _onStudentScoreChanged,
+                      getScoreLabel: _getScoreLabel,
                     ),
                   ),
-                ),
-              ),
-            ],
-          );
-        },
+
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16, bottom: 12),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Tháng $selectedMonth - Năm $selectedYear',
+                        style: const TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

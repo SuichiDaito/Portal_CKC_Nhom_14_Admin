@@ -7,6 +7,11 @@ part 'admin_service.chopper.dart';
 @ChopperApi(baseUrl: '/admin')
 abstract class AdminService extends ChopperService {
   static AdminService create([ChopperClient? client]) => _$AdminService(client);
+  // API Quên mật khẩu
+  @Post(path: '/lay-lai-mat-khau')
+  Future<Response<Map<String, dynamic>>> resetPassword(
+    @Body() Map<String, dynamic> body,
+  );
 
   //API LOGIN
   @Post(path: '/login')
@@ -67,6 +72,13 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/lopsinhvien/{id}')
   Future<Response<Map<String, dynamic>>> getLopChiTiet(@Path('id') int lopId);
 
+  //API ĐỔI CHỨC VỤ THƯ KÝ CHO SINH VIÊN
+  @POST(path: '/lopsinhvien/{sinhVien}/chucvu')
+  Future<Response<Map<String, dynamic>>> doiChucVu(
+    @Path('sinhVien') int sinhVienId,
+    @Body() Map<String, dynamic> data,
+  );
+
   //API LẤY DANH SÁCH NIÊN KHÓA-HỌC KỲ
   @Get(path: '/nien-khoa')
   Future<Response<Map<String, dynamic>>> fetchNienKhoaHocKy();
@@ -80,8 +92,17 @@ abstract class AdminService extends ChopperService {
   Future<Response> fetchDiemRenLuyen(
     @Path('id') int idLop,
     @Query('thoi_gian') int thoiGian,
-    // @Query('nam') int nam,
+    @Query('nam') int nam,
   );
+  //API CẬP NHẬT ĐIỂM RÈN LUYỆN CHO LỚP
+  @Post(path: '/lop/cap-nhat-diem-checked') // ✅
+  @FormUrlEncoded()
+  Future<Response> updateBulkDiemRenLuyen({
+    @Field("selected_students") required String selectedStudents,
+    @Field("thoi_gian") required String thoiGian,
+    @Field("xep_loai") required String xepLoai,
+    @Field("nam") required String nam,
+  });
 
   //API LẤY DANH SÁCH NGÀNH HỌC, KHOA
   @Get(path: '/nganh-hoc')
@@ -171,4 +192,54 @@ abstract class AdminService extends ChopperService {
 
   @Get(path: '/phieu-len-lop/all')
   Future<Response> getPhieuLenLopAll();
+
+  // =================== BIÊN BẢN SHCN ===================
+
+  // Lấy danh sách biên bản theo lớp
+  @Get(path: '/bienbanshcn/{lop}')
+  Future<Response> getBienBanListByLop(@Path('lop') int lopId);
+
+  // Lấy thông tin để tạo biên bản mới
+  @Get(path: '/bienbanshcn/create/{lop}')
+  Future<Response> getBienBanCreateInfo(@Path('lop') int lopId);
+
+  // Tạo biên bản mới
+  @Post(path: '/bienbanshcn/store/{lop}')
+  Future<Response> createBienBan(
+    @Path('lop') int lopId,
+    @Body() Map<String, dynamic> data,
+  );
+
+  // Lấy chi tiết 1 biên bản SHCN
+  @Get(path: '/bienbanshcn/chitiet/{bienBanSHCN}')
+  Future<Response> getBienBanDetail(@Path('bienBanSHCN') int bienBanId);
+
+  // Cập nhật biên bản
+  @Put(path: '/bienbanshcn/{bienBanSHCN}')
+  Future<Response> updateBienBan(
+    @Path('bienBanSHCN') int bienBanId,
+    @Body() Map<String, dynamic> data,
+  );
+
+  // Lấy thông tin để sửa biên bản
+  @Get(path: '/bienbanshcn/{bienBanSHCN}/edit')
+  Future<Response> getBienBanEditInfo(@Path('bienBanSHCN') int bienBanId);
+
+  // Xoá biên bản
+  @Delete(path: '/bienbanshcn/{bienBanSHCN}')
+  Future<Response> deleteBienBan(@Path('bienBanSHCN') int bienBanId);
+
+  // Xác nhận biên bản
+  @Post(path: '/bienbanshcn/confirm/{bienBanSHCN}')
+  Future<Response> confirmBienBan(@Path('bienBanSHCN') int bienBanId);
+
+  // Xoá sinh viên vắng mặt khỏi biên bản
+  @Delete(path: '/bienbanshcn/sinhvienvang/{id}')
+  Future<Response> deleteSinhVienVang(@Path('id') int chiTietId);
+
+  //DANH SÁCH TUẦN
+  @Get(path: '/danhsach-tuan')
+  Future<Response<Map<String, dynamic>>> getDanhSachTuan(
+    @Query('nam_bat_dau') int namBatDau,
+  );
 }

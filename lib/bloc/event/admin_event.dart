@@ -39,3 +39,9 @@ class ChangePasswordEvent extends AdminEvent {
     required this.newPassword,
   });
 }
+
+class ForgotPasswordRequested extends AdminEvent {
+  final String email;
+
+  ForgotPasswordRequested(this.email);
+}

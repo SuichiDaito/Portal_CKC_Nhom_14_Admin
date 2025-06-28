@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _teacherPasswordController = TextEditingController();
   final _adminAccountController = TextEditingController();
   final _adminPasswordController = TextEditingController();
+  bool _isLoggingIn = false;
 
   bool _isTeacherPasswordVisible = false;
   bool _isAdminPasswordVisible = false;
@@ -88,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen>
                           controller: _tabController,
                           children: [
                             _buildTeacherLoginForm(),
-                            _buildAdminLoginForm(),
+                            _buildResetPasswordForm(),
                           ],
                         ),
                       ),
@@ -196,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen>
               children: [
                 Icon(Icons.admin_panel_settings, size: 20),
                 SizedBox(width: 8),
-                Text('Admin'),
+                Text(''),
               ],
             ),
           ),
@@ -211,39 +212,44 @@ class _LoginScreenState extends State<LoginScreen>
         padding: EdgeInsets.all(20),
         child: BlocConsumer<AdminBloc, AdminState>(
           listener: (context, state) {
-            print('📌 [Listener] State: $state');
-            if (state is AdminLoaded) {
-              print('✅ Thành công, chuyển trang');
-              final user = state.user;
+            if (state is AdminLoading) {
+              setState(() {
+                _isLoggingIn = true;
+              });
+            } else if (state is AdminLoaded) {
+              setState(() {
+                _isLoggingIn = false;
+              });
 
-              // ✅ Điều hướng kèm user.id
-              context.go('/home/admin', extra: user.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('✅ Đăng nhập thành công'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+
+              // Chuyển trang
+              context.go('/home/admin', extra: state.user.id);
             } else if (state is AdminError) {
+              setState(() {
+                _isLoggingIn = false;
+              });
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Row(
                     children: [
-                      Icon(Icons.error, color: Colors.white, size: 20),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Đăng nhập không thành công',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
+                      Icon(Icons.error, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text('Đăng nhập không thành công'),
                     ],
                   ),
-                  backgroundColor: Colors.red[600],
-                  duration: Duration(seconds: 3),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  margin: EdgeInsets.all(16),
+                  backgroundColor: Colors.red,
                 ),
               );
             }
           },
+
           builder: (context, state) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -294,7 +300,9 @@ class _LoginScreenState extends State<LoginScreen>
 
                 TextButton(
                   onPressed: () {
-                    // Xử lý quên mật khẩu
+                    _tabController.animateTo(
+                      1,
+                    ); // Chuyển sang tab Admin (tab thứ 2)
                   },
                   child: Text(
                     'Quên mật khẩu?',
@@ -309,67 +317,81 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildAdminLoginForm() {
+  Widget _buildResetPasswordForm() {
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Đăng Nhập Admin',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1976D2),
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            SizedBox(height: 30),
-
-            _buildTextField(
-              controller: _adminAccountController,
-              label: 'Tài khoản admin',
-              icon: Icons.admin_panel_settings,
-              keyboardType: TextInputType.text,
-            ),
-
-            SizedBox(height: 20),
-
-            _buildPasswordField(
-              controller: _adminPasswordController,
-              label: 'Mật khẩu',
-              isVisible: _isAdminPasswordVisible,
-              onToggleVisibility: () {
-                setState(() {
-                  _isAdminPasswordVisible = !_isAdminPasswordVisible;
-                });
-              },
-            ),
-
-            SizedBox(height: 30),
-
-            _buildLoginButton('Đăng Nhập Admin', () {
-              // Xử lý đăng nhập admin
-              _handleAdminLogin();
-            }),
-
-            SizedBox(height: 15),
-
-            TextButton(
-              onPressed: () {
-                // Xử lý quên mật khẩu
-              },
-              child: Text(
-                'Quên mật khẩu?',
-                style: TextStyle(color: Color(0xFF1976D2), fontSize: 16),
-              ),
-            ),
-          ],
+        child: BlocConsumer<AdminBloc, AdminState>(
+          listener: (context, state) {
+            if (state is ForgotPasswordSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '✅ Mật khẩu mới đã được gửi tới: ${state.email}',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              _tabController.animateTo(0); // Chuyển lại tab đăng nhập
+            } else if (state is ForgotPasswordFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('❌ ${state.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Quên mật khẩu',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1976D2),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 30),
+                _buildTextField(
+                  controller: _adminAccountController,
+                  label: 'Email',
+                  icon: Icons.admin_panel_settings,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 20),
+                _buildLoginButton(
+                  state is ForgotPasswordLoading
+                      ? 'Đang gửi...'
+                      : 'Gửi yêu cầu',
+                  () => _handleForgotPassword(context),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
+  }
+
+  void _handleForgotPassword(BuildContext context) {
+    String email = _adminAccountController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Vui lòng nhập email'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    context.read<AdminBloc>().add(ForgotPasswordRequested(email));
   }
 
   Widget _buildTextField({
@@ -448,7 +470,7 @@ class _LoginScreenState extends State<LoginScreen>
         ],
       ),
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: _isLoggingIn ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -456,14 +478,23 @@ class _LoginScreenState extends State<LoginScreen>
             borderRadius: BorderRadius.circular(15),
           ),
         ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
+        child: _isLoggingIn
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

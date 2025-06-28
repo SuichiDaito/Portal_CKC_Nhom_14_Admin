@@ -86,16 +86,16 @@ class TeacherListItem extends StatelessWidget {
                     vertical: 8,
                   ),
                 ),
-                const SizedBox(width: 8),
-                CustomButton(
-                  text: 'Đặt lại MK',
-                  onPressed: onResetPasswordPressed,
-                  backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
+                // const SizedBox(width: 8),
+                // CustomButton(
+                //   text: 'Đặt lại MK',
+                //   onPressed: onResetPasswordPressed,
+                //   backgroundColor: Colors.orange,
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: 12,
+                //     vertical: 8,
+                //   ),
+                // ),
               ],
             ),
           ],

@@ -17,3 +17,19 @@ class DiemRLError extends DiemRLState {
 }
 
 class DiemRLInitial extends DiemRLState {}
+
+class DiemRLSuccess extends DiemRLState {
+  final String message;
+
+  DiemRLSuccess(this.message);
+}
+
+class DiemRLUpdateSuccess extends DiemRLState {
+  final String message;
+  DiemRLUpdateSuccess(this.message);
+}
+
+class DiemRLUpdateFailure extends DiemRLState {
+  final String message;
+  DiemRLUpdateFailure(this.message);
+}

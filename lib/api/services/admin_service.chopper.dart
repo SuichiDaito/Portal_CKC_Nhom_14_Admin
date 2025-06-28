@@ -19,6 +19,16 @@ final class _$AdminService extends AdminService {
   final Type definitionType = AdminService;
 
   @override
+  Future<Response<Map<String, dynamic>>> resetPassword(
+    Map<String, dynamic> body,
+  ) {
+    final Uri $url = Uri.parse('/admin/lay-lai-mat-khau');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
   Future<Response<Map<String, dynamic>>> login(Map<String, dynamic> body) {
     final Uri $url = Uri.parse('/admin/login');
     final $body = body;
@@ -112,6 +122,17 @@ final class _$AdminService extends AdminService {
   }
 
   @override
+  Future<Response<Map<String, dynamic>>> doiChucVu(
+    int sinhVienId,
+    Map<String, dynamic> data,
+  ) {
+    final Uri $url = Uri.parse('/admin/lopsinhvien/${sinhVienId}/chucvu');
+    final $body = data;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
   Future<Response<Map<String, dynamic>>> fetchNienKhoaHocKy() {
     final Uri $url = Uri.parse('/admin/nien-khoa');
     final Request $request = Request('GET', $url, client.baseUrl);
@@ -126,16 +147,48 @@ final class _$AdminService extends AdminService {
   }
 
   @override
-  Future<Response<dynamic>> fetchDiemRenLuyen(int idLop, int thoiGian) {
+  Future<Response<dynamic>> fetchDiemRenLuyen(
+    int idLop,
+    int thoiGian,
+    int nam,
+  ) {
     final Uri $url = Uri.parse('/admin/lop-chu-nhiem/nhap-diem-rl/${idLop}');
     final Map<String, dynamic> $params = <String, dynamic>{
       'thoi_gian': thoiGian,
+      'nam': nam,
     };
     final Request $request = Request(
       'GET',
       $url,
       client.baseUrl,
       parameters: $params,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> updateBulkDiemRenLuyen({
+    required String selectedStudents,
+    required String thoiGian,
+    required String xepLoai,
+    required String nam,
+  }) {
+    final Uri $url = Uri.parse('/admin/lop/cap-nhat-diem-checked');
+    final Map<String, String> $headers = {
+      'content-type': 'application/x-www-form-urlencoded',
+    };
+    final $body = <String, String>{
+      'selected_students': selectedStudents.toString(),
+      'thoi_gian': thoiGian.toString(),
+      'xep_loai': xepLoai.toString(),
+      'nam': nam.toString(),
+    };
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+      headers: $headers,
     );
     return client.send<dynamic, dynamic>($request);
   }
@@ -284,5 +337,91 @@ final class _$AdminService extends AdminService {
     final Uri $url = Uri.parse('/admin/phieu-len-lop/all');
     final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getBienBanListByLop(int lopId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/${lopId}');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getBienBanCreateInfo(int lopId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/create/${lopId}');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> createBienBan(
+    int lopId,
+    Map<String, dynamic> data,
+  ) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/store/${lopId}');
+    final $body = data;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getBienBanDetail(int bienBanId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/chitiet/${bienBanId}');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> updateBienBan(
+    int bienBanId,
+    Map<String, dynamic> data,
+  ) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/${bienBanId}');
+    final $body = data;
+    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getBienBanEditInfo(int bienBanId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/${bienBanId}/edit');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> deleteBienBan(int bienBanId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/${bienBanId}');
+    final Request $request = Request('DELETE', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> confirmBienBan(int bienBanId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/confirm/${bienBanId}');
+    final Request $request = Request('POST', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> deleteSinhVienVang(int chiTietId) {
+    final Uri $url = Uri.parse('/admin/bienbanshcn/sinhvienvang/${chiTietId}');
+    final Request $request = Request('DELETE', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<Map<String, dynamic>>> getDanhSachTuan(int namBatDau) {
+    final Uri $url = Uri.parse('/admin/danhsach-tuan');
+    final Map<String, dynamic> $params = <String, dynamic>{
+      'nam_bat_dau': namBatDau,
+    };
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
 }

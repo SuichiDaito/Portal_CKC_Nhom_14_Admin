@@ -3,12 +3,40 @@ import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class DiemRenLuyen {
   final int id;
-  final String diem;
-
-  DiemRenLuyen({required this.id, required this.diem});
+  final int idGvcn;
+  final int idSinhVien;
+  final int idNam;
+  final int xepLoai;
+  final int thoiGian;
+  DiemRenLuyen({
+    required this.id,
+    required this.idGvcn,
+    required this.idSinhVien,
+    required this.idNam,
+    required this.xepLoai,
+    required this.thoiGian,
+  });
 
   factory DiemRenLuyen.fromJson(Map<String, dynamic> json) {
-    return DiemRenLuyen(id: json['id'], diem: json['diem']);
+    return DiemRenLuyen(
+      id: json['id'],
+      idGvcn: json['id_gvcn'],
+      idSinhVien: json['id_sinh_vien'],
+      idNam: json['id_nam'],
+      xepLoai: json['xep_loai'],
+      thoiGian: json['thoi_gian'],
+    );
+  }
+
+  factory DiemRenLuyen.empty() {
+    return DiemRenLuyen(
+      id: 0,
+      idNam: 0,
+      thoiGian: 0,
+      xepLoai: 0,
+      idGvcn: 0,
+      idSinhVien: 0,
+    );
   }
 }
 

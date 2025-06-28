@@ -46,3 +46,16 @@ class AdminSuccessMessage extends AdminState {
 
   AdminSuccessMessage(this.message);
 }
+
+class ForgotPasswordLoading extends AdminState {}
+
+class ForgotPasswordSuccess extends AdminState {
+  final String hoTen;
+  final String email;
+  ForgotPasswordSuccess({required this.hoTen, required this.email});
+}
+
+class ForgotPasswordFailure extends AdminState {
+  final String message;
+  ForgotPasswordFailure(this.message);
+}
