@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/api/model/studen_model.dart' hide StudentStatus;
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/studen_model.dart' hide StudentStatus;
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
@@ -125,6 +127,7 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
 
             const SizedBox(height: 10),
 
+            _buildInfoTile(Icons.class_, 'Lớp', widget.student.lop.tenLop),
             _buildInfoTile(Icons.badge, 'MSSV', widget.student.maSv),
             _buildInfoTile(
               Icons.person,
@@ -250,6 +253,8 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
       ),
       child: Row(
         children: [
+          Icon(icon, color: Colors.blueAccent, size: 20),
+          const SizedBox(width: 12),
           Icon(icon, color: Colors.blueAccent, size: 20),
           const SizedBox(width: 12),
           Expanded(
