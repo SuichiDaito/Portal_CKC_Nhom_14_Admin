@@ -1,7 +1,7 @@
-
 // services/admin_service.dart
 import 'package:chopper/chopper.dart';
 import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+import 'package:http/http.dart' show MultipartFile;
 
 part 'admin_service.chopper.dart';
 
@@ -155,12 +155,15 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/thongbao/{id}')
   Future<Response<Map<String, dynamic>>> getThongBaoDetail(@Path('id') int id);
 
-  // Tạo mới thông báo
   @Post(path: '/thongbao')
-  Future<Response<Map<String, dynamic>>> createThongBao(
-    @Body() Map<String, dynamic> body,
+  @multipart
+  Future<Response<Map<String, dynamic>>> createThongBaoWithFiles(
+    @Part('tieu_de') String tieuDe,
+    @Part('noi_dung') String noiDung,
+    @Part('tu_ai') String tuAi,
+    @Part('ngay_gui') String ngayGui,
+    // @Part('files') List<MultipartFile> files,
   );
-
   // Cập nhật thông báo
   @Put(path: '/thongbao/{id}')
   Future<Response<Map<String, dynamic>>> updateThongBao(

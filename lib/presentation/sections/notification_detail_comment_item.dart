@@ -143,6 +143,9 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                                     context.read<ThongBaoBloc>().add(
                                       DeleteCommentEvent(comment.id),
                                     );
+                                    context.read<ThongBaoBloc>().add(
+                                      FetchThongBaoDetail(widget.idThongBao),
+                                    );
                                   },
                                 ),
                             ],
@@ -166,7 +169,7 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                   TextField(
                     controller: _replyController,
                     decoration: const InputDecoration(
-                      hintText: 'Nhập nội dung trả lời...',
+                      hintText: ' Nhập nội dung trả lời...',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -177,6 +180,8 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                       onPressed: () {
                         final replyText = _replyController.text.trim();
                         if (replyText.isNotEmpty) {
+                          print('📤 Gửi trả lời cho commentId: ${comment.id}');
+
                           context.read<ThongBaoBloc>().add(
                             CreateCommentEvent(
                               thongBaoId: widget.idThongBao,

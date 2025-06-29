@@ -1,4 +1,5 @@
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
+import 'package:equatable/equatable.dart';
 
 abstract class ThongBaoState {}
 
@@ -9,6 +10,8 @@ class TBLoading extends ThongBaoState {}
 class TBListLoaded extends ThongBaoState {
   final List<ThongBao> list;
   TBListLoaded(this.list);
+  @override
+  List<Object?> get props => [list];
 }
 
 class TBDetailLoaded extends ThongBaoState {

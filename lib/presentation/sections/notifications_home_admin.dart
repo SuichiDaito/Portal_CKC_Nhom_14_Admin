@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
+import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/presentation/sections/card/notification_card.dart';
 
 class NotificationsHomeAdmin extends StatefulWidget {
   final String typeNotification;
   final List<ThongBao> notifications;
+  final VoidCallback? onReload; // 👈 THÊM CALLBACK NÀY
 
   const NotificationsHomeAdmin({
     super.key,
     required this.typeNotification,
     required this.notifications,
+    this.onReload, // 👈 THÊM
   });
 
   @override
@@ -25,7 +30,7 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
       children: [
         Text(
           widget.typeNotification,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -34,7 +39,7 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
         const SizedBox(height: 16),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: widget.notifications.length,
           itemBuilder: (context, index) {
             final tb = widget.notifications[index];
@@ -46,11 +51,18 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
                   date: _formatDate(tb.ngayGui),
                   bgColor: Colors.blue[100]!,
                   buttonColor: Colors.blue,
-                  onPressed: () {
-                    context.push('/notifications/detail/${tb.id}');
+                  onPressed: () async {
+                    final shouldReload = await context.push<bool>(
+                      '/notifications/detail/${tb.id}',
+                    );
+
+                    if (shouldReload == true && widget.onReload != null) {
+                      widget.onReload!(); // gọi bloc fetch lại dữ liệu
+                      // setState(() {}); ❌ không cần dòng này
+                    }
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
               ],
             );
           },

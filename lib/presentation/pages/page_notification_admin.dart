@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
-import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 import 'package:portal_ckc/presentation/sections/notifications_home_admin.dart';
 
-// Main Notifications Page
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
   @override
@@ -17,22 +14,6 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   String selectedFilter = 'Tất cả';
-  List<ThongBao> _filterBySelected(List<ThongBao> list) {
-    switch (selectedFilter) {
-      case 'Khoa':
-        return list.where((e) => e.tuAi.toLowerCase() == 'khoa').toList();
-      case 'Lớp':
-        return list.where((e) => e.tuAi.toLowerCase() == 'lop').toList();
-      case 'Giảng viên':
-        return list.where((e) => e.tuAi.toLowerCase() == 'giangvien').toList();
-      default:
-        return list;
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-  }
 
   @override
   void initState() {
@@ -42,60 +23,116 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThongBaoBloc, ThongBaoState>(
-      builder: (context, state) {
-        if (state is TBLoading) {
-          return Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      body: BlocBuilder<ThongBaoBloc, ThongBaoState>(
+        builder: (context, state) {
+          if (state is TBLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
 
-        if (state is TBFailure) {
-          return Center(child: Text('Lỗi: ${state.error}'));
-        }
+          if (state is TBFailure) {
+            return Center(child: Text('Lỗi: ${state.error}'));
+          }
 
-        if (state is TBListLoaded) {
-          final khoaNoti = state.list.where((e) => e.tuAi == 'khoa').toList();
-          final lopNoti = state.list.where((e) => e.tuAi == 'lop').toList();
-          final gvNoti = state.list
-              .where((e) => e.tuAi == 'giangvien')
-              .toList();
+          if (state is TBListLoaded) {
+            final khoaNoti = state.list
+                .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
+                .toList();
+            final lopNoti = state.list
+                .where((e) => e.tuAi == 'lop' && e.trangThai == 1)
+                .toList();
+            final gvNoti = state.list
+                .where((e) => e.tuAi == 'giangvien' && e.trangThai == 1)
+                .toList();
 
-          return Column(
-            children: [
-              _buildFilterTabs(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (selectedFilter == 'Tất cả' ||
-                          selectedFilter == 'Khoa')
-                        NotificationsHomeAdmin(
-                          typeNotification: 'Thông báo khoa',
-                          notifications: khoaNoti,
-                        ),
-                      if (selectedFilter == 'Tất cả' || selectedFilter == 'Lớp')
-                        NotificationsHomeAdmin(
-                          typeNotification: 'Thông báo lớp',
-                          notifications: lopNoti,
-                        ),
-                      if (selectedFilter == 'Tất cả' ||
-                          selectedFilter == 'Giảng viên')
-                        NotificationsHomeAdmin(
-                          typeNotification: 'Thông báo giảng viên',
-                          notifications: gvNoti,
-                        ),
-                    ],
+            return Column(
+              children: [
+                _buildFilterTabs(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    key: ValueKey(state.list.length),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (selectedFilter == 'Tất cả' ||
+                            selectedFilter == 'Khoa')
+                          NotificationsHomeAdmin(
+                            typeNotification: 'Thông báo khoa',
+                            key: ValueKey('khoa-${state.list.length}'),
+                            notifications: khoaNoti,
+                            onReload: () {
+                              setState(() {}); // 👈 ép cập nhật lại UI
+                              context.read<ThongBaoBloc>().add(
+                                FetchThongBaoList(),
+                              );
+                            },
+                          ),
+
+                        if (selectedFilter == 'Tất cả' ||
+                            selectedFilter == 'Lớp')
+                          NotificationsHomeAdmin(
+                            typeNotification: 'Thông báo lớp',
+                            notifications: lopNoti,
+                            onReload: () {
+                              setState(() {}); // 👈 ép cập nhật lại UI
+                              context.read<ThongBaoBloc>().add(
+                                FetchThongBaoList(),
+                              );
+                            },
+                          ),
+                        if (selectedFilter == 'Tất cả' ||
+                            selectedFilter == 'Giảng viên')
+                          NotificationsHomeAdmin(
+                            typeNotification: 'Thông báo giảng viên',
+                            notifications: gvNoti,
+                            onReload: () {
+                              setState(() {}); // 👈 ép cập nhật lại UI
+                              context.read<ThongBaoBloc>().add(
+                                FetchThongBaoList(),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        }
+              ],
+            );
+          }
 
-        // Mặc định
-        return Center(child: Text('Không có dữ liệu'));
-      },
+          // Mặc định
+          return Center(child: Text('Không có dữ liệu'));
+        },
+      ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'archiveBtn',
+            icon: const Icon(Icons.archive),
+            label: const Text('Kho'),
+            backgroundColor: Colors.grey,
+            onPressed: () {
+              // TODO: điều hướng tới screen "Kho thông báo"
+              context.push('/notifications/user');
+            },
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'createBtn',
+            icon: const Icon(Icons.add),
+            label: const Text('Tạo'),
+            onPressed: () async {
+              final result = await context.push('/notifications/create');
+
+              if (result == true) {
+                context.read<ThongBaoBloc>().add(FetchThongBaoList());
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 

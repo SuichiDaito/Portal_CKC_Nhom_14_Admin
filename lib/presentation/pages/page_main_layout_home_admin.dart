@@ -103,10 +103,14 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                       )
                       .toList();
 
-                  khoaNoti = recentList.where((e) => e.tuAi == 'khoa').toList();
-                  lopNoti = recentList.where((e) => e.tuAi == 'lop').toList();
-                  gvNoti = recentList
-                      .where((e) => e.tuAi == 'giangvien')
+                  final khoaNoti = state.list
+                      .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
+                      .toList();
+                  final lopNoti = state.list
+                      .where((e) => e.tuAi == 'lop' && e.trangThai == 1)
+                      .toList();
+                  final gvNoti = state.list
+                      .where((e) => e.tuAi == 'giangvien' && e.trangThai == 1)
                       .toList();
 
                   return Column(
@@ -118,6 +122,12 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                             ? NotificationsHomeAdmin(
                                 typeNotification: 'Thông báo khoa',
                                 notifications: khoaNoti,
+                                onReload: () {
+                                  setState(() {}); // 👈 ép cập nhật lại UI
+                                  context.read<ThongBaoBloc>().add(
+                                    FetchThongBaoList(),
+                                  );
+                                },
                               )
                             : const Text('📭 Chưa có thông báo khoa'),
 
@@ -126,6 +136,12 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                             ? NotificationsHomeAdmin(
                                 typeNotification: 'Thông báo lớp',
                                 notifications: lopNoti,
+                                onReload: () {
+                                  setState(() {}); // 👈 ép cập nhật lại UI
+                                  context.read<ThongBaoBloc>().add(
+                                    FetchThongBaoList(),
+                                  );
+                                },
                               )
                             : const Text('Chưa có thông báo lớp'),
 
@@ -135,6 +151,12 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                             ? NotificationsHomeAdmin(
                                 typeNotification: 'Thông báo giảng viên',
                                 notifications: gvNoti,
+                                onReload: () {
+                                  setState(() {}); // 👈 ép cập nhật lại UI
+                                  context.read<ThongBaoBloc>().add(
+                                    FetchThongBaoList(),
+                                  );
+                                },
                               )
                             : const Text('Chưa có thông báo giảng viên'),
                     ],

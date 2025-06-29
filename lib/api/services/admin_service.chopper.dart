@@ -272,12 +272,26 @@ final class _$AdminService extends AdminService {
   }
 
   @override
-  Future<Response<Map<String, dynamic>>> createThongBao(
-    Map<String, dynamic> body,
+  Future<Response<Map<String, dynamic>>> createThongBaoWithFiles(
+    String tieuDe,
+    String noiDung,
+    String tuAi,
+    String ngayGui,
   ) {
     final Uri $url = Uri.parse('/admin/thongbao');
-    final $body = body;
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final List<PartValue> $parts = <PartValue>[
+      PartValue<String>('tieu_de', tieuDe),
+      PartValue<String>('noi_dung', noiDung),
+      PartValue<String>('tu_ai', tuAi),
+      PartValue<String>('ngay_gui', ngayGui),
+    ];
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      parts: $parts,
+      multipart: true,
+    );
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
 

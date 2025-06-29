@@ -17,6 +17,7 @@ import 'package:portal_ckc/presentation/pages/page_class_roster_detail_admin.dar
 import 'package:portal_ckc/presentation/pages/page_conduct_evaluation_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_section_student_list.dart';
+import 'package:portal_ckc/presentation/pages/page_create_notification_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_grouped_admin.dart';
@@ -25,6 +26,7 @@ import 'package:portal_ckc/presentation/pages/page_login.dart';
 import 'package:portal_ckc/presentation/pages/page_meeting_minutes_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_notification_user_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_report_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_room_management.dart';
 import 'package:portal_ckc/presentation/pages/page_schedule_management_admin.dart';
@@ -223,7 +225,14 @@ class RouteName {
           return PageReportDetailAdmin(bienBanId: bienBanId, lopId: lopId);
         },
       ),
-
+      GoRoute(
+        path: '/notifications/create',
+        builder: (context, state) => PageCreateNotificationAdmin(),
+      ),
+      GoRoute(
+        path: '/notifications/user',
+        builder: (context, state) => PageNotificationUserAdmin(),
+      ),
       GoRoute(
         path: '/notifications/detail/:id',
         builder: (context, state) {
