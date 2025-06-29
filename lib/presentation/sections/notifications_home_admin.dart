@@ -1,88 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/presentation/sections/card/notification_card.dart';
 
 class NotificationsHomeAdmin extends StatefulWidget {
   final String typeNotification;
-  final String contentNotification;
-  final String date;
+  final List<ThongBao> notifications;
+
   const NotificationsHomeAdmin({
     super.key,
     required this.typeNotification,
-    required this.contentNotification,
-    required this.date,
+    required this.notifications,
   });
+
   @override
   State<NotificationsHomeAdmin> createState() => _NotificationsHomeAdmin();
 }
 
 class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
-  final list = [
-    NotificationCard(
-      title: '🎉 Chào mừng bạn!78687',
-      content: 'Cảm ơn bạn đã đăng ký. Hãy khám phá ứng dụng ngay!',
-      date: '14/06/2025',
-      bgColor: Colors.orange[100]!,
-      buttonColor: Colors.orange,
-      onPressed: () {},
-    ),
-    NotificationCard(
-      title: '🎉 Chào mừng bạn!',
-      content: 'Cảm ơn bạn đã đăng ký. Hãy khám phá ứng dụng ngay!',
-      date: '14/06/2025',
-      bgColor: Colors.blue[100]!,
-      buttonColor: Colors.blue,
-      onPressed: () {},
-    ),
-  ];
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${widget.typeNotification}',
+          widget.typeNotification,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
         ),
-        SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  NotificationCard(
-                    title: list[index].title,
-                    content: list[index].content,
-                    date: list[index].date,
-                    bgColor: list[index].bgColor,
-                    buttonColor: list[index].buttonColor,
-                    onPressed: () {
-                      context.go(
-                        '/notifications/detail',
-                        extra: {
-                          'title': list[index].title,
-                          'content': list[index].content,
-                          'date': list[index].date,
-                        },
-                      );
-                    },
-                  ),
-                  SizedBox(height: 15),
-                ],
-              );
-            },
-          ),
+        const SizedBox(height: 16),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: widget.notifications.length,
+          itemBuilder: (context, index) {
+            final tb = widget.notifications[index];
+            return Column(
+              children: [
+                NotificationCard(
+                  title: tb.tieuDe,
+                  content: tb.noiDung,
+                  date: _formatDate(tb.ngayGui),
+                  bgColor: Colors.blue[100]!,
+                  buttonColor: Colors.blue,
+                  onPressed: () {
+                    context.push('/notifications/detail/${tb.id}');
+                  },
+                ),
+                SizedBox(height: 15),
+              ],
+            );
+          },
         ),
       ],
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

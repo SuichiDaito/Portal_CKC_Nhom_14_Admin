@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
+import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
+import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 import 'package:portal_ckc/presentation/sections/notifications_home_admin.dart';
 
@@ -12,43 +17,85 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   String selectedFilter = 'Tất cả';
+  List<ThongBao> _filterBySelected(List<ThongBao> list) {
+    switch (selectedFilter) {
+      case 'Khoa':
+        return list.where((e) => e.tuAi.toLowerCase() == 'khoa').toList();
+      case 'Lớp':
+        return list.where((e) => e.tuAi.toLowerCase() == 'lop').toList();
+      case 'Giảng viên':
+        return list.where((e) => e.tuAi.toLowerCase() == 'giangvien').toList();
+      default:
+        return list;
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ThongBaoBloc>().add(FetchThongBaoList());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Filter Tabs
-        _buildFilterTabs(),
-        // Notifications List
-        Expanded(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                  NotificationsHomeAdmin(
-                    typeNotification: 'Thông báo khoa',
-                    contentNotification: 'Thông báo mới nhất',
-                    date: '24/06/2025',
+    return BlocBuilder<ThongBaoBloc, ThongBaoState>(
+      builder: (context, state) {
+        if (state is TBLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (state is TBFailure) {
+          return Center(child: Text('Lỗi: ${state.error}'));
+        }
+
+        if (state is TBListLoaded) {
+          final khoaNoti = state.list.where((e) => e.tuAi == 'khoa').toList();
+          final lopNoti = state.list.where((e) => e.tuAi == 'lop').toList();
+          final gvNoti = state.list
+              .where((e) => e.tuAi == 'giangvien')
+              .toList();
+
+          return Column(
+            children: [
+              _buildFilterTabs(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (selectedFilter == 'Tất cả' ||
+                          selectedFilter == 'Khoa')
+                        NotificationsHomeAdmin(
+                          typeNotification: 'Thông báo khoa',
+                          notifications: khoaNoti,
+                        ),
+                      if (selectedFilter == 'Tất cả' || selectedFilter == 'Lớp')
+                        NotificationsHomeAdmin(
+                          typeNotification: 'Thông báo lớp',
+                          notifications: lopNoti,
+                        ),
+                      if (selectedFilter == 'Tất cả' ||
+                          selectedFilter == 'Giảng viên')
+                        NotificationsHomeAdmin(
+                          typeNotification: 'Thông báo giảng viên',
+                          notifications: gvNoti,
+                        ),
+                    ],
                   ),
-               
-                SizedBox(height: 20),
-                NotificationsHomeAdmin(
-                  typeNotification: 'Thông báo giáo viên',
-                  contentNotification: 'Thông báo mới nhất',
-                  date: '24/06/2025',
                 ),
-                SizedBox(height: 20),
-                NotificationsHomeAdmin(
-                  typeNotification: 'Thông báo lớp',
-                  contentNotification: 'Thông báo mới nhất',
-                  date: '24/06/2025',
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+              ),
+            ],
+          );
+        }
+
+        // Mặc định
+        return Center(child: Text('Không có dữ liệu'));
+      },
     );
   }
 

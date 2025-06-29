@@ -1,9 +1,8 @@
-// widgets/class_item_card.dart
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/sections/card/class_roster_teacher_info_card.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
 
 class ClassItemCard extends StatelessWidget {
-  final ClassModel classModel;
+  final LopHocPhan classModel;
   final VoidCallback onTap;
 
   const ClassItemCard({Key? key, required this.classModel, required this.onTap})
@@ -11,6 +10,10 @@ class ClassItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String className = classModel.lop.tenLop ?? 'Chưa rõ';
+    final String subject = classModel.tenHocPhan;
+    final String status = _getTrangThaiText(classModel.trangThai);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
@@ -35,10 +38,8 @@ class ClassItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Row
                 Row(
                   children: [
-                    // Class Icon
                     Container(
                       width: 40,
                       height: 40,
@@ -53,14 +54,12 @@ class ClassItemCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-
-                    // Class Name & Subject
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            classModel.className,
+                            className,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -69,7 +68,7 @@ class ClassItemCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            classModel.subject,
+                            subject,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -79,52 +78,30 @@ class ClassItemCard extends StatelessWidget {
                         ],
                       ),
                     ),
-
-                    // Status Badge
-                    _buildStatusBadge(classModel.status),
+                    _buildStatusBadge(status),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-
-                // Class Details
                 Row(
                   children: [
                     _buildDetailItem(
                       Icons.people_outline,
-                      '${classModel.studentCount} SV',
+                      '${classModel.soLuongDangKy} sinh viên',
                       Colors.blue[600]!,
                     ),
                     const SizedBox(width: 16),
                     _buildDetailItem(
-                      Icons.schedule_outlined,
-                      classModel.schedule,
-                      Colors.green[600]!,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                Row(
-                  children: [
-                    _buildDetailItem(
-                      Icons.location_on_outlined,
-                      classModel.room,
-                      Colors.orange[600]!,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildDetailItem(
-                      Icons.calendar_today_outlined,
-                      classModel.semester,
-                      Colors.purple[600]!,
+                      classModel.loaiMon == 0
+                          ? Icons
+                                .menu_book_outlined // Icon cho Lý thuyết
+                          : Icons.handyman_outlined, // Icon cho Thực hành
+                      classModel.loaiMon == 0 ? 'Lý thuyết' : 'Thực hành',
+                      Colors.deepOrange[600]!,
                     ),
                   ],
                 ),
 
                 const SizedBox(height: 12),
-
-                // Action Button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -142,15 +119,6 @@ class ClassItemCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -162,23 +130,33 @@ class ClassItemCard extends StatelessWidget {
     );
   }
 
+  String _getTrangThaiText(int? trangThai) {
+    switch (trangThai) {
+      case 0:
+        return 'Chưa diễn ra';
+      case 1:
+        return 'Đang diễn ra';
+      case 2:
+        return 'Đã kết thúc';
+      default:
+        return 'Không rõ';
+    }
+  }
+
   Widget _buildStatusBadge(String status) {
     Color backgroundColor;
     Color textColor;
 
     switch (status.toLowerCase()) {
       case 'đang diễn ra':
-      case 'active':
         backgroundColor = Colors.green[100]!;
         textColor = Colors.green[700]!;
         break;
       case 'đã kết thúc':
-      case 'completed':
-        backgroundColor = Colors.grey[100]!;
-        textColor = Colors.grey[700]!;
+        backgroundColor = Colors.grey[200]!;
+        textColor = Colors.grey[800]!;
         break;
-      case 'sắp diễn ra':
-      case 'upcoming':
+      case 'chưa diễn ra':
         backgroundColor = Colors.blue[100]!;
         textColor = Colors.blue[700]!;
         break;

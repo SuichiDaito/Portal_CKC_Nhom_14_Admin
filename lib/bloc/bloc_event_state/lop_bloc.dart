@@ -11,6 +11,7 @@ class LopBloc extends Bloc<LopDetailEvent, LopDetailState> {
   LopBloc() : super(LopDetailInitial()) {
     on<FetchLopDetail>(_onFetchLopDetail);
     on<FetchAllLopEvent>(_onFetchAllLop);
+    on<ChangeStudentRoleEvent>(_onChangeStudentRole);
   }
 
   Future<void> _onFetchLopDetail(
@@ -67,6 +68,33 @@ class LopBloc extends Bloc<LopDetailEvent, LopDetailState> {
       }
     } catch (e) {
       emit(LopDetailError("Lỗi mạng: ${e.toString()}"));
+    }
+  }
+
+  Future<void> _onChangeStudentRole(
+    ChangeStudentRoleEvent event,
+    Emitter<LopDetailState> emit,
+  ) async {
+    emit(LopDetailLoading());
+    try {
+      final response = await _service.doiChucVu(event.sinhVienId, {
+        'chuc_vu': event.chucVu,
+      });
+
+      if (response.isSuccessful && response.body != null) {
+        final success = response.body?['success'];
+        final message = response.body?['message'];
+
+        if (success == true) {
+          emit(ChangeStudentRoleSuccess(message ?? 'Cập nhật thành công'));
+        } else {
+          emit(ChangeStudentRoleFailed(message ?? 'Cập nhật thất bại'));
+        }
+      } else {
+        emit(ChangeStudentRoleFailed('Không nhận được phản hồi từ máy chủ.'));
+      }
+    } catch (e) {
+      emit(ChangeStudentRoleFailed('Lỗi mạng: ${e.toString()}'));
     }
   }
 }

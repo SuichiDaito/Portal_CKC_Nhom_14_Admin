@@ -7,7 +7,7 @@ class ClassInfoCard extends StatelessWidget {
   final String secretaryName;
   final String teacherName;
   final List<SinhVien> studentList;
-  final void Function(String) onSelectSecretary;
+  final void Function(int) onSelectSecretary;
 
   const ClassInfoCard({
     super.key,
@@ -149,7 +149,7 @@ class ClassInfoCard extends StatelessWidget {
                 tileColor: Colors.grey[100],
                 onTap: () {
                   Navigator.pop(context);
-                  onSelectSecretary(sv.maSv);
+                  onSelectSecretary(sv.id);
                 },
               );
             },

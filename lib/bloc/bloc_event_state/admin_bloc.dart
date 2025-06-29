@@ -17,6 +17,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<FetchAdminDetail>(_onFetchDetail);
     on<FetchClassList>(_onFetchClassList);
     on<FetchStudentList>(_onFetchStudentList);
+    on<ChangePasswordEvent>(_onChangePassword);
+    on<ForgotPasswordRequested>(_onForgotPasswordRequested);
   }
 
   Future<void> _onLogin(AdminLoginEvent event, Emitter emit) async {
@@ -140,6 +142,60 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       }
     } catch (e) {
       emit(AdminError('Lỗi lấy danh sách sinh viên: $e'));
+    }
+  }
+
+  Future<void> _onChangePassword(
+    ChangePasswordEvent event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(AdminLoading());
+    try {
+      final response = await service.changePassword({
+        'current_password': event.currentPassword,
+        'new_password': event.newPassword,
+      });
+
+      if (response.isSuccessful && response.body != null) {
+        final body = response.body!;
+        if (body['status'] == true) {
+          emit(AdminSuccessMessage(body['message']));
+        } else {
+          emit(AdminError(body['message'] ?? 'Đổi mật khẩu thất bại'));
+        }
+      } else {
+        emit(AdminError('Không thể đổi mật khẩu. Vui lòng thử lại.'));
+      }
+    } catch (e) {
+      emit(AdminError('Lỗi hệ thống: $e'));
+    }
+  }
+
+  Future<void> _onForgotPasswordRequested(
+    ForgotPasswordRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(ForgotPasswordLoading());
+    try {
+      final response = await service.resetPassword({'email': event.email});
+
+      if (response.isSuccessful && response.body != null) {
+        final body = response.body;
+        if (body?['success'] == true && body?['data'] != null) {
+          emit(
+            ForgotPasswordSuccess(
+              hoTen: body?['data']['ho_ten'],
+              email: body?['data']['email'],
+            ),
+          );
+        } else {
+          emit(ForgotPasswordFailure(body?['message'] ?? 'Yêu cầu thất bại'));
+        }
+      } else {
+        emit(ForgotPasswordFailure('Không thể gửi yêu cầu. Vui lòng thử lại.'));
+      }
+    } catch (e) {
+      emit(ForgotPasswordFailure('Lỗi hệ thống: ${e.toString()}'));
     }
   }
 }

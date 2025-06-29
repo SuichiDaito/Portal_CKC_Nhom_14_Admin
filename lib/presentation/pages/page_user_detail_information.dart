@@ -56,14 +56,7 @@ class _UserDetailInformationPageState extends State<UserDetailInformationPage> {
                       const SizedBox(height: 15),
                       Row(
                         children: [
-                          Expanded(
-                            child: ButtonLogOutInUser(
-                              nameButton: 'Đăng xuất',
-                              onPressed: () {
-                                //nope
-                              },
-                            ),
-                          ),
+                          Expanded(child: ButtonLogOutInUser()),
                           const SizedBox(width: 12),
                           Expanded(child: ButtonChangePasswordInUser()),
                         ],

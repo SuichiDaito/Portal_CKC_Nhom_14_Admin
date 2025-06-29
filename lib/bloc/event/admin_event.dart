@@ -30,3 +30,18 @@ class FetchStudentList extends AdminEvent {
   FetchStudentList(this.lopId);
 }
 
+class ChangePasswordEvent extends AdminEvent {
+  final String currentPassword;
+  final String newPassword;
+
+  ChangePasswordEvent({
+    required this.currentPassword,
+    required this.newPassword,
+  });
+}
+
+class ForgotPasswordRequested extends AdminEvent {
+  final String email;
+
+  ForgotPasswordRequested(this.email);
+}

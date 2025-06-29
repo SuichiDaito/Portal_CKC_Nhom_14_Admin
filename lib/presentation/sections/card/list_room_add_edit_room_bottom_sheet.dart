@@ -27,7 +27,6 @@ class _AddEditRoomBottomSheetState extends State<AddEditRoomBottomSheet> {
   final List<DropdownItem> _roomTypes = [
     DropdownItem(value: '1', label: 'Phòng học lý thuyết', icon: Icons.school),
     DropdownItem(value: '2', label: 'Phòng thực hành', icon: Icons.computer),
-    DropdownItem(value: '3', label: 'Phòng họp', icon: Icons.meeting_room),
   ];
 
   @override
@@ -100,6 +99,7 @@ class _AddEditRoomBottomSheetState extends State<AddEditRoomBottomSheet> {
                   color: Colors.blue,
                 ),
               ),
+              Divider(),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _tenController,

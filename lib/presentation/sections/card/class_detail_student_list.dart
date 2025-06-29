@@ -61,7 +61,7 @@ class StudentList extends StatelessWidget {
               children: [
                 const SizedBox(height: 4),
                 Text("MSSV: ${student.maSv}"),
-                Text("Chức vụ: ${student.chucVu == 0 ? 'Thư ký' : 'Không có'}"),
+                Text("Chức vụ: ${student.chucVu == 1 ? 'Thư ký' : 'Không có'}"),
               ],
             ),
             trailing: Container(
