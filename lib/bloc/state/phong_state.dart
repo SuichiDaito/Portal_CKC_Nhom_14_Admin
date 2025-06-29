@@ -17,3 +17,14 @@ class PhongError extends PhongState {
 
   PhongError(this.message);
 }
+
+class PhongDetailLoaded extends PhongState {
+  final Room room;
+  PhongDetailLoaded(this.room);
+}
+
+class PhongSuccess extends PhongState {
+  final String message;
+  final Room room;
+  PhongSuccess(this.message, this.room);
+}

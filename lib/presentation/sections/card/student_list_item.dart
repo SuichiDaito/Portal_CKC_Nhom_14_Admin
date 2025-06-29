@@ -130,12 +130,12 @@ class StudentListItem extends StatelessWidget {
                         onPressed: onDetailPressed,
                         backgroundColor: Colors.blue,
                       ),
-                      const SizedBox(width: 8),
-                      CustomButton(
-                        text: 'Đặt lại mật khẩu',
-                        onPressed: onResetPasswordPressed,
-                        backgroundColor: Colors.orange,
-                      ),
+                      // const SizedBox(width: 8),
+                      // CustomButton(
+                      //   text: 'Đặt lại mật khẩu',
+                      //   onPressed: onResetPasswordPressed,
+                      //   backgroundColor: Colors.orange,
+                      // ),
                     ],
                   ),
                 ],

@@ -170,6 +170,7 @@ class _PageAcademicYearManagementState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 250, 248, 248),
       appBar: AppBar(
         title: const CustomAppBarTitle(title: 'Khởi tạo năm học'),
         backgroundColor: Colors.blueAccent,

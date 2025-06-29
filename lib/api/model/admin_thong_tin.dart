@@ -1,8 +1,6 @@
-
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 import 'package:portal_ckc/api/model/admin_vai_tro.dart';
-import 'package:portal_ckc/presentation/pages/page_teacher_management_admin.dart';
 
 enum TeacherPosition {
   director,
@@ -42,7 +40,9 @@ class User {
       trangThai: json['trang_thai'] ?? 0,
       hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : null,
       boMon: json['bo_mon'] != null ? BoMon.fromJson(json['bo_mon']) : null,
-      roles: (json['roles'] ?? []).map<Role>((e) => Role.fromJson(e)).toList(),
+      roles: (json['roles'] as List<dynamic>? ?? [])
+          .map((e) => Role.fromJson(e))
+          .toList(),
     );
   }
   User copyWith({
@@ -62,48 +62,61 @@ class User {
       roles: [],
     );
   }
-}
 
-class HoSo {
-  final int id;
-  final String hoTen;
-  final String email;
-  final String password;
-  final String soDienThoai;
-  final String ngaySinh;
-  final String gioiTinh;
-  final String cccd;
-  final String diaChi;
-  final String anh;
-
-  HoSo({
-    required this.id,
-    required this.hoTen,
-    required this.email,
-    required this.password,
-    required this.soDienThoai,
-    required this.ngaySinh,
-    required this.gioiTinh,
-    required this.cccd,
-    required this.diaChi,
-    required this.anh,
-  });
-
-  factory HoSo.fromJson(Map<String, dynamic> json) {
-    return HoSo(
-      id: json['id'],
-      hoTen: json['ho_ten'] ?? '',
-      email: json['email'] ?? '',
-      password: json['password'] ?? '',
-      soDienThoai: json['so_dien_thoai'] ?? '',
-      ngaySinh: json['ngay_sinh'] ?? '',
-      gioiTinh: json['gioi_tinh'] ?? '',
-      cccd: json['cccd'] ?? '',
-      diaChi: json['dia_chi'] ?? '',
-      anh: json['anh'] ?? '',
+  factory User.empty() {
+    return User(
+      id: 0,
+      idHoSo: null,
+      idBoMon: null,
+      taiKhoan: '',
+      trangThai: 0,
+      hoSo: null,
+      boMon: null,
+      roles: [],
     );
   }
 }
+
+// class HoSo {
+//   final int id;
+//   final String hoTen;
+//   final String email;
+//   final String password;
+//   final String soDienThoai;
+//   final String ngaySinh;
+//   final String gioiTinh;
+//   final String cccd;
+//   final String diaChi;
+//   final String anh;
+
+//   HoSo({
+//     required this.id,
+//     required this.hoTen,
+//     required this.email,
+//     required this.password,
+//     required this.soDienThoai,
+//     required this.ngaySinh,
+//     required this.gioiTinh,
+//     required this.cccd,
+//     required this.diaChi,
+//     required this.anh,
+//   });
+
+//   factory HoSo.fromJson(Map<String, dynamic> json) {
+//     return HoSo(
+//       id: json['id'],
+//       hoTen: json['ho_ten'] ?? '',
+//       email: json['email'] ?? '',
+//       password: json['password'] ?? '',
+//       soDienThoai: json['so_dien_thoai'] ?? '',
+//       ngaySinh: json['ngay_sinh'] ?? '',
+//       gioiTinh: json['gioi_tinh'] ?? '',
+//       cccd: json['cccd'] ?? '',
+//       diaChi: json['dia_chi'] ?? '',
+//       anh: json['anh'] ?? '',
+//     );
+//   }
+// }
 
 class LoginResponse {
   final String token;

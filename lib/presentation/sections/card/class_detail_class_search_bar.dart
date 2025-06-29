@@ -8,6 +8,9 @@ class ClassSearchBar extends StatelessWidget {
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onStatusChanged;
   final List<SinhVien> studentList;
+  final int idClass;
+  final int idNienKhoa;
+
   const ClassSearchBar({
     super.key,
     required this.searchQuery,
@@ -15,6 +18,8 @@ class ClassSearchBar extends StatelessWidget {
     required this.onSearchChanged,
     required this.onStatusChanged,
     required this.studentList,
+    required this.idClass,
+    required this.idNienKhoa,
   });
 
   @override
@@ -50,9 +55,9 @@ class ClassSearchBar extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton.icon(
                   onPressed: () => context.push(
-                    '/admin/conduct_evaluation_admin',
-                    extra: studentList,
+                    '/admin/conduct_evaluation_admin/${idClass}/${idNienKhoa}',
                   ),
+
                   icon: const Icon(Icons.edit, size: 18),
                   label: const Text('Nhập điểm'),
                   style: ElevatedButton.styleFrom(

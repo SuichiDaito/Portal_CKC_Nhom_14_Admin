@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
+import 'package:portal_ckc/api/model/admin_ho_so.dart';
+import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart' hide HoSo;
 
 class ReportDetailReadonlySummaryCard extends StatelessWidget {
   final int selectedWeek;
@@ -10,9 +16,12 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
   final int present;
   final int absent;
   final String content;
-  final List<String> absentStudentIds;
-  final List<Map<String, String>> studentList;
-  final Map<String, String> absenceReasons;
+  final String teacherName;
+  final String secretaryName;
+  final List<ChiTietBienBan> chiTietBienBanList;
+  final List<int> absentStudentIds;
+  final List<Map<String, dynamic>> studentList;
+  final Map<int, String> absenceReasons;
 
   const ReportDetailReadonlySummaryCard({
     super.key,
@@ -27,6 +36,9 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
     required this.absentStudentIds,
     required this.studentList,
     required this.absenceReasons,
+    required this.secretaryName,
+    required this.teacherName,
+    required this.chiTietBienBanList,
   });
 
   @override
@@ -79,19 +91,19 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
               const SizedBox(height: 16),
 
               Text(
-                'Thời gian bắt đầu sinh hoạt lớp: ${selectedTime.format(context)}, ngày ${DateFormat('dd').format(selectedDate)} tháng ${DateFormat('MM').format(selectedDate)} năm ${DateFormat('yyyy').format(selectedDate)}',
+                'Thời gian bắt đầu sinh hoạt lớp: ${DateFormat('HH:mm').format(selectedDate)}, ngày ${DateFormat('dd').format(selectedDate)} tháng ${DateFormat('MM').format(selectedDate)} năm ${DateFormat('yyyy').format(selectedDate)}',
               ),
-              Text('Địa điểm sinh hoạt: $selectedRoom'),
+
+              Text('Địa điểm sinh hoạt: Trường Cao Đẳng Kỹ Thuật Cao Thắng'),
               const SizedBox(height: 8),
 
               const Text(
                 'Thành phần tham dự gồm có:',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              const Text(
-                ' - Giáo viên chủ nhiệm (ghi họ và tên): Nguyễn Đức Duy',
-              ),
-              const Text(' - Thư ký (ghi họ và tên): Tạ Kiều Ngân'),
+              Text(' - Giáo viên chủ nhiệm (ghi họ và tên): $teacherName'),
+              Text(' - Thư ký (ghi họ và tên): $secretaryName'),
+
               Text(
                 ' - Sĩ số: $total       Hiện diện: $present        Vắng mặt: $absent',
               ),
@@ -99,13 +111,47 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
               if (absentStudentIds.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 const Text('Họ và tên HSSV vắng, lý do:'),
-                ...absentStudentIds.map((mssv) {
-                  final student = studentList.firstWhere(
-                    (s) => s['mssv'] == mssv,
-                    orElse: () => {'mssv': mssv, 'name': 'Không rõ'},
+                ...absentStudentIds.map((id) {
+                  if (chiTietBienBanList.isNotEmpty) {
+                    print(chiTietBienBanList[0].sinhVien.hoSo.hoTen);
+                  } else {
+                    print('Danh sách chi tiết biên bản đang rỗng');
+                  }
+
+                  final studentList = chiTietBienBanList
+                      .map(
+                        (e) => {
+                          'mssv': e.sinhVien.maSv,
+                          'name': e.sinhVien.maSv,
+                        },
+                      )
+                      .toList();
+
+                  final reason = absenceReasons['$id'] ?? 'Không rõ lý do';
+
+                  final ctbb = chiTietBienBanList.firstWhere(
+                    (e) => e.sinhVien.id == id, // ✅ so sánh ID thực tế (int)
+                    orElse: () => ChiTietBienBan(
+                      id: -1,
+                      idBienBanShcn: -1,
+                      lyDo: '',
+                      loai: 0,
+                      sinhVien: SinhVien(
+                        id: id,
+                        maSv: '',
+                        hoSo: HoSo.empty(),
+                        trangThai: 0,
+                        lop: Lop.empty(),
+                        diemRenLuyens: [],
+                      ),
+                    ),
                   );
-                  final reason = absenceReasons[mssv] ?? 'Không rõ lý do';
-                  return Text('  ${student['name']}, Lý do: $reason');
+
+                  final isExcused = ctbb.loai == 1;
+
+                  return Text(
+                    '  ${ctbb.sinhVien.hoSo.hoTen}, Lý do: $reason (${isExcused ? "Có phép" : "Không phép"})',
+                  );
                 }).toList(),
               ],
 
@@ -139,15 +185,15 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
                 spacing: 24,
                 runSpacing: 16,
                 alignment: WrapAlignment.spaceBetween,
-                children: const [
+                children: [
                   SizedBox(
                     width: 160,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('GVCN (Ký, ghi rõ họ tên)'),
-                        SizedBox(height: 48),
-                        Text('Nguyễn Đức Duy'),
+                        const Text('GVCN (Ký, ghi rõ họ tên)'),
+                        const SizedBox(height: 48),
+                        Text(teacherName),
                       ],
                     ),
                   ),
@@ -156,9 +202,9 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('Thư ký (Ký, ghi rõ họ tên)'),
-                        SizedBox(height: 48),
-                        Text('Tạ Kiều Ngân'),
+                        const Text('Thư ký (Ký, ghi rõ họ tên)'),
+                        const SizedBox(height: 48),
+                        Text(secretaryName),
                       ],
                     ),
                   ),

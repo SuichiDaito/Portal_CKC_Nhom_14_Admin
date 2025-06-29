@@ -42,8 +42,8 @@ class DangKyGiayBloc extends Bloc<DangKyGiayEvent, DangKyGiayState> {
     try {
       final response = await _service.confirmMultipleGiayXacNhan({
         'ids': event.ids,
-        'id_giang_vien': event.userId, // dùng đúng key như backend
-        'trang_thai': 1, // ví dụ: trạng thái đã xác nhận
+        'id_giang_vien': event.userId,
+        'trang_thai': 1,
       });
 
       if (response.isSuccessful && response.body['success'] == true) {

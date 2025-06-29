@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/diem_rl_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/main.dart';
 import 'package:portal_ckc/presentation/pages/appbar_bottombar/page_app_bar.dart';
 import 'package:portal_ckc/presentation/pages/appbar_bottombar/page_home_admin.dart';
@@ -10,12 +13,14 @@ import 'package:portal_ckc/presentation/pages/page_class_book_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_class_roster_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_class_roster_detail_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_conduct_evaluation_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_section_student_list.dart';
 import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_grouped_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_list_class_book_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_login.dart';
 import 'package:portal_ckc/presentation/pages/page_meeting_minutes_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_notification_admin.dart';
@@ -92,6 +97,10 @@ class RouteName {
         builder: (context, state) => const PageClassBookAdmin(),
       ),
       GoRoute(
+        path: '/admin/class_list_book_admin',
+        builder: (context, state) => const PageListClassBookAdmin(),
+      ),
+      GoRoute(
         path: '/admin/management_group_admin',
         builder: (context, state) => const PageQuanlyphongAdmin(),
       ),
@@ -103,7 +112,15 @@ class RouteName {
         path: '/admin/class_management_admin',
         builder: (context, state) => PageClassManagementAdmin(),
       ),
-
+      GoRoute(
+        path: '/admin/class_roster_detail_admin/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          return PageClassRosterDetailAdmin(
+            idLopHocPhan: id ?? 0,
+          ); // hoặc xử lý null phù hợp
+        },
+      ),
       // GoRoute(
       //   path: '/admin/class_detail_admin',
       //   builder: (context, state) => PageClassDetailAdmin(),
@@ -117,8 +134,21 @@ class RouteName {
       ),
 
       GoRoute(
-        path: '/admin/conduct_evaluation_admin',
-        builder: (context, state) => PageConductEvaluationAdmin(),
+        path: '/admin/conduct_evaluation_admin/:lopId/:idNienKhoa',
+        builder: (context, state) {
+          final lopId = int.parse(state.pathParameters['lopId']!);
+          final idNienKhoa = int.parse(state.pathParameters['idNienKhoa']!);
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => DiemRlBloc()),
+              BlocProvider(create: (_) => NienKhoaHocKyBloc()),
+            ],
+            child: PageConductEvaluationAdmin(
+              lopId: lopId,
+              idNienKhoa: idNienKhoa,
+            ),
+          );
+        },
       ),
 
       GoRoute(
@@ -155,17 +185,26 @@ class RouteName {
       ),
       GoRoute(
         path: '/admin/meeting_minutes_admin',
-        builder: (context, state) => PageMeetingMinutesAdmin(),
+        builder: (context, state) {
+          final lop =
+              state.extra as Lop; // đảm bảo đã truyền Lop từ màn hình trước
+          return PageMeetingMinutesAdmin(lop: lop);
+        },
       ),
+
       GoRoute(
         path: '/admin/teaching_schedule_admin',
         builder: (context, state) => PageTeachingScheduleAdmin(),
       ),
 
       GoRoute(
-        path: '/admin/course_student_list',
-        builder: (context, state) => PageCourseSectionStudentList(),
+        path: '/admin/course_student_list/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          return PageCourseSectionStudentList(idLopHocPhan: id ?? 0);
+        },
       ),
+
       GoRoute(
         path: '/admin/exam_schedule_admin',
         builder: (context, state) => PageExamScheduleAdmin(),
@@ -177,22 +216,22 @@ class RouteName {
       GoRoute(
         path: '/admin/report_detail_admin',
         builder: (context, state) {
-          final args = state.extra as Map<String, dynamic>;
-          return PageReportDetailAdmin(isApproved: args['isApproved'] as bool);
+          final extra = state.extra as Map<String, dynamic>; // ✅ đúng kiểu
+          final bienBanId = extra['bienBanId'] as int;
+          final lopId = extra['lopId'] as int;
+
+          return PageReportDetailAdmin(bienBanId: bienBanId, lopId: lopId);
         },
       ),
 
       GoRoute(
-        path: '/notifications/detail',
+        path: '/notifications/detail/:id',
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return NotificationDetailPage(
-            title: data['title'],
-            content: data['content'],
-            date: data['date'],
-          );
+          final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+          return NotificationDetailPage(id: id); // ✅ Truyền ID
         },
       ),
+
       //NotificationDetailPage
     ],
   );

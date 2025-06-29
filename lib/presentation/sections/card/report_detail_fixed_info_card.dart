@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class ReportDetailFixedInfoCard extends StatelessWidget {
   final bool isEditing;
+  final bool canEdit; // ✅ mới thêm
   final VoidCallback onToggleEdit;
   final VoidCallback onApprove;
 
   const ReportDetailFixedInfoCard({
     super.key,
     required this.isEditing,
+    required this.canEdit, // ✅ thêm vào constructor
     required this.onToggleEdit,
     required this.onApprove,
   });
@@ -37,41 +40,50 @@ class ReportDetailFixedInfoCard extends StatelessWidget {
             style: TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.cyan,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+          if (canEdit == true) // ✅ CHỈ hiện nếu còn được chỉnh sửa
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.cyan,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    onPressed: onToggleEdit,
+                    icon: const Icon(Icons.edit),
+                    label: Text(isEditing ? 'Tắt sửa' : 'Sửa'),
                   ),
-                  onPressed: onToggleEdit,
-                  icon: const Icon(Icons.edit),
-                  label: Text(isEditing ? 'Tắt sửa' : 'Sửa'),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    onPressed: onApprove,
+                    icon: const Icon(Icons.check_circle),
+                    label: const Text('Duyệt biên bản'),
                   ),
-                  onPressed: onApprove,
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Duyệt biên bản'),
                 ),
+              ],
+            )
+          else
+            const Text(
+              "Biên bản đã được duyệt.",
+              style: TextStyle(
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
               ),
-            ],
-          ),
+            ),
         ],
       ),
     );

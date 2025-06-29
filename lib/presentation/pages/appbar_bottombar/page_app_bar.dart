@@ -1,9 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+import 'package:portal_ckc/bloc/state/admin_state.dart';
 
 class AppBarNavigationHomePage extends StatefulWidget {
   final Widget child;
-  AppBarNavigationHomePage({super.key, required this.child});
+  const AppBarNavigationHomePage({super.key, required this.child});
+
   @override
   State<AppBarNavigationHomePage> createState() => _AppBarNavigationHomePage();
 }
@@ -37,31 +41,47 @@ class _AppBarNavigationHomePage extends State<AppBarNavigationHomePage> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // User info section
-                Row(
+            child: BlocBuilder<AdminBloc, AdminState>(
+              builder: (context, state) {
+                String hoTen = 'Chưa đăng nhập';
+                String vaiTro = '';
+
+                if (state is AdminLoaded || state is AdminSuccess) {
+                  final user = (state is AdminLoaded)
+                      ? state.user
+                      : (state as AdminSuccess).user;
+                  print(user);
+                  hoTen = user.hoSo?.hoTen ?? 'Không rõ tên';
+                  vaiTro = user.roles.isNotEmpty
+                      ? user.roles.first.name ?? 'Không rõ vai trò'
+                      : 'Không rõ vai trò';
+                }
+
+                return Row(
                   children: [
                     CircleAvatar(
                       backgroundColor: Colors.white.withOpacity(0.3),
                       radius: 20,
-                      child: Icon(Icons.person, color: Colors.white, size: 24),
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Nguyễn Văn B',
-                          style: TextStyle(
+                          hoTen,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
-                          'Trưởng khoa CNTT',
+                          vaiTro,
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 12,
@@ -70,8 +90,8 @@ class _AppBarNavigationHomePage extends State<AppBarNavigationHomePage> {
                       ],
                     ),
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),

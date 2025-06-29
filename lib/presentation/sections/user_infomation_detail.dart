@@ -60,7 +60,7 @@ class AccountInfoSection extends StatelessWidget {
                 'Phòng/khoa: ${user.boMon?.nganhHoc?.khoa?.tenKhoa ?? "Không xác định"}',
               ),
               _buildInfoItem(
-                'Chức vụ: ${user.roles.isNotEmpty ? user.roles.first.name : 'Chưa có'}',
+                'Chức vụ: ${user.roles.isNotEmpty ? user.roles[0].name : 'Chưa có'}',
               ),
               _buildInfoItem('Ngày sinh: ${hoSo?.ngaySinh ?? 'Chưa có'}'),
               _buildInfoItem(

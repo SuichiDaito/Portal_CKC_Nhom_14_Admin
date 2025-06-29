@@ -12,25 +12,27 @@ class ApplicationsAdminPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Section for Students
-          _buildSection(
-            title: 'Dành cho Sinh viên',
-            icon: Icons.school,
-            iconColor: Colors.green,
-            backgroundColor: Colors.green.withOpacity(0.05),
-            borderColor: Colors.green.withOpacity(0.2),
-            gridItems: _getStudentFeatures(),
-          ),
-
-          const SizedBox(height: 24),
 
           // Section for Teachers
           _buildSection(
+            context: context,
             title: 'Dành cho Giảng viên',
             icon: Icons.person,
             iconColor: Colors.blue,
             backgroundColor: Colors.blue.withOpacity(0.05),
             borderColor: Colors.blue.withOpacity(0.2),
             gridItems: _getTeacherFeatures(),
+          ),
+          const SizedBox(height: 24),
+
+          _buildSection(
+            context: context,
+            title: 'Dành cho Admin',
+            icon: Icons.school,
+            iconColor: Colors.green,
+            backgroundColor: Colors.green.withOpacity(0.05),
+            borderColor: Colors.green.withOpacity(0.2),
+            gridItems: _getAdminFeatures(),
           ),
         ],
       ),
@@ -44,6 +46,7 @@ class ApplicationsAdminPage extends StatelessWidget {
     required Color backgroundColor,
     required Color borderColor,
     required List<_FeatureItem> gridItems,
+    required BuildContext context,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -55,7 +58,7 @@ class ApplicationsAdminPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section Header
+          // Header
           Row(
             children: [
               Container(
@@ -77,20 +80,18 @@ class ApplicationsAdminPage extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 20),
 
-          // Grid View
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            itemCount: gridItems.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width > 400 ? 3 : 2,
               childAspectRatio: 1.1,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
             ),
-            itemCount: gridItems.length,
             itemBuilder: (context, index) {
               final feature = gridItems[index];
               return _buildFeatureCard(context, feature);
@@ -155,97 +156,8 @@ class ApplicationsAdminPage extends StatelessWidget {
     );
   }
 
-  List<_FeatureItem> _getStudentFeatures() {
+  List<_FeatureItem> _getAdminFeatures() {
     return [
-      _FeatureItem(
-        icon: Icons.assessment,
-        title: 'Điểm rèn luyện',
-        color: Colors.blue,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.notifications,
-        title: 'Thông báo',
-        color: Colors.orange,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.videocam,
-        title: 'KPKP',
-        color: Colors.green,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.description,
-        title: 'SKCH',
-        color: Colors.purple,
-        value: 'SKCH',
-      ),
-      _FeatureItem(
-        icon: Icons.calendar_today,
-        title: 'Lịch học',
-        color: Colors.red,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.folder,
-        title: 'Tài liệu',
-        color: Colors.teal,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.access_time,
-        title: 'Thời khóa biểu',
-        color: Colors.indigo,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.star,
-        title: 'Đánh giá',
-        color: Colors.amber,
-        value: '',
-      ),
-      _FeatureItem(
-        icon: Icons.assignment,
-        title: 'Bài tập',
-        color: Colors.deepOrange,
-        value: '',
-      ),
-    ];
-  }
-
-  List<_FeatureItem> _getTeacherFeatures() {
-    return [
-      _FeatureItem(
-        icon: Icons.class_,
-        title: 'Quản lý lớp chủ nhiệm',
-        color: Colors.blueAccent,
-        value: 'class_management_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.menu_book,
-        title: 'Sổ lên lớp',
-        color: Colors.green,
-        value: 'class_book_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.list_alt,
-        title: 'Danh sách lớp học phần',
-        color: Colors.teal,
-        value: 'class_roster_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.event_seat,
-        title: 'Lịch gác thi',
-        color: Colors.deepPurple,
-        value: 'exam_schedule_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.schedule,
-        title: 'Lịch giảng dạy',
-        color: Colors.orange,
-        value: 'teaching_schedule_admin',
-      ),
       _FeatureItem(
         icon: Icons.calendar_today,
         title: 'Quản lý lịch tuần',
@@ -289,10 +201,51 @@ class ApplicationsAdminPage extends StatelessWidget {
         value: 'teacher_management_admin',
       ),
       _FeatureItem(
+        icon: Icons.book,
+        title: 'Quản lý sổ lên lớp',
+        color: Colors.pink,
+        value: 'class_list_book_admin',
+      ),
+      _FeatureItem(
         icon: Icons.security,
         title: 'Khởi tạo năm học',
         color: Colors.grey,
         value: 'academic_year_management',
+      ),
+    ];
+  }
+
+  List<_FeatureItem> _getTeacherFeatures() {
+    return [
+      _FeatureItem(
+        icon: Icons.class_,
+        title: 'Quản lý lớp chủ nhiệm',
+        color: Colors.blueAccent,
+        value: 'class_management_admin',
+      ),
+      _FeatureItem(
+        icon: Icons.menu_book,
+        title: 'Sổ lên lớp',
+        color: Colors.green,
+        value: 'class_book_admin',
+      ),
+      _FeatureItem(
+        icon: Icons.list_alt,
+        title: 'Danh sách lớp học phần',
+        color: Colors.teal,
+        value: 'class_roster_admin',
+      ),
+      _FeatureItem(
+        icon: Icons.event_seat,
+        title: 'Lịch gác thi',
+        color: Colors.deepPurple,
+        value: 'exam_schedule_admin',
+      ),
+      _FeatureItem(
+        icon: Icons.schedule,
+        title: 'Lịch giảng dạy',
+        color: Colors.orange,
+        value: 'teaching_schedule_admin',
       ),
     ];
   }

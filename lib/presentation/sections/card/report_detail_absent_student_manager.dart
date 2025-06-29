@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AbsentStudentManager extends StatelessWidget {
-  final List<Map<String, String>> studentList;
-  final List<String> absentStudentIds;
-  final void Function(String) onAddAbsentStudent;
-  final void Function(String) onRemoveAbsentStudent;
-  final Map<String, String> absenceReasons;
-  final Map<String, bool> isExcusedMap;
-  final void Function(String mssv, String reason) onReasonChanged;
-  final void Function(String mssv, bool isExcused) onExcusedChanged;
+  final List<Map<String, dynamic>> studentList;
+  final List<int> absentStudentIds;
+  final void Function(int) onAddAbsentStudent;
+  final void Function(int) onRemoveAbsentStudent;
+  final Map<int, String> absenceReasons;
+  final Map<int, bool> isExcusedMap;
+  final void Function(int id, String reason) onReasonChanged;
+  final void Function(int id, bool isExcused) onExcusedChanged;
 
   const AbsentStudentManager({
     super.key,
@@ -25,7 +25,7 @@ class AbsentStudentManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final availableStudents = studentList
-        .where((s) => !absentStudentIds.contains(s['mssv']))
+        .where((s) => !absentStudentIds.contains(s['id']))
         .toList();
 
     return Padding(
@@ -39,7 +39,7 @@ class AbsentStudentManager extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          Autocomplete<Map<String, String>>(
+          Autocomplete<Map<String, dynamic>>(
             optionsBuilder: (TextEditingValue textEditingValue) {
               if (textEditingValue.text.isEmpty) return const Iterable.empty();
 
@@ -79,8 +79,8 @@ class AbsentStudentManager extends StatelessWidget {
                   );
                 },
             onSelected: (student) {
-              if (student['mssv'] != null) {
-                onAddAbsentStudent(student['mssv']!);
+              if (student['id'] != null) {
+                onAddAbsentStudent(student['id'] as int);
               }
               Future.delayed(const Duration(milliseconds: 100), () {
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -92,10 +92,14 @@ class AbsentStudentManager extends StatelessWidget {
 
           if (absentStudentIds.isNotEmpty)
             Column(
-              children: absentStudentIds.map((mssv) {
+              children: absentStudentIds.map((id) {
                 final student = studentList.firstWhere(
-                  (s) => s['mssv'] == mssv,
-                  orElse: () => {'mssv': mssv, 'name': ''},
+                  (s) => s['id'] == id,
+                  orElse: () => <String, Object>{
+                    'id': id,
+                    'mssv': '',
+                    'name': '',
+                  },
                 );
 
                 return Container(
@@ -129,27 +133,27 @@ class AbsentStudentManager extends StatelessWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.close),
-                            onPressed: () => onRemoveAbsentStudent(mssv),
+                            onPressed: () => onRemoveAbsentStudent(id),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        initialValue: absenceReasons[mssv] ?? '',
+                        initialValue: absenceReasons[id] ?? '',
                         decoration: const InputDecoration(
                           labelText: 'Lý do vắng',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => onReasonChanged(mssv, value),
+                        onChanged: (value) => onReasonChanged(id, value),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Checkbox(
-                            value: isExcusedMap[mssv] ?? false,
+                            value: isExcusedMap[id] ?? false,
                             onChanged: (value) {
                               if (value != null) {
-                                onExcusedChanged(mssv, value);
+                                onExcusedChanged(id, value);
                               }
                             },
                           ),
