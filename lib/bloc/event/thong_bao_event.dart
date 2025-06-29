@@ -31,3 +31,21 @@ class SendToStudents extends ThongBaoEvent {
 }
 
 class FetchCapTrenOptions extends ThongBaoEvent {}
+
+class CreateCommentEvent extends ThongBaoEvent {
+  final int thongBaoId;
+  final String noiDung;
+  final int? idBinhLuanCha;
+
+  CreateCommentEvent({
+    required this.thongBaoId,
+    required this.noiDung,
+    this.idBinhLuanCha,
+  });
+}
+
+class DeleteCommentEvent extends ThongBaoEvent {
+  final int commentId;
+
+  DeleteCommentEvent(this.commentId);
+}

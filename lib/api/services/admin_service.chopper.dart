@@ -325,6 +325,24 @@ final class _$AdminService extends AdminService {
   }
 
   @override
+  Future<Response<Map<String, dynamic>>> createComment(
+    int thongBaoId,
+    Map<String, dynamic> body,
+  ) {
+    final Uri $url = Uri.parse('/admin/thongbao/${thongBaoId}/binh-luan');
+    final $body = body;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> deleteComment(int commentId) {
+    final Uri $url = Uri.parse('/admin/thongbao/binh-luan/${commentId}');
+    final Request $request = Request('DELETE', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<dynamic>> storePhieuLenLop(Map<String, dynamic> body) {
     final Uri $url = Uri.parse('/admin/phieu-len-lop/store');
     final $body = body;

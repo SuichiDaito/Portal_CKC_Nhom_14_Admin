@@ -3,26 +3,48 @@ import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/api/model/comment.dart';
 import 'package:portal_ckc/presentation/sections/notification_detail_comment_item.dart';
 import 'package:portal_ckc/presentation/sections/textfield/comment_input_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationCommentSection extends StatefulWidget {
   final String lengthComment;
   final TextEditingController commentController;
-  final List<ChiTietThongBao> comments;
-  final Function onPressed;
+  final List<BinhLuan> comments;
+  final VoidCallback onPressed;
+  final idThongBao;
   NotificationCommentSection({
     super.key,
     required this.lengthComment,
     required this.commentController,
     required this.comments,
     required this.onPressed,
+    required this.idThongBao,
   });
   @override
   State<NotificationCommentSection> createState() => CommentSection();
 }
 
 class CommentSection extends State<NotificationCommentSection> {
+  int? currentUserId;
+  int? currentUserChucVu;
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      currentUserId = prefs.getInt('user_id');
+      currentUserChucVu = prefs.getInt('user_chuc_vu'); // Nếu bạn đã lưu
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (currentUserId == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 30),
       decoration: BoxDecoration(
@@ -52,9 +74,15 @@ class CommentSection extends State<NotificationCommentSection> {
           ),
           NotificationDetailInputTextField(
             commentController: widget.commentController,
-            onPressed: () {},
+            onPressed: widget.onPressed, // ✅ fix ở đây
           ),
-          NotificationCommentItem(comment: widget.comments),
+
+          NotificationCommentItem(
+            idThongBao: widget.idThongBao,
+            comments: widget.comments,
+            currentUserId: currentUserId!,
+            currentUserChucVu: currentUserChucVu ?? 1,
+          ),
           const SizedBox(height: 30),
         ],
       ),

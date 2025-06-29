@@ -15,6 +15,8 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
     on<DeleteThongBao>(_onDelete);
     on<SendToStudents>(_onSend);
     on<FetchCapTrenOptions>(_onFetchCapTren);
+    on<CreateCommentEvent>(_onCreateComment);
+    on<DeleteCommentEvent>(_onDeleteComment);
   }
 
   Future<void> _onFetchList(
@@ -147,6 +149,49 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
       }
     } catch (e) {
       emit(TBFailure('Exception: $e'));
+    }
+  }
+
+  Future<void> _onCreateComment(
+    CreateCommentEvent event,
+    Emitter<ThongBaoState> emit,
+  ) async {
+    print('🟢 Đang gửi bình luận: ${event.noiDung}');
+    try {
+      final response = await _service.createComment(event.thongBaoId, {
+        'noi_dung': event.noiDung,
+        if (event.idBinhLuanCha != null)
+          'id_binh_luan_cha': event.idBinhLuanCha,
+      });
+
+      if (response.isSuccessful) {
+        print('✅ Gửi bình luận thành công');
+        add(FetchThongBaoDetail(event.thongBaoId));
+      } else {
+        print('❌ Gửi thất bại: ${response.error}');
+        emit(TBFailure('Gửi bình luận thất bại: ${response.error}'));
+      }
+    } catch (e) {
+      print('❌ Exception: $e');
+      emit(TBFailure('Exception khi gửi bình luận: $e'));
+    }
+  }
+
+  Future<void> _onDeleteComment(
+    DeleteCommentEvent event,
+    Emitter<ThongBaoState> emit,
+  ) async {
+    try {
+      final response = await _service.deleteComment(event.commentId);
+
+      if (response.isSuccessful) {
+        // Không biết comment của TB nào nên không reload. Tùy giao diện:
+        // Nếu bạn có sẵn ID TB, có thể gọi: add(FetchThongBaoDetail(tbId));
+      } else {
+        emit(TBFailure('Xoá bình luận thất bại: ${response.error}'));
+      }
+    } catch (e) {
+      emit(TBFailure('Exception khi xoá bình luận: $e'));
     }
   }
 }

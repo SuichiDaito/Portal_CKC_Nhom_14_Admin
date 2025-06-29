@@ -30,45 +30,66 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: _buildAppBar(),
-      body: BlocBuilder<ThongBaoBloc, ThongBaoState>(
-        builder: (context, state) {
-          if (state is TBLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is TBDetailLoaded) {
-            final tb = state.detail;
-            final comments = tb.chiTiet;
-
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  NotificationDetailCard(
-                    typeNotificationSender: tb.tuAi ?? 'Hệ thống',
-                    date: _formatDate(tb.ngayGui),
-                    headerNotification: tb.tieuDe,
-                    contentNotification: tb.noiDung,
-                    lengthComment: tb.chiTiet.length.toString(),
-                  ),
-
-                  const SizedBox(height: 16),
-                  NotificationCommentSection(
-                    lengthComment: '${comments.length}',
-                    commentController: _commentController,
-
-                    onPressed: () {
-                      // TODO: Gửi bình luận mới
-                    },
-                    comments: comments,
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          } else if (state is TBFailure) {
-            return Center(child: Text('❌ ${state.error}'));
-          } else {
-            return const Center(child: Text('Không có dữ liệu.'));
+      body: BlocListener<ThongBaoBloc, ThongBaoState>(
+        listener: (context, state) {
+          if (state is TBFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('❌ ${state.error}')));
           }
         },
+        child: BlocBuilder<ThongBaoBloc, ThongBaoState>(
+          builder: (context, state) {
+            if (state is TBLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is TBDetailLoaded) {
+              final tb = state.detail;
+              final comments = tb.binhLuans;
+
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    NotificationDetailCard(
+                      typeNotificationSender: tb.tuAi ?? 'Hệ thống',
+                      date: _formatDate(tb.ngayGui),
+                      headerNotification: tb.tieuDe,
+                      contentNotification: tb.noiDung,
+                      lengthComment: tb.chiTiet.length.toString(),
+                    ),
+
+                    const SizedBox(height: 16),
+                    NotificationCommentSection(
+                      lengthComment: '${comments.length}',
+                      commentController: _commentController,
+                      idThongBao: tb.id,
+                      onPressed: () {
+                        //BÌNH LUẬN MỚI
+                        final content = _commentController.text.trim();
+                        if (content.isNotEmpty) {
+                          context.read<ThongBaoBloc>().add(
+                            CreateCommentEvent(
+                              thongBaoId: widget.id,
+                              noiDung: content,
+                            ),
+                          );
+
+                          _commentController.clear();
+                        }
+                      },
+
+                      comments: comments,
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              );
+            } else if (state is TBFailure) {
+              return Center(child: Text('❌ ${state.error}'));
+            } else {
+              return const Center(child: Text('Không có dữ liệu.'));
+            }
+          },
+        ),
       ),
     );
   }

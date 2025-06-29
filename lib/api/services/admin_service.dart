@@ -185,6 +185,16 @@ abstract class AdminService extends ChopperService {
   // Lấy danh sách giá trị enum cấp trên
   @Get(path: '/thongbao/get-data-cap-tren')
   Future<Response<Map<String, dynamic>>> getCapTrenOptions();
+  // Gửi bình luận mới cho thông báo
+  @Post(path: '/thongbao/{id}/binh-luan')
+  Future<Response<Map<String, dynamic>>> createComment(
+    @Path('id') int thongBaoId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Xoá bình luận
+  @Delete(path: '/thongbao/binh-luan/{id}')
+  Future<Response> deleteComment(@Path('id') int commentId);
 
   //========================PHIẾU LÊN LỚP==============
   @Post(path: '/phieu-len-lop/store')
