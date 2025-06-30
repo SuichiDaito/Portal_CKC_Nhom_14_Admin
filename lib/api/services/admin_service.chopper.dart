@@ -456,4 +456,21 @@ final class _$AdminService extends AdminService {
     );
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
+
+  @override
+  Future<Response<dynamic>> khoiTaoTuan(String date) {
+    final Uri $url = Uri.parse('/admin/khoi-tao-tuan');
+    final Map<String, String> $headers = {
+      'content-type': 'application/x-www-form-urlencoded',
+    };
+    final $body = <String, String>{'date': date.toString()};
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+      headers: $headers,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }

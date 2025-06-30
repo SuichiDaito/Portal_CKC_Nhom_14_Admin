@@ -5,3 +5,8 @@ class FetchTuanEvent extends TuanEvent {
 
   FetchTuanEvent(this.namBatDau);
 }
+
+class KhoiTaoTuanEvent extends TuanEvent {
+  final String date; // định dạng yyyy-MM-dd
+  KhoiTaoTuanEvent(this.date);
+}

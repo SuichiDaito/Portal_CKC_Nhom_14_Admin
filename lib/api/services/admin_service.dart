@@ -256,4 +256,8 @@ abstract class AdminService extends ChopperService {
   Future<Response<Map<String, dynamic>>> getDanhSachTuan(
     @Query('nam_bat_dau') int namBatDau,
   );
+
+  @Post(path: '/khoi-tao-tuan')
+  @FormUrlEncoded()
+  Future<Response> khoiTaoTuan(@Field('date') String date);
 }

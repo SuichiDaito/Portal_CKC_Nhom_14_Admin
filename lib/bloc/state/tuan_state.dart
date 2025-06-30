@@ -17,3 +17,8 @@ class TuanError extends TuanState {
 
   TuanError(this.message);
 }
+
+class TuanSuccess extends TuanState {
+  final String message;
+  TuanSuccess(this.message);
+}

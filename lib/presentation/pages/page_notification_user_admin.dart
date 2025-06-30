@@ -160,34 +160,88 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    if (tb.trangThai == 0)
-                                      // IconButton(
-                                      //   tooltip: 'Đăng',
-                                      //   icon: const Icon(
-                                      //     Icons.publish,
-                                      //     color: Colors.blue,
-                                      //   ),
-                                      //   onPressed: () {
-                                      //     context.read<ThongBaoBloc>().add(
-                                      //       UpdateThongBao(
-                                      //         id: tb.id,
-                                      //         title: tb.tieuDe,
-                                      //         content: tb.noiDung,
-                                      //         trangThai: 1,
-                                      //         tuAi: tb.tuAi,
-                                      //       ),
-                                      //     );
-                                      //     // Gọi lại sau một chút để đảm bảo dữ liệu được cập nhật
-                                      //     Future.delayed(
-                                      //       const Duration(milliseconds: 300),
-                                      //       () {
-                                      //         context.read<ThongBaoBloc>().add(
-                                      //           FetchThongBaoList(),
-                                      //         );
-                                      //       },
-                                      //     );
-                                      //   },
-                                      // ),
+                                    if (tb.trangThai == 0) ...[
+                                      IconButton(
+                                        tooltip: 'Sửa',
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.green,
+                                        ),
+                                        onPressed: () async {
+                                          final TextEditingController
+                                          titleController =
+                                              TextEditingController(
+                                                text: tb.tieuDe,
+                                              );
+                                          final TextEditingController
+                                          contentController =
+                                              TextEditingController(
+                                                text: tb.noiDung,
+                                              );
+
+                                          final result = await showDialog<bool>(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: const Text(
+                                                'Sửa thông báo',
+                                              ),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  TextField(
+                                                    controller: titleController,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                          labelText: 'Tiêu đề',
+                                                        ),
+                                                  ),
+                                                  TextField(
+                                                    controller:
+                                                        contentController,
+                                                    maxLines: 5,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                          labelText: 'Nội dung',
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                        context,
+                                                        false,
+                                                      ),
+                                                  child: const Text('Huỷ'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                        context,
+                                                        true,
+                                                      ),
+                                                  child: const Text('Lưu'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+
+                                          if (result == true) {
+                                            context.read<ThongBaoBloc>().add(
+                                              UpdateThongBao(
+                                                id: tb.id,
+                                                title: titleController.text,
+                                                content: contentController.text,
+                                                trangThai: tb
+                                                    .trangThai, // giữ nguyên trạng thái hiện tại
+                                                tuAi: tb.tuAi,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(width: 4),
                                       IconButton(
                                         tooltip: 'Chọn lớp',
                                         icon: const Icon(
@@ -195,12 +249,10 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                           color: Colors.orange,
                                         ),
                                         onPressed: () async {
-                                          // Gửi sự kiện lấy danh sách lớp
                                           context.read<LopBloc>().add(
                                             FetchAllLopEvent(),
                                           );
 
-                                          // Mở bottom sheet chọn lớp
                                           final selectedLopIds =
                                               await showModalBottomSheet<
                                                 List<int>
@@ -222,6 +274,7 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                           }
                                         },
                                       ),
+                                    ],
                                     const SizedBox(width: 4),
                                     IconButton(
                                       tooltip: 'Xoá',

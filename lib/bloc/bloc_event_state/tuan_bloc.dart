@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/model/admin_tuan.dart';
@@ -9,6 +11,7 @@ class TuanBloc extends Bloc<TuanEvent, TuanState> {
 
   TuanBloc() : super(TuanInitial()) {
     on<FetchTuanEvent>(_onFetchTuan);
+    on<KhoiTaoTuanEvent>(_onKhoiTaoTuan);
   }
 
   Future<void> _onFetchTuan(
@@ -29,7 +32,28 @@ class TuanBloc extends Bloc<TuanEvent, TuanState> {
         emit(TuanError("Không lấy được danh sách tuần"));
       }
     } catch (e) {
-      emit(TuanError("Lỗi: ${e.toString()}"));
+      print("Lỗi: ${e.toString()}");
+
+      emit(TuanError("Không lấy được danh sách tuần"));
+    }
+  }
+
+  Future<void> _onKhoiTaoTuan(
+    KhoiTaoTuanEvent event,
+    Emitter<TuanState> emit,
+  ) async {
+    emit(TuanLoading());
+    try {
+      final response = await _service.khoiTaoTuan(event.date);
+      if (response.isSuccessful) {
+        emit(TuanSuccess("Khởi tạo tuần thành công"));
+      } else {
+        print("Lỗi: ${response.error}");
+        emit(TuanError("Đã có lỗi xảy ra khi khởi tạo tuần"));
+      }
+    } catch (e) {
+      print("Lỗi: ${e.toString()}");
+      emit(TuanError("Đã có lỗi xảy ra khi khởi tạo tuần"));
     }
   }
 }
