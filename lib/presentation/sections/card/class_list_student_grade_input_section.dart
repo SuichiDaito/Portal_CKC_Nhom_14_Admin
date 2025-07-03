@@ -7,13 +7,22 @@ class GradeInputSection extends StatefulWidget {
   final Function(SinhVienLopHocPhan) onGradeSubmit;
   final bool isExpanded;
   final bool isEditing;
-
+  final bool canEditDiemChuyenCan;
+  final bool canEditDiemQuaTrinh;
+  final bool canEditDiemThi;
+  final bool canEditDiemThiLan2;
+  final bool isSubmitEnabled;
   const GradeInputSection({
     Key? key,
     required this.student,
     required this.onGradeSubmit,
     this.isExpanded = false,
     this.isEditing = false,
+    this.canEditDiemChuyenCan = false,
+    this.canEditDiemQuaTrinh = false,
+    this.canEditDiemThi = false,
+    this.canEditDiemThiLan2 = false,
+    this.isSubmitEnabled = true,
   }) : super(key: key);
 
   @override
@@ -60,10 +69,12 @@ class _GradeInputSectionState extends State<GradeInputSection>
         .toStringAsFixed(1);
     _processController.text = (widget.student.diemQuaTrinh ?? 0.0)
         .toStringAsFixed(1);
-    _examController.text = (widget.student.diemThi ?? 0.0).toStringAsFixed(1);
-    _theoryController.text = (widget.student.diemLyThuyet ?? 0.0)
+    _examController.text = (widget.student.diemThiLan1 ?? 0.0).toStringAsFixed(
+      1,
+    );
+    _theoryController.text = (widget.student.diemThiLan2 ?? 0.0)
         .toStringAsFixed(1);
-    _calculateFinalScore(); // set initial tổng kết
+    _calculateFinalScore();
   }
 
   void _addListeners() {
@@ -84,9 +95,8 @@ class _GradeInputSectionState extends State<GradeInputSection>
         double.tryParse(_attendanceController.text) ?? 0.0;
     widget.student.diemQuaTrinh =
         double.tryParse(_processController.text) ?? 0.0;
-    widget.student.diemThi = double.tryParse(_examController.text) ?? 0.0;
-    widget.student.diemLyThuyet =
-        double.tryParse(_theoryController.text) ?? 0.0;
+    widget.student.diemThiLan1 = double.tryParse(_examController.text) ?? 0.0;
+    widget.student.diemThiLan2 = double.tryParse(_theoryController.text) ?? 0.0;
   }
 
   void _calculateFinalScore() {
@@ -175,7 +185,7 @@ class _GradeInputSectionState extends State<GradeInputSection>
                     'Chuyên cần',
                     _attendanceController,
                     '(10%)',
-                    readOnly: !widget.isEditing,
+                    readOnly: !widget.isEditing || !widget.canEditDiemChuyenCan,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -184,38 +194,39 @@ class _GradeInputSectionState extends State<GradeInputSection>
                     'Quá trình',
                     _processController,
                     '(30%)',
-                    readOnly: !widget.isEditing,
+                    readOnly: !widget.isEditing || !widget.canEditDiemQuaTrinh,
                   ),
                 ),
               ],
             ),
+
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _buildInput(
-                    'Lý thuyết',
-                    _theoryController,
-                    '(Tự chọn)',
-                    readOnly: !widget.isEditing,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(child: SizedBox()),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildInput(
-                    'Thi',
+                    'Điểm thi lần 1',
                     _examController,
                     '(60%)',
-                    readOnly: !widget.isEditing,
+                    readOnly: !widget.isEditing || !widget.canEditDiemThi,
                   ),
                 ),
+                const SizedBox(height: 12),
                 const SizedBox(width: 12),
+
+                Expanded(
+                  child: _buildInput(
+                    'Điểm thi lần 2',
+                    _theoryController,
+                    '(Tự chọn)',
+                    readOnly: !widget.isEditing || !widget.canEditDiemThiLan2,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12),
+            Row(
+              children: [
                 Expanded(
                   child: _buildInput(
                     'Tổng kết',
@@ -228,7 +239,9 @@ class _GradeInputSectionState extends State<GradeInputSection>
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: _submitGrade,
+              onPressed: widget.isSubmitEnabled
+                  ? _submitGrade
+                  : null, // <- đây là chỗ khóa
               icon: const Icon(Icons.check, size: 20),
               label: const Text(
                 'Nộp điểm',
@@ -239,7 +252,9 @@ class _GradeInputSectionState extends State<GradeInputSection>
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade600,
+                backgroundColor: widget.isSubmitEnabled
+                    ? Colors.green.shade600
+                    : Colors.grey.shade400, // màu khi disable
                 foregroundColor: Colors.white,
                 elevation: 4,
                 shadowColor: Colors.green.shade200,

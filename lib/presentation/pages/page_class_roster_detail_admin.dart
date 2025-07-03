@@ -79,13 +79,12 @@ class _PageClassRosterDetailAdminState
                                 .tenChuongTrinhDaoTao,
                             onEditChanged: (value) {
                               setState(() {
-                                isEditing =
-                                    value; // ✅ Gán đúng trạng thái từ child
+                                isEditing = value;
                               });
                               print(isEditing ? 'Đang chỉnh sửa' : 'Đã lưu');
                             },
                           )
-                        : const SizedBox(), // hoặc hiển thị placeholder nếu null
+                        : const SizedBox(),
                   ),
                   const SizedBox(height: 8),
                   ...danhSachSinhVien.map((sv) {
@@ -184,7 +183,7 @@ class _PageClassRosterDetailAdminState
                                     Expanded(
                                       child: buildEditableRow(
                                         'Điểm thi',
-                                        sv.diemThi,
+                                        sv.diemThiLan1,
                                         isEditing,
                                       ),
                                     ),

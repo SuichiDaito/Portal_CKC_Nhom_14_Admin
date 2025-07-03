@@ -130,6 +130,12 @@ abstract class AdminService extends ChopperService {
 
   //==============LỚP HỌC PHẦN=====================
 
+  //LẤY DANH SÁCH TOÀN BỘ LỚP HỌC PHẦN
+  @Get(path: '/lop-hoc-phan')
+  Future<Response<Map<String, dynamic>>> getALLLopHocPhanList();
+  @Get(path: '/lop-hoc-phan/giang-vien')
+  Future<Response<Map<String, dynamic>>> getLopHocPhanTheoGiangVienList();
+
   //LẤY DANH SÁCH LỚP HỌC PHẦN CỦA GV HIỆN TẠI
   @Get(path: '/diem-mon-hoc')
   Future<Response<Map<String, dynamic>>> getLopHocPhanList();
@@ -138,6 +144,18 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/diem-mon-hoc/{id}')
   Future<Response<Map<String, dynamic>>> getDanhSachSinhVienLopHocPhan(
     @Path('id') int idLopHocPhan,
+  );
+  //LẤY DANH SÁCH LỚP HỌC PHẦN THEO GIẢNG VIÊN
+  @POST(path: '/lop-hoc-phan/phan-cong-giang-vien/{lopHocPhan}')
+  Future<Response<Map<String, dynamic>>> phanCongGiangVien(
+    @Path('lopHocPhan') int lopHocPhanId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  // ✅ NỘP BẢNG ĐIỂM (UPDATE TRẠNG THÁI)
+  @Post(path: '/diem-mon-hoc/nop-bang-diem/{lopHocPhan}')
+  Future<Response<Map<String, dynamic>>> updateTrangThaiNopDiem(
+    @Path('lopHocPhan') int idLopHocPhan,
   );
 
   // API CẬP NHẬT ĐIỂM MÔN HỌC CHO LỚP HỌC PHẦN
@@ -190,7 +208,7 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/thongbao/get-data-cap-tren')
   Future<Response<Map<String, dynamic>>> getCapTrenOptions();
   // Gửi bình luận mới cho thông báo
-  @Post(path: '/thongbao/{id}/binh-luan')
+  @Post(path: '/thongbao/binh-luan/{id}')
   Future<Response<Map<String, dynamic>>> createComment(
     @Path('id') int thongBaoId,
     @Body() Map<String, dynamic> body,
@@ -199,8 +217,7 @@ abstract class AdminService extends ChopperService {
   // Xoá bình luận
   @Delete(path: '/thongbao/binh-luan/{id}')
   Future<Response> deleteComment(@Path('id') int commentId);
-
-  //========================PHIẾU LÊN LỚP==============
+  //===========PHIẾU LÊN LỚP==============
   @Post(path: '/phieu-len-lop/store')
   Future<Response> storePhieuLenLop(@Body() Map<String, dynamic> body);
 
@@ -256,8 +273,67 @@ abstract class AdminService extends ChopperService {
   Future<Response<Map<String, dynamic>>> getDanhSachTuan(
     @Query('nam_bat_dau') int namBatDau,
   );
-
+  //KHỞI TẠO TUẦN
   @Post(path: '/khoi-tao-tuan')
   @FormUrlEncoded()
   Future<Response> khoiTaoTuan(@Field('date') String date);
+  //LẤY DANH SÁCH CHƯƠNG TRÌNH ĐÀO TẠO
+  @Get(path: '/ctdt')
+  Future<Response> getCTDT();
+
+  // ================== THỜI KHÓA BIỂU ==================
+
+  //DANH SÁCH TKB
+  @Get(path: '/thoi-khoa-bieu')
+  Future<Response<dynamic>> getDanhSachThoiKhoaBieu();
+
+  //TẠO THỜI KHÓA BIÊU
+  @Post(path: '/thoi-khoa-bieu')
+  Future<Response<Map<String, dynamic>>> createThoiKhoaBieu(
+    @Body() Map<String, dynamic> body,
+  );
+
+  //CẬP NHẬT THỜI KHÓA BIỂU
+  @Post(path: '/thoi-khoa-bieu/{tkb}')
+  Future<Response<Map<String, dynamic>>> updateThoiKhoaBieu(
+    @Path('tkb') int tkbId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  //XÓA THỜI KHÓA BIỂU
+  @Delete(path: '/thoi-khoa-bieu/xoa-thoi-khoa-bieu/{tkb}')
+  Future<Response> deleteThoiKhoaBieu(@Path('tkb') int tkbId);
+
+  // //COPY THỜI KHÓA BIỂU
+  // @Post(path: '/thoi-khoa-bieu/copy-tuan/{tkb}')
+  // Future<Response> copyThoiKhoaBieuWeek(
+  //   @Path('tkb') int tkbId,
+  //   @Body() Map<String, dynamic> body,
+  // );
+  // COPY NHIỀU THỜI KHÓA BIỂU SANG NHIỀU TUẦN
+  @Post(path: '/thoi-khoa-bieu/copy-nhieu-tuan')
+  Future<Response> copyNhieuThoiKhoaBieuWeek(@Body() Map<String, dynamic> body);
+
+  //===================== LỊCH THI =========================
+
+  // Lấy danh sách lịch thi
+  @Get(path: '/lich-thi/danh-sach-lich-thi')
+  Future<Response<Map<String, dynamic>>> fetchLichThi();
+
+  // Tạo mới lịch thi
+  @Post(path: '/lich-thi/tao-lich-thi')
+  Future<Response<Map<String, dynamic>>> createLichThi(
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Cập nhật lịch thi
+  @Post(path: '/lich-thi/cap-nhat-lich-thi/{lichThi}')
+  Future<Response<Map<String, dynamic>>> updateLichThi(
+    @Path('lichThi') int lichThiId,
+    @Body() Map<String, dynamic> body,
+  );
+
+  // Xóa lịch thi
+  @Delete(path: '/lich-thi/xoa-lich-thi/{lichThi}')
+  Future<Response> deleteLichThi(@Path('lichThi') int lichThiId);
 }

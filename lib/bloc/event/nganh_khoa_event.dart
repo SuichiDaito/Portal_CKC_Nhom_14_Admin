@@ -17,3 +17,7 @@ class FetchNganhTheoKhoaEvent extends NganhKhoaEvent {
 }
 
 class FetchBoMonEvent extends NganhKhoaEvent {}
+
+class FetchCTCTDTEvent extends NganhKhoaEvent {
+  FetchCTCTDTEvent();
+}

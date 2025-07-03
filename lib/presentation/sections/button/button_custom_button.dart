@@ -8,17 +8,17 @@ class CustomButton extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final BorderRadiusGeometry borderRadius;
   final bool isEnabled;
-
+  final IconData? icon;
   const CustomButton({
     Key? key,
     required this.text,
     required this.onPressed,
-    this.backgroundColor = Colors.blueAccent,
+    this.backgroundColor = Colors.green,
     this.textColor = Colors.white,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
-    this.isEnabled = true, // Mặc định là bật
-
+    this.isEnabled = true,
+    this.icon,
   }) : super(key: key);
 
   @override

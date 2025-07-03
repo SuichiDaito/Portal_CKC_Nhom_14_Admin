@@ -38,12 +38,12 @@ class _NotificationPageState extends State<NotificationPage> {
             final khoaNoti = state.list
                 .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
                 .toList();
-            final lopNoti = state.list
-                .where((e) => e.tuAi == 'lop' && e.trangThai == 1)
+            final ctctNoti = state.list
+                .where((e) => e.tuAi == 'phong_ctct' && e.trangThai == 1)
                 .toList();
-            final gvNoti = state.list
-                .where((e) => e.tuAi == 'giangvien' && e.trangThai == 1)
-                .toList();
+            // final gvNoti = state.list
+            //     .where((e) => e.tuAi == 'giangvien' && e.trangThai == 1)
+            //     .toList();
 
             return Column(
               children: [
@@ -70,29 +70,29 @@ class _NotificationPageState extends State<NotificationPage> {
                           ),
 
                         if (selectedFilter == 'Tất cả' ||
-                            selectedFilter == 'Lớp')
+                            selectedFilter == 'Phòng Công Tác Chính Trị')
                           NotificationsHomeAdmin(
-                            typeNotification: 'Thông báo lớp',
-                            notifications: lopNoti,
+                            typeNotification: 'phong_ctct',
+                            notifications: ctctNoti,
                             onReload: () {
-                              setState(() {}); // 👈 ép cập nhật lại UI
+                              setState(() {});
                               context.read<ThongBaoBloc>().add(
                                 FetchThongBaoList(),
                               );
                             },
                           ),
-                        if (selectedFilter == 'Tất cả' ||
-                            selectedFilter == 'Giảng viên')
-                          NotificationsHomeAdmin(
-                            typeNotification: 'Thông báo giảng viên',
-                            notifications: gvNoti,
-                            onReload: () {
-                              setState(() {}); // 👈 ép cập nhật lại UI
-                              context.read<ThongBaoBloc>().add(
-                                FetchThongBaoList(),
-                              );
-                            },
-                          ),
+                        // if (selectedFilter == 'Tất cả' ||
+                        //     selectedFilter == 'gvcn')
+                        //   NotificationsHomeAdmin(
+                        //     typeNotification: 'Thông báo giảng viên',
+                        //     notifications: gvNoti,
+                        //     onReload: () {
+                        //       setState(() {});
+                        //       context.read<ThongBaoBloc>().add(
+                        //         FetchThongBaoList(),
+                        //       );
+                        //     },
+                        //   ),
                       ],
                     ),
                   ),
@@ -137,7 +137,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildFilterTabs() {
-    final filters = ['Tất cả', 'Khoa', 'Lớp', 'Giảng viên'];
+    final filters = ['Tất cả', 'Khoa', 'Phòng Công Tác Chính Trị'];
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),

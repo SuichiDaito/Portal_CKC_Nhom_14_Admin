@@ -14,6 +14,7 @@ import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/cap_nhat_diem_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/diem_rl_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/giay_xac_nhan_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/lich_thi_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nganh_khoa_bloc.dart';
@@ -22,6 +23,7 @@ import 'package:portal_ckc/bloc/bloc_event_state/phieu_len_lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/phong_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/role_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/sinh_vien_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/user_bloc.dart';
@@ -63,6 +65,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => PhieuLenLopBloc()),
         BlocProvider(create: (_) => BienBangShcnBloc()),
         BlocProvider(create: (_) => TuanBloc()),
+        BlocProvider(create: (_) => ThoiKhoaBieuBloc()),
+        BlocProvider(create: (_) => LichThiBloc()),
       ],
       child: MaterialApp.router(
         routerConfig: RouteName.route,

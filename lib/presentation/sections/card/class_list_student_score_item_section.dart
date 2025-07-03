@@ -5,15 +5,15 @@ import 'package:portal_ckc/presentation/sections/card/class_list_student_grade_i
 class StudentItemSection extends StatefulWidget {
   final SinhVienLopHocPhan student;
   final bool showCheckbox;
-  final bool isGradeInputMode;
   final Function(SinhVienLopHocPhan, bool) onCheckboxChanged;
   final Function(SinhVienLopHocPhan) onGradeSubmit;
+  final int trangThaiLop;
 
   const StudentItemSection({
     Key? key,
     required this.student,
+    required this.trangThaiLop,
     required this.showCheckbox,
-    required this.isGradeInputMode,
     required this.onCheckboxChanged,
     required this.onGradeSubmit,
   }) : super(key: key);
@@ -54,6 +54,11 @@ class _StudentItemSectionState extends State<StudentItemSection> {
   Widget build(BuildContext context) {
     final statusCode = widget.student.sinhVien.trangThai ?? 0;
     final hasGrades = widget.student.diemTongKet != null;
+    final bool canEditDiemChuyenCan = widget.trangThaiLop == 0;
+    final bool canEditDiemQuaTrinh = widget.trangThaiLop == 0;
+    final bool canEditDiemThiLan1 = widget.trangThaiLop == 1;
+    final bool canEditDiemThiLan2 = widget.trangThaiLop == 2;
+    final bool isLocked = widget.trangThaiLop == 3;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -211,14 +216,19 @@ class _StudentItemSectionState extends State<StudentItemSection> {
                 GradeInputSection(
                   student: widget.student,
                   isExpanded: _isGradeExpanded,
-                  isEditing: true, // luôn cho phép sửa
+                  isSubmitEnabled: !isLocked,
+                  isEditing: true,
+                  canEditDiemChuyenCan: widget.trangThaiLop == 0,
+                  canEditDiemQuaTrinh: widget.trangThaiLop == 0,
+                  canEditDiemThi: widget.trangThaiLop == 1,
+                  canEditDiemThiLan2: widget.trangThaiLop == 2,
                   onGradeSubmit: (updatedStudent) {
                     setState(() {
                       widget.student
                         ..diemChuyenCan = updatedStudent.diemChuyenCan
                         ..diemQuaTrinh = updatedStudent.diemQuaTrinh
-                        ..diemThi = updatedStudent.diemThi
-                        ..diemLyThuyet = updatedStudent.diemLyThuyet
+                        ..diemThiLan1 = updatedStudent.diemThiLan1
+                        ..diemThiLan2 = updatedStudent.diemThiLan2
                         ..diemTongKet = updatedStudent.diemTongKet;
                     });
                     widget.onGradeSubmit(updatedStudent);

@@ -57,9 +57,6 @@ class RouteName {
     debugLogDiagnostics: true,
     routes: [
       GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
-
-      /// 🔁 ShellRoute dùng `shellNavigatorKey` static
-      /// use for home_admin, applications, notifications and user.
       ShellRoute(
         navigatorKey: shellNavigatorKey,
         builder: (context, state, child) => AdminHomePage(child: child),
@@ -81,7 +78,6 @@ class RouteName {
                 path: '/apps',
                 builder: (context, state) => const ApplicationsAdminPage(),
               ),
-              // DashboardScreen
               GoRoute(
                 path: '/admin/information/user',
                 builder: (context, state) => const UserDetailInformationPage(),
@@ -90,51 +86,58 @@ class RouteName {
           ),
         ],
       ),
+      //============GIẢNG VIÊN============
+      //role_id = 5(Giảng Viên)
+      //Thông tin giảng viên
       GoRoute(
         path: '/admin/info',
         builder: (context, state) => const PageThongtinAdmin(),
       ),
+      //Sổ lên lớp
       GoRoute(
         path: '/admin/class_book_admin',
         builder: (context, state) => const PageClassBookAdmin(),
       ),
-      GoRoute(
-        path: '/admin/class_list_book_admin',
-        builder: (context, state) => const PageListClassBookAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/management_group_admin',
-        builder: (context, state) => const PageQuanlyphongAdmin(),
-      ),
+      //Đổi mật khẩu
       GoRoute(
         path: '/doimatkhau',
         builder: (context, state) => const PageDoimatkhauAdmin(),
       ),
+      //Quản lý lớp chủ nhiệm
       GoRoute(
         path: '/admin/class_management_admin',
         builder: (context, state) => PageClassManagementAdmin(),
       ),
+      //Danh sách lớp học phần
+      GoRoute(
+        path: '/admin/class_roster_admin',
+        builder: (context, state) => PageClassRosterAdmin(),
+      ),
+      //Chi tiết danh sách sinh viên lớp học phần
+      GoRoute(
+        path: '/admin/course_student_list/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          return PageCourseSectionStudentList(idLopHocPhan: id ?? 0);
+        },
+      ),
+      //chưa sử dụng
       GoRoute(
         path: '/admin/class_roster_detail_admin/:id',
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
-          return PageClassRosterDetailAdmin(
-            idLopHocPhan: id ?? 0,
-          ); // hoặc xử lý null phù hợp
+          return PageClassRosterDetailAdmin(idLopHocPhan: id ?? 0);
         },
       ),
-      // GoRoute(
-      //   path: '/admin/class_detail_admin',
-      //   builder: (context, state) => PageClassDetailAdmin(),
-      // ),
+      //Chi tiết danh sách lớp chủ nhiệm
       GoRoute(
         path: '/admin/class_detail_admin',
         builder: (context, state) {
-          final lop = state.extra as Lop; // ✅ lấy dữ liệu Lop truyền sang
+          final lop = state.extra as Lop;
           return PageClassDetailAdmin(lop: lop);
         },
       ),
-
+      //Nhập điểm rèn luyện lớp chủ nhiệm
       GoRoute(
         path: '/admin/conduct_evaluation_admin/:lopId/:idNienKhoa',
         builder: (context, state) {
@@ -152,96 +155,108 @@ class RouteName {
           );
         },
       ),
-
-      GoRoute(
-        path: '/admin/schedule_management_admin',
-        builder: (context, state) => PageScheduleManagementAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/room_management_admin',
-        builder: (context, state) => PageRoomManagement(),
-      ),
-      GoRoute(
-        path: '/admin/student_management_admin',
-        builder: (context, state) => PageStudentManagementAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/exam_schedule_groupe_admin',
-        builder: (context, state) => PageExamScheduleGroupedAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/teacher_management_admin',
-        builder: (context, state) => PageTeacherManagementAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/decument_request_management_admin',
-        builder: (context, state) => PageDocumentRequestManagementAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/academic_year_management',
-        builder: (context, state) => PageAcademicYearManagement(),
-      ),
-      GoRoute(
-        path: '/admin/class_roster_admin',
-        builder: (context, state) => PageClassRosterAdmin(),
-      ),
+      //Biên bảng sinh hoạt chủ nhiệm
       GoRoute(
         path: '/admin/meeting_minutes_admin',
         builder: (context, state) {
-          final lop =
-              state.extra as Lop; // đảm bảo đã truyền Lop từ màn hình trước
+          final lop = state.extra as Lop;
           return PageMeetingMinutesAdmin(lop: lop);
         },
       ),
-
-      GoRoute(
-        path: '/admin/teaching_schedule_admin',
-        builder: (context, state) => PageTeachingScheduleAdmin(),
-      ),
-
-      GoRoute(
-        path: '/admin/course_student_list/:id',
-        builder: (context, state) {
-          final id = int.tryParse(state.pathParameters['id'] ?? '');
-          return PageCourseSectionStudentList(idLopHocPhan: id ?? 0);
-        },
-      ),
-
-      GoRoute(
-        path: '/admin/exam_schedule_admin',
-        builder: (context, state) => PageExamScheduleAdmin(),
-      ),
-      GoRoute(
-        path: '/admin/course_assignment_admin',
-        builder: (context, state) => PageCourseAssignmentAdmin(),
-      ),
+      //Chi tiết biên bản sinh hoạt chủ nhiệm
       GoRoute(
         path: '/admin/report_detail_admin',
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>; // ✅ đúng kiểu
+          final extra = state.extra as Map<String, dynamic>;
           final bienBanId = extra['bienBanId'] as int;
           final lopId = extra['lopId'] as int;
 
           return PageReportDetailAdmin(bienBanId: bienBanId, lopId: lopId);
         },
       ),
+      //Thời khóa biểu giảng viên
+      GoRoute(
+        path: '/admin/teaching_schedule_admin',
+        builder: (context, state) => PageTeachingScheduleAdmin(),
+      ),
+      //Lịch gác thi giảng viên
+      GoRoute(
+        path: '/admin/exam_schedule_admin',
+        builder: (context, state) => PageExamScheduleAdmin(),
+      ),
+      //Tạo thông báo
       GoRoute(
         path: '/notifications/create',
         builder: (context, state) => PageCreateNotificationAdmin(),
       ),
+      //Kho lưu trữ thông báo
       GoRoute(
         path: '/notifications/user',
         builder: (context, state) => PageNotificationUserAdmin(),
       ),
+      //Chi tiết thông báo
       GoRoute(
         path: '/notifications/detail/:id',
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
-          return NotificationDetailPage(id: id); // ✅ Truyền ID
+          return NotificationDetailPage(id: id);
         },
       ),
+      //===========ADMIN===========
+      //role_id = 1(Trưởng Phòng Đào tạo)//ALL CHỨC NĂNG
+      //role_id = 2(Trưởng Khoa)//ALL CHỨC NĂNG
+      //role_id = 3(Trưởng bộ môn)
+      //role_id = 4(Trường phòng công tác sinh viên)
 
-      //NotificationDetailPage
+      //Quản lý sổ lên lớp
+      GoRoute(
+        path: '/admin/class_list_book_admin',
+        builder: (context, state) => const PageListClassBookAdmin(),
+      ),
+      //Quản lý phòng học
+      GoRoute(
+        path: '/admin/management_group_admin',
+        builder: (context, state) => const PageQuanlyphongAdmin(),
+      ),
+      GoRoute(
+        path: '/admin/room_management_admin',
+        builder: (context, state) => PageRoomManagement(),
+      ),
+      //Quản lý lịch tuần/ tạo tkb
+      GoRoute(
+        path: '/admin/schedule_management_admin',
+        builder: (context, state) => PageScheduleManagementAdmin(),
+      ),
+      //Quản lý sinh viên/ xem danh sách sinh viên của lớp
+      GoRoute(
+        path: '/admin/student_management_admin',
+        builder: (context, state) => PageStudentManagementAdmin(),
+      ),
+      //Quản lý giảng viên/ xem danh sách giảng viên
+      GoRoute(
+        path: '/admin/teacher_management_admin',
+        builder: (context, state) => PageTeacherManagementAdmin(),
+      ),
+      //Quản lý/ phân công lịch gác thi
+      GoRoute(
+        path: '/admin/exam_schedule_groupe_admin',
+        builder: (context, state) => PageExamScheduleGroupedAdmin(),
+      ),
+      //Phân công lớp học phần/ phân công gv vào lớp học phần
+      GoRoute(
+        path: '/admin/course_assignment_admin',
+        builder: (context, state) => PageCourseAssignmentAdmin(),
+      ),
+      //Quản lý cấp giấy tờ
+      GoRoute(
+        path: '/admin/decument_request_management_admin',
+        builder: (context, state) => PageDocumentRequestManagementAdmin(),
+      ),
+      //Khởi tạo năm học
+      GoRoute(
+        path: '/admin/academic_year_management',
+        builder: (context, state) => PageAcademicYearManagement(),
+      ),
     ],
   );
 }

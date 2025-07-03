@@ -9,13 +9,13 @@ import 'package:portal_ckc/presentation/sections/card/notification_card.dart';
 class NotificationsHomeAdmin extends StatefulWidget {
   final String typeNotification;
   final List<ThongBao> notifications;
-  final VoidCallback? onReload; // 👈 THÊM CALLBACK NÀY
+  final VoidCallback? onReload;
 
   const NotificationsHomeAdmin({
     super.key,
     required this.typeNotification,
     required this.notifications,
-    this.onReload, // 👈 THÊM
+    this.onReload,
   });
 
   @override
@@ -57,8 +57,7 @@ class _NotificationsHomeAdmin extends State<NotificationsHomeAdmin> {
                     );
 
                     if (shouldReload == true && widget.onReload != null) {
-                      widget.onReload!(); // gọi bloc fetch lại dữ liệu
-                      // setState(() {}); ❌ không cần dòng này
+                      widget.onReload!();
                     }
                   },
                 ),

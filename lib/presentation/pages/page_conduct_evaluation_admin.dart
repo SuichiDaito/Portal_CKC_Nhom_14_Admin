@@ -79,7 +79,7 @@ class _PageConductEvaluationAdminState
       case 'D':
         return '4';
       default:
-        return '1'; // mặc định là Tốt
+        return '1';
     }
   }
 
@@ -125,7 +125,6 @@ class _PageConductEvaluationAdminState
       }
     });
 
-    // ✅ Gọi lại load dữ liệu sau khi cập nhật
     Future.delayed(const Duration(milliseconds: 500), () {
       _reloadData();
     });
@@ -280,7 +279,7 @@ class _PageConductEvaluationAdminState
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text(state.message)));
-              _reloadData(); // Gọi lại sau khi update
+              _reloadData();
             } else if (state is DiemRLUpdateFailure) {
               ScaffoldMessenger.of(
                 context,

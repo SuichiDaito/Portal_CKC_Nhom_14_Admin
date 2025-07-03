@@ -43,7 +43,7 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
   }
 
   void _confirmSelectedRequests(BuildContext context) {
-    final userId = 1; // TODO: Replace with actual user ID from login/session
+    final userId = 1;
     final selectedIds = _selectedRequestIds.map(int.parse).toList();
 
     if (selectedIds.isNotEmpty) {

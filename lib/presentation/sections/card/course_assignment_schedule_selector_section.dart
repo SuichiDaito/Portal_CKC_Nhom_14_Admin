@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 
 class ScheduleSection extends StatefulWidget {
-  final List<ClassInfoAssignment> selectedClasses;
+  final List<LopHocPhan> selectedClasses;
 
   const ScheduleSection({Key? key, required this.selectedClasses})
     : super(key: key);
@@ -228,7 +229,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        classInfo.className,
+                        classInfo.tenHocPhan,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -239,7 +240,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        classInfo.subject,
+                        classInfo.chuongTrinhDaoTao.tenChuongTrinhDaoTao,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -324,7 +325,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-                        classInfo.className,
+                        classInfo.tenHocPhan,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -335,7 +336,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        classInfo.subject,
+                        classInfo.chuongTrinhDaoTao.tenChuongTrinhDaoTao,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -350,7 +351,9 @@ class _ScheduleSectionState extends State<ScheduleSection>
                 _buildScheduleRow(
                   icon: Icons.quiz,
                   label: 'Hình thức thi',
-                  value: classInfo.type == 'TH' ? 'Thực hành' : 'Viết',
+                  value: classInfo.loaiLopHocPhan == 'TH'
+                      ? 'Thực hành'
+                      : 'Viết',
                 ),
                 _buildScheduleRow(
                   icon: Icons.access_time,
@@ -427,7 +430,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
 
   void _showScheduleDialog(
     BuildContext context,
-    ClassInfoAssignment classInfo,
+    LopHocPhan classInfo,
     String type,
   ) {
     showDialog(
@@ -444,8 +447,8 @@ class _ScheduleSectionState extends State<ScheduleSection>
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Lớp: ${classInfo.className}'),
-              Text('Môn: ${classInfo.subject}'),
+              Text('Lớp: ${classInfo.tenHocPhan}'),
+              // Text('Môn: ${classInfo.}'),
               const SizedBox(height: 16),
               Text(
                 type == 'class'

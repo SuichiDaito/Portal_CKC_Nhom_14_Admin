@@ -26,8 +26,7 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
   String selectedFilter = 'Tất cả';
 
   List<ThongBao> khoaNoti = [];
-  List<ThongBao> lopNoti = [];
-  List<ThongBao> gvNoti = [];
+  List<ThongBao> phongNoti = [];
 
   @override
   void initState() {
@@ -80,11 +79,8 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
               },
             ),
 
-            // const SizedBox(height: 20),
-            // GridAppHomeAdmin(),
             const SizedBox(height: 20),
 
-            // Bộ lọc thông báo
             _buildFilterTabs(),
 
             const SizedBox(height: 10),
@@ -106,11 +102,8 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                   final khoaNoti = state.list
                       .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
                       .toList();
-                  final lopNoti = state.list
-                      .where((e) => e.tuAi == 'lop' && e.trangThai == 1)
-                      .toList();
-                  final gvNoti = state.list
-                      .where((e) => e.tuAi == 'giangvien' && e.trangThai == 1)
+                  final phongNoti = state.list
+                      .where((e) => e.tuAi == 'phong_ctct' && e.trangThai == 1)
                       .toList();
 
                   return Column(
@@ -123,7 +116,7 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                                 typeNotification: 'Thông báo khoa',
                                 notifications: khoaNoti,
                                 onReload: () {
-                                  setState(() {}); // 👈 ép cập nhật lại UI
+                                  setState(() {});
                                   context.read<ThongBaoBloc>().add(
                                     FetchThongBaoList(),
                                   );
@@ -131,34 +124,20 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                               )
                             : const Text('📭 Chưa có thông báo khoa'),
 
-                      if (selectedFilter == 'Tất cả' || selectedFilter == 'Lớp')
-                        lopNoti.isNotEmpty
-                            ? NotificationsHomeAdmin(
-                                typeNotification: 'Thông báo lớp',
-                                notifications: lopNoti,
-                                onReload: () {
-                                  setState(() {}); // 👈 ép cập nhật lại UI
-                                  context.read<ThongBaoBloc>().add(
-                                    FetchThongBaoList(),
-                                  );
-                                },
-                              )
-                            : const Text('Chưa có thông báo lớp'),
-
                       if (selectedFilter == 'Tất cả' ||
-                          selectedFilter == 'Giảng viên')
-                        gvNoti.isNotEmpty
+                          selectedFilter == 'Phòng Công Tác Chính Trị')
+                        phongNoti.isNotEmpty
                             ? NotificationsHomeAdmin(
-                                typeNotification: 'Thông báo giảng viên',
-                                notifications: gvNoti,
+                                typeNotification: 'Thông báo phòng ctct',
+                                notifications: phongNoti,
                                 onReload: () {
-                                  setState(() {}); // 👈 ép cập nhật lại UI
+                                  setState(() {});
                                   context.read<ThongBaoBloc>().add(
                                     FetchThongBaoList(),
                                   );
                                 },
                               )
-                            : const Text('Chưa có thông báo giảng viên'),
+                            : const Text('Chưa có thông báo phòng ctct'),
                     ],
                   );
                 } else if (state is TBFailure) {
@@ -178,46 +157,48 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
   }
 
   Widget _buildFilterTabs() {
-    final filters = [
-      'Tất cả',
-      'Khoa',
-      'Lớp',
-      'Giảng viên',
-    ]; // bạn có thể thêm nhiều mục
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        children: filters.map((filter) {
-          final isSelected = selectedFilter == filter;
-          return Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedFilter = filter;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  filter,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black87,
-                    fontWeight: FontWeight.w500,
+    final filters = ['Tất cả', 'Khoa', 'Phòng Công Tác Chính Trị'];
+
+    return Container(
+      color: const Color.fromARGB(255, 243, 241, 241),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: filters.map((filter) {
+            final isSelected = selectedFilter == filter;
+            return Padding(
+              padding: EdgeInsets.only(right: 12),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedFilter = filter;
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.blue[600] : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? Colors.blue[600]! : Colors.grey[300]!,
+                    ),
+                  ),
+                  child: Text(
+                    filter,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey[700],
+                      fontSize: 14,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

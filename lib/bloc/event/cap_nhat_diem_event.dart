@@ -7,3 +7,18 @@ class SubmitCapNhatDiem extends CapNhatDiemEvent {
 
   SubmitCapNhatDiem(this.request);
 }
+
+class GetLopHocPhanEvent extends CapNhatDiemEvent {
+  final int? lopId;
+  GetLopHocPhanEvent({this.lopId});
+}
+
+class GetDanhSachSinhVienEvent extends CapNhatDiemEvent {
+  final int idLopHocPhan;
+  GetDanhSachSinhVienEvent(this.idLopHocPhan);
+}
+
+class UpdateTrangThaiNopDiemEvent extends CapNhatDiemEvent {
+  final int idLopHocPhan;
+  UpdateTrangThaiNopDiemEvent(this.idLopHocPhan);
+}

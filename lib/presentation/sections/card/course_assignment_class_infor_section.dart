@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 
 class ClassListSection extends StatefulWidget {
-  final List<ClassInfoAssignment> classes;
+  final List<dynamic> classes;
   final Function(String, String, String) onClassInfoChanged;
-
+  final List<User> instructors;
   const ClassListSection({
     Key? key,
     required this.classes,
     required this.onClassInfoChanged,
+    required this.instructors,
   }) : super(key: key);
 
   @override
@@ -77,15 +80,10 @@ class _ClassListSectionState extends State<ClassListSection> {
     );
   }
 
-  Widget _buildClassCard(BuildContext context, ClassInfoAssignment classInfo) {
-    final isEditing = _editingStates[classInfo.id] ?? false;
-
-    List<String> instructors = [
-      'Nguyễn Văn A',
-      'Trần Thị B',
-      'Phạm Văn C',
-      'Lê Thị D',
-    ];
+  Widget _buildClassCard(BuildContext context, LopHocPhan classInfo) {
+    final key = classInfo.id.toString();
+    final isEditing = _editingStates[key] ?? false;
+    final instructorItems = widget.instructors;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -105,7 +103,7 @@ class _ClassListSectionState extends State<ClassListSection> {
         children: [
           // Tên lớp
           Text(
-            classInfo.className,
+            classInfo.lop.tenLop,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -120,12 +118,15 @@ class _ClassListSectionState extends State<ClassListSection> {
               Expanded(
                 child: _buildInfoRow(
                   Icons.menu_book_outlined,
-                  classInfo.subject,
+                  classInfo.tenHocPhan,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildInfoRow(Icons.category_outlined, classInfo.type),
+                child: _buildInfoRow(
+                  Icons.category_outlined,
+                  classInfo.loaiMon.toString(),
+                ),
               ),
             ],
           ),
@@ -136,26 +137,19 @@ class _ClassListSectionState extends State<ClassListSection> {
             children: [
               Expanded(
                 child: _buildInfoRow(
-                  Icons.account_tree_outlined,
-                  classInfo.department,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildInfoRow(
                   Icons.calendar_today_outlined,
-                  'Niên khóa: ${classInfo.academicYear}',
+                  'Niên khóa: ${classInfo.lop.nienKhoa.tenNienKhoa ?? "Khong co"}',
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
 
-          // Học kỳ
-          _buildInfoRow(
-            Icons.date_range_outlined,
-            'Học kỳ: ${classInfo.semester}',
-          ),
+          // // Học kỳ
+          // _buildInfoRow(
+          //   Icons.date_range_outlined,
+          //   'Học kỳ: ${classInfo.lop}',
+          // ),
           const SizedBox(height: 6),
 
           // Giảng viên + chỉnh sửa
@@ -168,21 +162,21 @@ class _ClassListSectionState extends State<ClassListSection> {
                 child: AbsorbPointer(
                   absorbing: !isEditing,
                   child: DropdownButtonFormField<String>(
-                    value: instructors.contains(classInfo.instructor.trim())
-                        ? classInfo.instructor.trim()
+                    value: classInfo.gv?.id != null
+                        ? classInfo.gv!.id.toString()
                         : null,
-                    items: instructors.map((String instructor) {
+                    items: instructorItems.map((instructor) {
                       return DropdownMenuItem<String>(
-                        value: instructor,
-                        child: Text(instructor),
+                        value: instructor.id.toString(),
+                        child: Text(instructor.hoSo?.hoTen ?? 'Không tên'),
                       );
                     }).toList(),
                     onChanged: (value) {
                       if (value != null) {
                         widget.onClassInfoChanged(
-                          classInfo.id,
-                          'instructor',
-                          value,
+                          classInfo.id.toString(), // ✅ ID lớp học phần
+                          'id_giang_vien', // ✅ field
+                          value, // ✅ ID giảng viên
                         );
                       }
                     },
@@ -210,7 +204,7 @@ class _ClassListSectionState extends State<ClassListSection> {
                 tooltip: isEditing ? 'Xác nhận' : 'Chỉnh sửa',
                 onPressed: () {
                   setState(() {
-                    _editingStates[classInfo.id] = !isEditing;
+                    _editingStates[key] = !isEditing;
                   });
                 },
               ),

@@ -1,3 +1,4 @@
+import 'package:portal_ckc/api/model/admin_chuong_trinh_dao_tao.dart';
 import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 
 abstract class NganhKhoaState {}
@@ -40,4 +41,10 @@ class NganhKhoaError extends NganhKhoaState {
 class BoMonLoaded extends NganhKhoaState {
   final List<BoMon> boMons;
   BoMonLoaded(this.boMons);
+}
+
+class CTCTDTLoaded extends NganhKhoaState {
+  final List<ChiTietChuongTrinhDaoTao> chiTiet;
+
+  CTCTDTLoaded(this.chiTiet);
 }

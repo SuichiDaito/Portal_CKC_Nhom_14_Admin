@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
+import 'package:portal_ckc/api/model/admin_chuong_trinh_dao_tao.dart';
 import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 import 'package:portal_ckc/bloc/event/nganh_khoa_event.dart';
 import 'package:portal_ckc/bloc/state/nganh_khoa_state.dart';
@@ -9,8 +10,9 @@ class NganhKhoaBloc extends Bloc<NganhKhoaEvent, NganhKhoaState> {
 
   NganhKhoaBloc() : super(NganhKhoaInitial()) {
     on<FetchAllNganhHocEvent>(_onFetchAllNganhHoc);
-    on<FetchBoMonEvent>(_onFetchBoMon); // ✅ đúng event
-    on<FetchNganhTheoKhoaEvent>(_onFetchBoMonByKhoa); // giữ lại nếu dùng
+    on<FetchBoMonEvent>(_onFetchBoMon);
+    on<FetchNganhTheoKhoaEvent>(_onFetchBoMonByKhoa);
+    on<FetchCTCTDTEvent>(_onFetchCTCTDT);
   }
 
   Future<void> _onFetchAllNganhHoc(
@@ -53,11 +55,36 @@ class NganhKhoaBloc extends Bloc<NganhKhoaEvent, NganhKhoaState> {
     }
   }
 
-  // Nếu cần vẫn giữ lại handler cho sự kiện khác
   Future<void> _onFetchBoMonByKhoa(
     FetchNganhTheoKhoaEvent event,
     Emitter<NganhKhoaState> emit,
+  ) async {}
+
+  Future<void> _onFetchCTCTDT(
+    FetchCTCTDTEvent event,
+    Emitter<NganhKhoaState> emit,
   ) async {
-    // xử lý lọc theo khoa nếu có
+    emit(NganhKhoaLoading());
+    try {
+      final response = await _service.getCTDT();
+      if (response.isSuccessful && response.body != null) {
+        final Map<String, dynamic> map = response.body!['ct_ctdt'] ?? {};
+        final List<ChiTietChuongTrinhDaoTao> chiTietList = [];
+
+        map.forEach((_, value) {
+          if (value is List) {
+            chiTietList.addAll(
+              value.map((e) => ChiTietChuongTrinhDaoTao.fromJson(e)),
+            );
+          }
+        });
+
+        emit(CTCTDTLoaded(chiTietList));
+      } else {
+        emit(NganhKhoaError("Không lấy được chi tiết CTĐT"));
+      }
+    } catch (e) {
+      emit(NganhKhoaError("Lỗi khi tải CTCTDT: $e"));
+    }
   }
 }

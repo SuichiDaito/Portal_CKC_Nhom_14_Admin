@@ -97,10 +97,17 @@ class _PageCreateNotificationAdminState
                         decoration: const InputDecoration(labelText: 'Từ ai'),
                         items: const [
                           DropdownMenuItem(value: 'khoa', child: Text('Khoa')),
-                          DropdownMenuItem(value: 'Khoa', child: Text('Lớp')),
                           DropdownMenuItem(
-                            value: 'Khoa',
-                            child: Text('Giảng viên'),
+                            value: 'phong_ctct',
+                            child: Text('Phòng Công Tác Chính Trị'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'gvcn',
+                            child: Text('Giáo viên chủ nhiệm'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'gvbm',
+                            child: Text('Giáo viên bộ môn'),
                           ),
                         ],
                         onChanged: (value) {
@@ -115,7 +122,7 @@ class _PageCreateNotificationAdminState
 
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
-                        onPressed: null, // ❌ Không làm gì cả
+                        onPressed: null,
                         icon: const Icon(Icons.attach_file),
                         label: const Text('Chọn file đính kèm'),
                         style: ElevatedButton.styleFrom(

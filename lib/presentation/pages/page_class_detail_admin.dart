@@ -56,9 +56,7 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
-          _adminBloc.add(
-            FetchStudentList(widget.lop.id),
-          ); // chỉ gọi khi cập nhật thành công
+          _adminBloc.add(FetchStudentList(widget.lop.id));
         } else if (state is ChangeStudentRoleFailed) {
           ScaffoldMessenger.of(
             context,

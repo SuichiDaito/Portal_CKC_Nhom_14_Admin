@@ -52,9 +52,7 @@ class _PageRoomManagementState extends State<PageRoomManagement> {
     return BlocListener<PhongBloc, PhongState>(
       listener: (context, state) {
         if (state is PhongSuccess) {
-          context.read<PhongBloc>().add(
-            FetchRoomsEvent(),
-          ); // 🔄 Tải lại danh sách
+          context.read<PhongBloc>().add(FetchRoomsEvent());
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -100,8 +98,7 @@ class _PageRoomManagementState extends State<PageRoomManagement> {
                       const Text(
                         'Lọc theo loại phòng',
                         style: TextStyle(
-                          color:
-                              Colors.white, // ✅ Màu trắng cho label bên ngoài
+                          color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),

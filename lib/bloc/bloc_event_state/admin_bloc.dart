@@ -45,6 +45,9 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
               await prefs.setInt('user_id', user.id);
+              await prefs.setInt('user_role', user.roles.first.id);
+              await prefs.setString('user_name_role', user.roles.first.name);
+
               print('✅ Token đã được lưu: $token');
               print('✅ User ID đã được lưu: ${user.id}');
             }
@@ -85,7 +88,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           final rolesJson = data['roles'];
 
           final user = User.fromJson({...userJson, 'roles': rolesJson});
-          emit(AdminSuccess(user)); // ✅ Chỉ emit, không add lại event
+          emit(AdminSuccess(user));
         } else {
           emit(AdminError('Phản hồi không đúng định dạng'));
         }
