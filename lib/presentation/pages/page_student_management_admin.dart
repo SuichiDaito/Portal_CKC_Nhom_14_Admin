@@ -116,7 +116,6 @@ class _PageStudentManagementAdminState
                   : _classNames.first;
             }
 
-            // Gọi FetchLopDetail nếu chưa có dữ liệu
             final selectedName = _selectedClass?.value;
             if (selectedName != null && selectedName != 'all') {
               final selectedId = _lopTenToId[selectedName]!;
@@ -145,7 +144,6 @@ class _PageStudentManagementAdminState
 
             return Column(
               children: [
-                // BỘ LỌC LỚP
                 Card(
                   margin: const EdgeInsets.all(16),
                   elevation: 4,
@@ -178,7 +176,6 @@ class _PageStudentManagementAdminState
                   ),
                 ),
 
-                // BỘ LỌC TRẠNG THÁI
                 FilterButtonsRow(
                   currentFilter: _currentFilter,
                   onFilterChanged: (status) {
@@ -189,7 +186,6 @@ class _PageStudentManagementAdminState
                 ),
                 const SizedBox(height: 8),
 
-                // DANH SÁCH SINH VIÊN
                 Expanded(
                   child: _filteredStudents.isEmpty
                       ? const Center(

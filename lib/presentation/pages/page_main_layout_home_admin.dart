@@ -24,7 +24,7 @@ class MainLayoutHomeAdminPage extends StatefulWidget {
 
 class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
   String selectedFilter = 'Tất cả';
-
+  String? _nameUser;
   List<ThongBao> khoaNoti = [];
   List<ThongBao> phongNoti = [];
 
@@ -38,11 +38,16 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
   Future<void> _loadAdminInfo() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id');
+    final nameUser = prefs.getString('user_name_fullname');
+
     if (userId != null) {
       context.read<AdminBloc>().add(FetchAdminDetail(userId));
     } else {
       debugPrint('❌ Không tìm thấy user_id trong SharedPreferences');
     }
+    setState(() {
+      _nameUser = nameUser;
+    });
   }
 
   @override
@@ -53,7 +58,7 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            HeaderHomeAdminSection(nameLogin: "Admin"),
+            HeaderHomeAdminSection(nameLogin: _nameUser),
             const SizedBox(height: 20),
 
             BlocBuilder<AdminBloc, AdminState>(

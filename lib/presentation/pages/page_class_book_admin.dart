@@ -31,7 +31,6 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
   int? selectedPhongId;
 
   String? selectedPhong;
-  List<String> danhSachPhong = ['Phòng A1', 'Phòng B2', 'Phòng C3']; // ví dụ
   List<Room> allRooms = [];
   final TextEditingController noiDungController = TextEditingController();
   final TextEditingController tietTuController = TextEditingController(
@@ -58,8 +57,8 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
   @override
   void initState() {
     super.initState();
-    context.read<LopHocPhanBloc>().add(FetchLopHocPhan()); // BẮT BUỘC PHẢI CÓ
-    context.read<PhongBloc>().add(FetchRoomsEvent()); // BẮT BUỘC PHẢI CÓ
+    context.read<LopHocPhanBloc>().add(FetchLopHocPhan());
+    context.read<PhongBloc>().add(FetchRoomsEvent());
   }
 
   void updateMonTheoLop(String? tenLop) {
@@ -126,7 +125,6 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
     context.read<PhieuLenLopBloc>().add(CreatePhieuLenLop(payload));
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<PhieuLenLopBloc, PhieuLenLopState>(
@@ -143,7 +141,7 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text(
             "Sổ Lên Lớp",
@@ -352,5 +350,4 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
     noiDungController.dispose();
     super.dispose();
   }
-
 }

@@ -49,7 +49,7 @@ final class _$AdminService extends AdminService {
   ) {
     final Uri $url = Uri.parse('/admin/doi-mat-khau');
     final $body = body;
-    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
 

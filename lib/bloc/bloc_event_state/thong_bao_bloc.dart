@@ -89,6 +89,7 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
     try {
       final response = await _service.updateThongBao(event.id, {
         'tieu_de': event.title,
+        'ngay_gui': event.ngayGui,
         'noi_dung': event.content,
         'trang_thai': event.trangThai,
         'tu_ai': event.tuAi, // Thêm biến mới nếu cần

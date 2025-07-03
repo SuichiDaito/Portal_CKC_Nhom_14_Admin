@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HeaderHomeAdminSection extends StatefulWidget {
-  final nameLogin;
+  final String? nameLogin;
   const HeaderHomeAdminSection({super.key, required this.nameLogin});
+
+  @override
   State<HeaderHomeAdminSection> createState() => _HeaderHomeAdminSection();
 }
 
@@ -12,26 +13,29 @@ class _HeaderHomeAdminSection extends State<HeaderHomeAdminSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start, // Cho đẹp hơn
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Xin chào, ${widget.nameLogin}',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Xin chào, ${widget.nameLogin}',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-              Text(
-                'Chào mừng đến với hệ thống quản lý',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
-            ],
+                Text(
+                  'Chào mừng đến với hệ thống quản lý',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+              ],
+            ),
           ),
           CircleAvatar(
             radius: 25,

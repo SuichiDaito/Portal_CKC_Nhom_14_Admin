@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApplicationsAdminPage extends StatelessWidget {
   const ApplicationsAdminPage({Key? key}) : super(key: key);
+
+  Future<int> getRoleId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('user_role') ?? 0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,9 +17,6 @@ class ApplicationsAdminPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section for Students
-
-          // Section for Teachers
           _buildSection(
             context: context,
             title: 'Dành cho Giảng viên',
@@ -104,11 +107,23 @@ class ApplicationsAdminPage extends StatelessWidget {
 
   Widget _buildFeatureCard(context, _FeatureItem feature) {
     return GestureDetector(
-      onTap: () {
-        GoRouter.of(context).push('/admin/${feature.value}');
+      onTap: () async {
+        final roleId = await getRoleId();
 
-        print('Tapped on ${feature.title}');
+        // Nếu Admin (role_id 1, 2, 3)
+        if (roleId == 1 || roleId == 2 || roleId == 3) {
+          GoRouter.of(context).push('/admin/${feature.value}');
+        } else {
+          // Thông báo không có quyền
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Bạn không có quyền truy cập chức năng này.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
+
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

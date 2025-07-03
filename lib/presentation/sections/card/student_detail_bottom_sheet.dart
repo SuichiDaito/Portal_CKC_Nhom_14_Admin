@@ -254,8 +254,6 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
         children: [
           Icon(icon, color: Colors.blueAccent, size: 20),
           const SizedBox(width: 12),
-          Icon(icon, color: Colors.blueAccent, size: 20),
-          const SizedBox(width: 12),
           Expanded(
             child: RichText(
               text: TextSpan(

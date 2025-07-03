@@ -231,10 +231,10 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                             context.read<ThongBaoBloc>().add(
                                               UpdateThongBao(
                                                 id: tb.id,
+                                                ngayGui: tb.ngayGui.toString(),
                                                 title: titleController.text,
                                                 content: contentController.text,
-                                                trangThai: tb
-                                                    .trangThai, // giữ nguyên trạng thái hiện tại
+                                                trangThai: tb.trangThai,
                                                 tuAi: tb.tuAi,
                                               ),
                                             );

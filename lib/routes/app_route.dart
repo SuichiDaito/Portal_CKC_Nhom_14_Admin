@@ -100,7 +100,7 @@ class RouteName {
       ),
       //Đổi mật khẩu
       GoRoute(
-        path: '/doimatkhau',
+        path: '/admin/doimatkhau',
         builder: (context, state) => const PageDoimatkhauAdmin(),
       ),
       //Quản lý lớp chủ nhiệm
@@ -204,15 +204,16 @@ class RouteName {
       ),
       //===========ADMIN===========
       //role_id = 1(Trưởng Phòng Đào tạo)//ALL CHỨC NĂNG
-      //role_id = 2(Trưởng Khoa)//ALL CHỨC NĂNG
-      //role_id = 3(Trưởng bộ môn)
-      //role_id = 4(Trường phòng công tác sinh viên)
+      //role_id = 2(Nhân viên phòng CTCT)//ALL CHỨC NĂNG
+      //role_id = 3(Nhiên viên phòng đào tạo)
 
+      //1/3
       //Quản lý sổ lên lớp
       GoRoute(
         path: '/admin/class_list_book_admin',
         builder: (context, state) => const PageListClassBookAdmin(),
       ),
+      //1/3
       //Quản lý phòng học
       GoRoute(
         path: '/admin/management_group_admin',
@@ -222,36 +223,43 @@ class RouteName {
         path: '/admin/room_management_admin',
         builder: (context, state) => PageRoomManagement(),
       ),
+      //1/3
       //Quản lý lịch tuần/ tạo tkb
       GoRoute(
         path: '/admin/schedule_management_admin',
         builder: (context, state) => PageScheduleManagementAdmin(),
       ),
+      //1/3
       //Quản lý sinh viên/ xem danh sách sinh viên của lớp
       GoRoute(
         path: '/admin/student_management_admin',
         builder: (context, state) => PageStudentManagementAdmin(),
       ),
+      //1/3
       //Quản lý giảng viên/ xem danh sách giảng viên
       GoRoute(
         path: '/admin/teacher_management_admin',
         builder: (context, state) => PageTeacherManagementAdmin(),
       ),
+      //1/2
       //Quản lý/ phân công lịch gác thi
       GoRoute(
         path: '/admin/exam_schedule_groupe_admin',
         builder: (context, state) => PageExamScheduleGroupedAdmin(),
       ),
+      //1/2
       //Phân công lớp học phần/ phân công gv vào lớp học phần
       GoRoute(
         path: '/admin/course_assignment_admin',
         builder: (context, state) => PageCourseAssignmentAdmin(),
       ),
+      //1/3
       //Quản lý cấp giấy tờ
       GoRoute(
         path: '/admin/decument_request_management_admin',
         builder: (context, state) => PageDocumentRequestManagementAdmin(),
       ),
+      //1
       //Khởi tạo năm học
       GoRoute(
         path: '/admin/academic_year_management',

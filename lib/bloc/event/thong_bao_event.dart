@@ -31,12 +31,14 @@ class UpdateThongBao extends ThongBaoEvent {
   final String content;
   final int? trangThai;
   final String tuAi;
+  final String ngayGui;
   UpdateThongBao({
     required this.id,
     required this.title,
     required this.content,
     this.trangThai,
     required this.tuAi,
+    required this.ngayGui,
   });
 }
 

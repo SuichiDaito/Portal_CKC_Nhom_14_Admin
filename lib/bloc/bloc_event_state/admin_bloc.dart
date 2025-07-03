@@ -47,9 +47,15 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               await prefs.setInt('user_id', user.id);
               await prefs.setInt('user_role', user.roles.first.id);
               await prefs.setString('user_name_role', user.roles.first.name);
-
+              await prefs.setString(
+                'user_name_fullname',
+                user.hoSo?.hoTen ?? "Lỗi khi tải ",
+              );
               print('✅ Token đã được lưu: $token');
               print('✅ User ID đã được lưu: ${user.id}');
+              print('✅ ID roles đã được lưu: ${user.roles.first.id}');
+              print('✅ Name roles đã được lưu: ${user.roles.first.name}');
+              print('✅ User Name đã được lưu: ${user.hoSo?.hoTen}');
             }
             emit(AdminLoaded(user));
           } else {
@@ -157,6 +163,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       final response = await service.changePassword({
         'current_password': event.currentPassword,
         'new_password': event.newPassword,
+        'new_password_confirmation': event.confirmPassword,
       });
 
       if (response.isSuccessful && response.body != null) {

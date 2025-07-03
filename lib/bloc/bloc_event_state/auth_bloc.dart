@@ -31,10 +31,8 @@ class LoggedOut extends AuthEvent {}
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthLoading()) {
-    // Gọi kiểm tra khi bắt đầu app
     _checkInitialLogin();
 
-    // Gắn handler cho các sự kiện
     on<AppStarted>(_onAppStarted);
     on<LoggedIn>((event, emit) => emit(Authenticated()));
     on<LoggedOut>((event, emit) async {

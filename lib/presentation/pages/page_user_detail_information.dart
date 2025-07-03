@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
@@ -21,13 +22,22 @@ class _UserDetailInformationPageState extends State<UserDetailInformationPage> {
   @override
   void initState() {
     super.initState();
-    SharedPreferences.getInstance().then((prefs) {
-      final userId = prefs.getInt('user_id') ?? 0;
-      print('🔍 user_id từ SharedPreferences: $userId');
-      if (userId != 0) {
-        context.read<AdminBloc>().add(FetchAdminDetail(userId));
-      }
-    });
+    _fetchUserDetail();
+  }
+
+  Future<void> _fetchUserDetail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id') ?? 0;
+    if (userId != 0 && context.mounted) {
+      context.read<AdminBloc>().add(FetchAdminDetail(userId));
+    }
+  }
+
+  Future<void> _navigateToChangePassword(int userId) async {
+    final result = await context.push('/admin/doimatkhau');
+    if (result == true) {
+      await _fetchUserDetail();
+    }
   }
 
   @override
@@ -52,16 +62,32 @@ class _UserDetailInformationPageState extends State<UserDetailInformationPage> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      ButtonEditInformationInUser(),
-                      const SizedBox(height: 15),
                       Row(
                         children: [
                           Expanded(child: ButtonLogOutInUser()),
                           const SizedBox(width: 12),
-                          Expanded(child: ButtonChangePasswordInUser()),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () =>
+                                  _navigateToChangePassword(user.id),
+                              icon: const Icon(Icons.lock),
+                              label: const Text('Đổi mật khẩu'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.blue,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: const BorderSide(color: Colors.blue),
+                                ),
+                                elevation: 2,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 12),
                     ],
                   ),
                 ),

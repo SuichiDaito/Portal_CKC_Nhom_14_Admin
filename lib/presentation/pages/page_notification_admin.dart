@@ -137,44 +137,58 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Widget _buildFilterTabs() {
-    final filters = ['Tất cả', 'Khoa', 'Phòng Công Tác Chính Trị'];
+    final filters = [
+      'Tất cả',
+      'Khoa',
+      'Phòng Công Tác Chính Trị',
+      // 'Thông báo A',
+      // 'Thông báo B',
+      // 'Thông báo C',
+    ];
+
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: filters.map((filter) {
-          final isSelected = selectedFilter == filter;
-          return Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedFilter = filter;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue[600] : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected ? Colors.blue[600]! : Colors.grey[300]!,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: filters.map((filter) {
+            final isSelected = selectedFilter == filter;
+            return Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedFilter = filter;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                ),
-                child: Text(
-                  filter,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey[700],
-                    fontSize: 14,
-                    fontWeight: isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.blue[600] : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? Colors.blue[600]! : Colors.grey[300]!,
+                    ),
+                  ),
+                  child: Text(
+                    filter,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.grey[700],
+                      fontSize: 14,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

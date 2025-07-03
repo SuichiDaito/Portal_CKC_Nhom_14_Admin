@@ -25,7 +25,7 @@ abstract class AdminService extends ChopperService {
   Future<Response> getUserDetail(@Path('id') int id);
 
   // ✅ API Đổi mật khẩu cho giảng viên
-  @Put(path: '/doi-mat-khau')
+  @Post(path: '/doi-mat-khau')
   Future<Response<Map<String, dynamic>>> changePassword(
     @Body() Map<String, dynamic> body,
   );
