@@ -78,7 +78,7 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
               currentFilter: _currentFilter,
               onFilterChanged: (status) {
                 setState(() {
-                  _currentFilter = status as DocumentRequestStatus?;
+                  // _currentFilter = status as DocumentRequestStatus?;
                   _selectedRequestIds.clear();
                 });
               },
@@ -158,7 +158,9 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
                       },
                     );
                   } else if (state is DangKyGiayError) {
-                    return Center(child: Text('Lỗi: ${state.message}'));
+                    return Center(
+                      child: Text('Bạn không có quyền truy cập chức năng này'),
+                    );
                   } else {
                     return const Center(child: Text('Không có dữ liệu.'));
                   }

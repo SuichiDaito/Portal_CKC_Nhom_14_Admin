@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
-import 'package:portal_ckc/presentation/sections/button/button_change_password_in_user.dart';
-import 'package:portal_ckc/presentation/sections/button/button_edit_information_in_user.dart';
 import 'package:portal_ckc/presentation/sections/button/button_log_out_in_user.dart';
 import 'package:portal_ckc/presentation/sections/user_infomation_detail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,7 +105,11 @@ class _UserDetailInformationPageState extends State<UserDetailInformationPage> {
               ),
             );
           } else {
-            return const Center(child: Text('Không có dữ liệu'));
+            return const Center(
+              child: Text(
+                'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+              ),
+            );
           }
         },
       ),

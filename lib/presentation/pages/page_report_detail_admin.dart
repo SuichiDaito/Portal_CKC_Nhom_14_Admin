@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
@@ -125,9 +124,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                             );
                           }
                           if (adminState is StudentListLoaded) {
-                            final studentList = adminState.students
-                                .map((e) => e.sinhVien)
-                                .toList();
+                            final studentList = adminState.students;
 
                             if (!isInitialized) {
                               absentStudentIds = bienBan.chiTiet
@@ -232,7 +229,10 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
     );
   }
 
-  Widget _buildPendingView(List<SinhVien> studentList, BienBanSHCN bienBan) {
+  Widget _buildPendingView(
+    List<StudentWithRole> studentList,
+    BienBanSHCN bienBan,
+  ) {
     final total = studentList.length;
     final absent = absentStudentIds.length;
     final present = total - absent;

@@ -288,7 +288,11 @@ class _PageTeacherManagementAdminState
                 }
 
                 if (state is UserError) {
-                  return Center(child: Text('Lỗi: ${state.message}'));
+                  return Center(
+                    child: Text(
+                      'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                    ),
+                  );
                 }
 
                 return const SizedBox();

@@ -91,7 +91,11 @@ class _NotificationPageState extends State<NotificationPage> {
               );
             }
 
-            return const Center(child: Text('Không có dữ liệu'));
+            return const Center(
+              child: Text(
+                'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+              ),
+            );
           },
         ),
       ),
@@ -105,7 +109,6 @@ class _NotificationPageState extends State<NotificationPage> {
             label: const Text('Kho'),
             backgroundColor: Colors.grey,
             onPressed: () {
-              // TODO: điều hướng tới screen "Kho thông báo"
               context.push('/notifications/user');
             },
           ),

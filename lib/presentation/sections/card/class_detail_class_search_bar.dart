@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 
 class ClassSearchBar extends StatelessWidget {
   final String searchQuery;

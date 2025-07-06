@@ -4,7 +4,6 @@ import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_event.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
-import 'package:portal_ckc/bloc/state/lop_state.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
 import 'package:portal_ckc/presentation/sections/card/danh_sach_lop_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,7 +99,6 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                /// 🔹 Tiêu đề
                                 Text(
                                   tb.tieuDe,
                                   style: const TextStyle(
@@ -111,7 +109,6 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
 
                                 const SizedBox(height: 6),
 
-                                /// 🔹 Nội dung rút gọn
                                 Text(
                                   tb.noiDung,
                                   maxLines: 3,
@@ -120,7 +117,6 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
 
                                 const SizedBox(height: 12),
 
-                                /// 🔹 Thông tin phụ
                                 Row(
                                   children: [
                                     const Spacer(),
@@ -155,8 +151,6 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                 ),
 
                                 const SizedBox(height: 12),
-
-                                /// 🔹 Hành động
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [

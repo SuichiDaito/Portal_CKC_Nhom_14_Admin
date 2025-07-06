@@ -1,3 +1,4 @@
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_diem_ren_luyen_response.dart';
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
@@ -75,32 +76,6 @@ class DanhSachSinhVienResponse {
   }
 }
 
-class StudentWithRole {
-  final int id;
-  final int idLop;
-  final int idSinhVien;
-  final int chucVu;
-  final SinhVien sinhVien;
-
-  StudentWithRole({
-    required this.id,
-    required this.idLop,
-    required this.idSinhVien,
-    required this.chucVu,
-    required this.sinhVien,
-  });
-
-  factory StudentWithRole.fromJson(Map<String, dynamic> json) {
-    return StudentWithRole(
-      id: json['id'],
-      idLop: json['id_lop'],
-      idSinhVien: json['id_sinh_vien'],
-      chucVu: json['chuc_vu'],
-      sinhVien: SinhVien.fromJson(json['sinh_vien']),
-    );
-  }
-}
-
 class StudentWithScore {
   final SinhVien sinhVien;
   String conductScore;
@@ -150,7 +125,6 @@ class StudentWithScore {
   }
 
   factory StudentWithScore.fromSinhVien({required SinhVien sv}) {
-    // Nếu có điểm rèn luyện thì lấy xếp loại
     String score = '-';
     if (sv.diemRenLuyens.isNotEmpty) {
       score = convertXepLoaiToString(sv.diemRenLuyens.first.xepLoai);

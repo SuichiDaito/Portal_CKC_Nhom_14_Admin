@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:portal_ckc/api/model/admin_giay_xac_nhan.dart';
-import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
 
 class DocumentRequestListItem extends StatelessWidget {
   final DocumentRequest request;

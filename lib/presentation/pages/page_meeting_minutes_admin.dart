@@ -192,7 +192,6 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                           ),
                           trailing: ElevatedButton(
                             onPressed: () async {
-                              final bloc = context.read<BienBangShcnBloc>();
                               final result = await context.push(
                                 '/admin/report_detail_admin',
                                 extra: {
@@ -222,7 +221,9 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                     },
                   );
                 } else if (state is BienBanError) {
-                  print('LỖI: ${state.message}');
+                  print(
+                    'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                  );
                   return Center(child: Text(state.message));
                 }
 

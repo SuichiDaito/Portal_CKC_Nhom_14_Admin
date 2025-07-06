@@ -1,6 +1,6 @@
 // 📁 student_list.dart
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 
 class StudentList extends StatelessWidget {
   final List<StudentWithRole> studentList;

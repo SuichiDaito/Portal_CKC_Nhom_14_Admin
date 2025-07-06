@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
@@ -9,7 +7,6 @@ import 'package:portal_ckc/bloc/event/admin_event.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
-import 'package:portal_ckc/presentation/sections/grid_app_home_admin.dart';
 import 'package:portal_ckc/presentation/sections/header_home_admin_section.dart';
 import 'package:portal_ckc/presentation/sections/notifications_home_admin.dart';
 import 'package:portal_ckc/presentation/sections/user_profile_card_home_admin.dart';
@@ -97,7 +94,6 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
             _buildFilterTabs(),
             const SizedBox(height: 10),
 
-            // Thông báo
             BlocListener<ThongBaoBloc, ThongBaoState>(
               listener: (context, state) {
                 if (state is TBFailure) {
@@ -119,8 +115,6 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
                   if (state is TBLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is TBListLoaded) {
-                    final now = DateTime.now();
-
                     final khoaNoti = state.list
                         .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
                         .toList();

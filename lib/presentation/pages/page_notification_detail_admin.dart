@@ -66,7 +66,6 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                       commentController: _commentController,
                       idThongBao: tb.id,
                       onPressed: () {
-                        //BÌNH LUẬN MỚI
                         final content = _commentController.text.trim();
                         if (content.isNotEmpty) {
                           context.read<ThongBaoBloc>().add(
@@ -89,7 +88,11 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
             } else if (state is TBFailure) {
               return Center(child: Text('❌ ${state.error}'));
             } else {
-              return const Center(child: Text('Không có dữ liệu.'));
+              return const Center(
+                child: Text(
+                  'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                ),
+              );
             }
           },
         ),

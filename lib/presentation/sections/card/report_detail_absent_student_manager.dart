@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_ho_so.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class AbsentStudentManager extends StatelessWidget {
-  final List<SinhVien> studentList;
+  final List<StudentWithRole> studentList;
   final List<int> absentStudentIds;
   final void Function(int) onAddAbsentStudent;
   final void Function(int) onRemoveAbsentStudent;
@@ -41,19 +41,19 @@ class AbsentStudentManager extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          Autocomplete<SinhVien>(
+          Autocomplete<StudentWithRole>(
             optionsBuilder: (TextEditingValue textEditingValue) {
               if (textEditingValue.text.isEmpty) return const Iterable.empty();
 
               return availableStudents.where((student) {
-                final mssv = student.maSv.toLowerCase();
-                final name = student.hoSo.hoTen.toLowerCase();
+                final mssv = student.sinhVien.maSv.toLowerCase();
+                final name = student.sinhVien.hoSo.hoTen.toLowerCase();
                 final query = textEditingValue.text.toLowerCase();
                 return mssv.contains(query) || name.contains(query);
               });
             },
             displayStringForOption: (student) =>
-                '${student.maSv} - ${student.hoSo.hoTen}',
+                '${student.sinhVien.maSv} - ${student.sinhVien.hoSo.hoTen}',
             fieldViewBuilder:
                 (context, controller, focusNode, onFieldSubmitted) {
                   return StatefulBuilder(
@@ -93,30 +93,16 @@ class AbsentStudentManager extends StatelessWidget {
           if (absentStudentIds.isNotEmpty)
             Column(
               children: absentStudentIds.map((id) {
-                final student = studentList.firstWhere(
-                  (s) => s.id == id,
-                  orElse: () => SinhVien(
-                    id: id,
-                    maSv: '',
+                final secretary = availableStudents.firstWhere(
+                  (s) => s.chucVu == 1,
+                  orElse: () => StudentWithRole(
+                    id: -1,
+                    idLop: -1,
+                    idSinhVien: -1,
                     chucVu: 0,
-                    trangThai: 0,
-                    hoSo: HoSo(
-                      id: -1,
-                      hoTen: '',
-                      email: '',
-                      password: '',
-                      soDienThoai: '',
-                      ngaySinh: '',
-                      gioiTinh: '',
-                      cccd: '',
-                      diaChi: '',
-                      anh: '',
-                    ),
-                    lop: studentList.first.lop,
-                    diemRenLuyens: [],
+                    sinhVien: SinhVien.empty(),
                   ),
                 );
-
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(12),
@@ -139,7 +125,7 @@ class AbsentStudentManager extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '${student.maSv} - ${student.hoSo.hoTen}',
+                              '${secretary.sinhVien.maSv} - ${secretary.sinhVien.hoSo.hoTen}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,

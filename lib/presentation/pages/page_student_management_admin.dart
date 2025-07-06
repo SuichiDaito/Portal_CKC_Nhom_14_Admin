@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_event.dart';
@@ -24,27 +25,29 @@ class _PageStudentManagementAdminState
     extends State<PageStudentManagementAdmin> {
   DropdownItem? _selectedClass;
   StudentStatus? _currentFilter;
-  List<SinhVien> _allStudents = [];
+  List<StudentWithRole> _allStudents = [];
   List<DropdownItem> _classNames = [];
   Map<String, int> _lopTenToId = {};
   bool _isDataLoaded = false;
 
-  void _resetStudentPassword(SinhVien student) {
+  void _resetStudentPassword(StudentWithRole student) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã yêu cầu đặt lại mật khẩu cho MSSV: ${student.maSv}'),
+        content: Text(
+          'Đã yêu cầu đặt lại mật khẩu cho MSSV: ${student.sinhVien.maSv}',
+        ),
       ),
     );
   }
 
-  void _updateStudentStatus(SinhVien updatedStudent) {
+  void _updateStudentStatus(StudentWithRole updatedStudent) {
     setState(() {
       final index = _allStudents.indexWhere((s) => s.id == updatedStudent.id);
       if (index != -1) _allStudents[index] = updatedStudent;
     });
   }
 
-  void _showStudentDetailBottomSheet(SinhVien student) {
+  void _showStudentDetailBottomSheet(StudentWithRole student) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -201,7 +204,11 @@ class _PageStudentManagementAdminState
           }
 
           if (state is LopDetailError) {
-            return Center(child: Text('Lỗi: ${state.message}'));
+            return Center(
+              child: Text(
+                'Không thể truy cập chức năng này, vui lòng thử lại sau',
+              ),
+            );
           }
 
           return const SizedBox();

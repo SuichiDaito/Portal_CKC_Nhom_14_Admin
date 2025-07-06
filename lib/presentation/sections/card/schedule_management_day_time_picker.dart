@@ -24,7 +24,7 @@ class _DayTimePickerState extends State<DayTimePicker> {
   final List<String> _daysOfWeek = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
   final List<int> _lessonNumbers = List.generate(15, (index) => index + 1);
 
-  int? _selectedDay; // day = T2 => 2
+  int? _selectedDay;
   int _startLesson = 1;
   int _endLesson = 1;
   List<ScheduleTime> _selectedSchedules = [];
@@ -72,14 +72,12 @@ class _DayTimePickerState extends State<DayTimePicker> {
   void _removeSchedule(int index) {
     final removedSchedule = _selectedSchedules[index];
 
-    // Nếu lịch đã lưu (có id), gọi Bloc để xóa qua API
     if (removedSchedule.id != null) {
       context.read<ThoiKhoaBieuBloc>().add(
         DeleteThoiKhoaBieuEvent(removedSchedule.id!),
       );
     }
 
-    // Xoá khỏi danh sách tạm
     setState(() {
       _selectedSchedules.removeAt(index);
     });

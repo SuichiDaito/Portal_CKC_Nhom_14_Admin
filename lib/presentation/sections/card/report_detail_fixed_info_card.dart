@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 
 class ReportDetailFixedInfoCard extends StatelessWidget {
   final bool isEditing;

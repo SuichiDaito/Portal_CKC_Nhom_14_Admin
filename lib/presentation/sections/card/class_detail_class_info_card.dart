@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 
 class ClassInfoCard extends StatelessWidget {
   final String className;
@@ -118,7 +118,7 @@ class ClassInfoCard extends StatelessWidget {
               fontSize: 18,
               color: Color(0xFF1976D2),
             ),
-            textAlign: TextAlign.center, // Căn giữa dòng nếu xuống hàng
+            textAlign: TextAlign.center,
           ),
         ),
         content: SizedBox(
@@ -148,7 +148,7 @@ class ClassInfoCard extends StatelessWidget {
                 tileColor: Colors.grey[100],
                 onTap: () {
                   Navigator.pop(context);
-                  onSelectSecretary(sv.id);
+                  onSelectSecretary(sv.sinhVien.id);
                 },
               );
             },

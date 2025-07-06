@@ -9,7 +9,7 @@ import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/bloc/state/tuan_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
-import 'package:portal_ckc/presentation/sections/button/year_filter_status_buttons.dart';
+import 'package:portal_ckc/presentation/sections/dialogs/show_dialog_academic.dart';
 
 class PageAcademicYearManagement extends StatefulWidget {
   const PageAcademicYearManagement({super.key});
@@ -32,115 +32,21 @@ class _PageAcademicYearManagementState
   }
 
   void _showCreateDialog() async {
-    if (_allYears.isEmpty) return;
+    final nk = await showNienKhoaDialog(context, _allYears);
+    if (nk == null) return;
 
-    final selectedYear = await showDialog<NienKhoa>(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: const Text('Chọn niên khóa'),
-          children: _allYears.map((nk) {
-            return SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, nk),
-              child: Text(nk.tenNienKhoa),
-            );
-          }).toList(),
-        );
-      },
-    );
+    final parts = nk.tenNienKhoa.split('-');
+    final start = int.parse(parts[0]), end = int.parse(parts[1]);
+    final nam = await showNamHocDialog(context, start, end);
+    if (nam == null) return;
 
-    if (selectedYear != null) {
-      final parts = selectedYear.tenNienKhoa.split('-');
-      final start = int.tryParse(parts[0]) ?? DateTime.now().year;
-      final end = int.tryParse(parts[1]) ?? (start + 3);
-
-      final selectedNam = await showDialog<int>(
-        context: context,
-        builder: (context) => SimpleDialog(
-          title: const Text('Chọn năm học'),
-          children: List.generate(end - start + 2, (i) => start + i)
-              .map(
-                (year) => SimpleDialogOption(
-                  onPressed: () => Navigator.pop(context, year),
-                  child: Text('Năm $year'),
-                ),
-              )
-              .toList(),
-        ),
-      );
-
-      if (selectedNam != null) {
-        final selectedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime(selectedNam),
-          firstDate: DateTime(selectedNam),
-          lastDate: DateTime(selectedNam, 12, 31),
-        );
-        if (selectedDate != null) {
-          _initializeAcademicYear(selectedDate);
-        }
-      }
+    final date = await showDateTrongNamPicker(context, nam);
+    if (date != null) {
+      _initializeAcademicYear(date);
     }
   }
 
-  void _showTuanListDialog(BuildContext context, int namBatDau) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return BlocBuilder<TuanBloc, TuanState>(
-          builder: (context, state) {
-            if (state is TuanLoading) {
-              return const AlertDialog(
-                content: SizedBox(
-                  height: 100,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              );
-            } else if (state is TuanLoaded) {
-              return AlertDialog(
-                title: Text('Danh sách tuần - Năm $namBatDau'),
-                content: SizedBox(
-                  width: double.maxFinite,
-                  height: 400,
-                  child: ListView.builder(
-                    itemCount: state.danhSachTuan.length,
-                    itemBuilder: (context, index) {
-                      final tuan = state.danhSachTuan[index];
-                      return ListTile(
-                        title: Text('Tuần ${tuan.tuan}'),
-                        subtitle: Text(
-                          'Từ ${DateFormat('dd/MM/yyyy').format(tuan.ngayBatDau)} '
-                          'đến ${DateFormat('dd/MM/yyyy').format(tuan.ngayKetThuc)}',
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    child: const Text('Đóng'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              );
-            } else if (state is TuanError) {
-              return AlertDialog(
-                title: const Text('Lỗi'),
-                content: Text(state.message),
-                actions: [
-                  TextButton(
-                    child: const Text('Đóng'),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        );
-      },
-    );
-  }
+  // Gọi Tuan dialog:
 
   @override
   void initState() {
@@ -265,7 +171,13 @@ class _PageAcademicYearManagementState
                                     context.read<TuanBloc>().add(
                                       FetchTuanEvent(namBatDau),
                                     );
-                                    _showTuanListDialog(context, namBatDau);
+                                    ElevatedButton(
+                                      onPressed: () => showTuanListDialog(
+                                        context,
+                                        namBatDau,
+                                      ),
+                                      child: const Text('Xem tuần trong năm'),
+                                    );
                                   }
                                 },
                               ),
@@ -314,7 +226,11 @@ class _PageAcademicYearManagementState
                       },
                     );
                   } else if (state is NienKhoaHocKyError) {
-                    return Center(child: Text(state.message));
+                    return Center(
+                      child: Text(
+                        "Không thể truy cập chức năng này, vui lòng thử lại sau.",
+                      ),
+                    );
                   } else {
                     return const SizedBox.shrink();
                   }

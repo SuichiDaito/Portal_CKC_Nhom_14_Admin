@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
-import 'package:portal_ckc/api/model/comment.dart';
 import 'package:portal_ckc/presentation/sections/notification_detail_comment_item.dart';
 import 'package:portal_ckc/presentation/sections/textfield/comment_input_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';

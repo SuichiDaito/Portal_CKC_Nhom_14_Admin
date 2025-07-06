@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
-import 'package:portal_ckc/api/model/admin_thong_tin.dart' hide HoSo;
 
 class ReportDetailReadonlySummaryCard extends StatelessWidget {
   final int selectedWeek;
@@ -19,7 +19,7 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
   final String secretaryName;
   final List<ChiTietBienBan> chiTietBienBanList;
   final List<int> absentStudentIds;
-  final List<SinhVien> studentList;
+  final List<StudentWithRole> studentList;
   final Map<int, String> absenceReasons;
 
   const ReportDetailReadonlySummaryCard({

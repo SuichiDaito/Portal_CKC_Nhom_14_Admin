@@ -65,13 +65,7 @@ class NotificationDetailCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   ...files.map(
                     (file) => GestureDetector(
-                      onTap: () {
-                        // Mở file (hoặc tải xuống) tùy logic của bạn
-                        // Ví dụ mở URL nếu là PDF, Word, v.v.
-                        final url =
-                            'https://yourdomain.com/storage/${file['url']}';
-                        // sử dụng url_launcher để mở URL
-                      },
+                      onTap: () {},
                       child: Text(
                         file['ten_file'] ?? '',
                         style: const TextStyle(

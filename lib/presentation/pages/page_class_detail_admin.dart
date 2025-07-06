@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portal_ckc/api/model/admin_ho_so.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
-import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
@@ -83,34 +81,18 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
 
             if (state is StudentListLoaded) {
               final studentWithRoles = state.students;
-              final studentList = studentWithRoles
-                  .map((e) => e.sinhVien)
-                  .toList();
 
-              // Tìm sinh viên là thư ký (chucVu == 0)
-              final currentSecretary = state.students.firstWhere(
+              final secretary = studentWithRoles.firstWhere(
                 (s) => s.chucVu == 1,
-                orElse: () => StudentWithRole(
-                  id: -1,
-                  idLop: -1,
-                  idSinhVien: -1,
-                  chucVu: 0,
-                  sinhVien: SinhVien.empty(),
-                ),
+                orElse: () => StudentWithRole.empty(),
               );
-              final filteredStudentWithRoles = studentWithRoles.where((
-                studentWithRole,
-              ) {
-                final student = studentWithRole.sinhVien;
-                final name = student.hoSo.hoTen.toLowerCase();
-                final id = student.maSv.toLowerCase();
-                final matchesQuery =
-                    name.contains(searchQuery.toLowerCase()) ||
-                    id.contains(searchQuery.toLowerCase());
-                final matchesStatus =
-                    selectedStatus == 'Tất cả' ||
-                    student.trangThai.toString() == selectedStatus;
-                return matchesQuery && matchesStatus;
+
+              final secretaryName = secretary?.sinhVien.hoSo.hoTen ?? 'Chưa có';
+
+              final filtered = studentWithRoles.where((sr) {
+                final name = sr.sinhVien.hoSo.hoTen.toLowerCase();
+                final id = sr.sinhVien.maSv.toLowerCase();
+                return name.contains(searchQuery) || id.contains(searchQuery);
               }).toList();
 
               return SingleChildScrollView(
@@ -120,23 +102,19 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                   children: [
                     ClassInfoCard(
                       className: widget.lop.tenLop,
-                      studentCount: studentList.length,
+                      studentCount: studentWithRoles.length,
                       teacherName: _teacher?.hoSo?.hoTen ?? 'Đang tải...',
-                      secretaryName:
-                          currentSecretary?.sinhVien.hoSo.hoTen ?? 'Chưa có',
-                      studentList: filteredStudentWithRoles,
+                      secretaryName: secretaryName,
+                      studentList: studentWithRoles,
                       onSelectSecretary: (newSecretaryId) async {
                         final lopBloc = context.read<LopBloc>();
 
-                        final newSecretaryStudentId = studentWithRoles
-                            .firstWhere((s) => s.id == newSecretaryId)
-                            .idSinhVien;
+                        final newSecretaryStudentId = newSecretaryId.toInt();
 
-                        final currentSecretaryStudentId =
-                            currentSecretary.idSinhVien;
+                        final currentSecretaryStudentId = secretary.sinhVien.id;
 
-                        if (currentSecretary.id != -1 &&
-                            currentSecretary.id != newSecretaryId) {
+                        if (secretary.id != -1 &&
+                            secretary.id != newSecretaryId) {
                           lopBloc.add(
                             ChangeStudentRoleEvent(
                               sinhVienId: currentSecretaryStudentId,
@@ -160,13 +138,13 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                           setState(() => searchQuery = value),
                       onStatusChanged: (value) =>
                           setState(() => selectedStatus = value),
-                      studentList: filteredStudentWithRoles,
+                      studentList: filtered,
                       idClass: widget.lop.id,
                       idNienKhoa: widget.lop.idNienKhoa,
                     ),
                     const SizedBox(height: 16),
                     StudentList(
-                      studentList: filteredStudentWithRoles,
+                      studentList: filtered,
                       onTapStudent: (sv) {
                         showDialog(
                           context: context,
@@ -191,7 +169,7 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
             }
 
             if (state is AdminError) {
-              return Center(child: Text('❌ ${state.message}'));
+              return Center(child: Text('❌ Lôi hiển thị dữ liệu'));
             }
 
             return const Center(child: Text('Không có dữ liệu'));

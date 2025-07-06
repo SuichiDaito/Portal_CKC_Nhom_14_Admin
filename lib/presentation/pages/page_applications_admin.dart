@@ -108,20 +108,15 @@ class ApplicationsAdminPage extends StatelessWidget {
   Widget _buildFeatureCard(context, _FeatureItem feature) {
     return GestureDetector(
       onTap: () async {
-        final roleId = await getRoleId();
-
-        // Nếu Admin (role_id 1, 2, 3)
-        if (roleId == 1 || roleId == 2 || roleId == 3) {
-          GoRouter.of(context).push('/admin/${feature.value}');
-        } else {
-          // Thông báo không có quyền
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Bạn không có quyền truy cập chức năng này.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        GoRouter.of(context).push('/admin/${feature.value}');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(
+        //       'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+        //     ),
+        //     backgroundColor: Colors.red,
+        //   ),
+        // );
       },
 
       child: Container(

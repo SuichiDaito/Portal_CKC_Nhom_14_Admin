@@ -221,8 +221,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                                   if (state is NienKhoaHocKyLoaded) {
                                     if (!_isSchoolYearLoaded) {
                                       _schoolYears = state.nienKhoas.map((nk) {
-                                        final name =
-                                            '${nk.namBatDau}-${nk.namKetThuc}';
                                         return DropdownItem(
                                           value: nk.namBatDau,
                                           label: nk.tenNienKhoa,
@@ -315,7 +313,9 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                                 );
                               }
                               if (tuanState is TuanError) {
-                                return Text('Lỗi: ${tuanState.message}');
+                                return Text(
+                                  'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                                );
                               }
                               return const SizedBox();
                             },

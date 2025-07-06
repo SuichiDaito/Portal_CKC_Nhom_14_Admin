@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_lich_thi.dart';
-import 'package:portal_ckc/presentation/pages/page_exam_schedule_admin.dart';
 import 'package:portal_ckc/presentation/sections/card/exam_duty_card.dart';
 
 class ExamScheduleView extends StatelessWidget {

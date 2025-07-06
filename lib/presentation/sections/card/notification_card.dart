@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/pages/page_notification_detail_admin.dart';
 
 class NotificationCard extends StatefulWidget {
   final String title;

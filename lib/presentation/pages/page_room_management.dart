@@ -208,15 +208,17 @@ class _PageRoomManagementState extends State<PageRoomManagement> {
                       itemBuilder: (context, index) {
                         final room = filteredRooms[index];
                         return GestureDetector(
-                          onTap: () => _showAddEditRoomSheet(
-                            room: room,
-                          ), // 👈 sửa từ onLongPress
+                          onTap: () => _showAddEditRoomSheet(room: room),
                           child: RoomListItem(index: index, room: room),
                         );
                       },
                     );
                   } else if (state is PhongError) {
-                    return Center(child: Text('Lỗi: ${state.message}'));
+                    return Center(
+                      child: Text(
+                        'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                      ),
+                    );
                   } else {
                     return const SizedBox();
                   }

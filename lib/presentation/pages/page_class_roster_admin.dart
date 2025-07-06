@@ -1,4 +1,3 @@
-// screens/class_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +6,6 @@ import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_hoc_phan_event.dart';
 import 'package:portal_ckc/bloc/state/lop_hoc_phan_state.dart';
 import 'package:portal_ckc/presentation/sections/card/class_roster_class_item_card.dart';
-import 'package:portal_ckc/presentation/sections/card/class_roster_teacher_info_card.dart';
 import 'package:portal_ckc/presentation/sections/class_roster_filter_section.dart';
 
 class PageClassRosterAdmin extends StatefulWidget {
@@ -68,7 +66,9 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is LopHocPhanError) {
-            return Center(child: Text('Lỗi: ${state.message}'));
+            return Center(
+              child: Text('Bạn không có quyền truy cập chức năng này'),
+            );
           }
           if (state is LopHocPhanLoaded) {
             allClasses = state.lopHocPhans;

@@ -10,7 +10,6 @@ import 'package:portal_ckc/bloc/state/lich_thi_state.dart';
 import 'package:portal_ckc/presentation/sections/card/class_management_teacher_info_card.dart';
 import 'package:portal_ckc/presentation/sections/card/exam_schedule_view.dart';
 import 'package:portal_ckc/presentation/sections/card/show_dialog_print_exam.dart';
-import 'package:portal_ckc/presentation/sections/card/teaching_schedule_print_schedule_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PageExamScheduleAdmin extends StatefulWidget {
@@ -191,7 +190,11 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
                       onDayTap: (day) {},
                     );
                   } else if (state is LichThiError) {
-                    return Center(child: Text(state.message));
+                    return Center(
+                      child: Text(
+                        "Bạn không chưa được phân công chức năng này",
+                      ),
+                    );
                   } else {
                     return SizedBox.shrink();
                   }

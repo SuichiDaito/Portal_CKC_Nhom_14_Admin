@@ -19,23 +19,23 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
   final confirmPassCtrl = TextEditingController();
   bool isLoading = false;
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoading = true;
-      });
+  // void _submit() {
+  //   if (_formKey.currentState!.validate()) {
+  //     setState(() {
+  //       isLoading = true;
+  //     });
 
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Đổi mật khẩu thành công')),
-        );
-        Navigator.pop(context);
-      });
-    }
-  }
+  //     Future.delayed(const Duration(seconds: 2), () {
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('✅ Đổi mật khẩu thành công')),
+  //       );
+  //       Navigator.pop(context);
+  //     });
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -191,8 +191,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
                                       vertical: 14,
                                     ),
                                     shape: const RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.zero, // Không bo góc
+                                      borderRadius: BorderRadius.zero,
                                     ),
                                   ),
                                   onPressed: () {

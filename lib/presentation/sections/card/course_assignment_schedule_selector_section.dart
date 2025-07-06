@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
-import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 
 class ScheduleSection extends StatefulWidget {
   final List<LopHocPhan> selectedClasses;

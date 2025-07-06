@@ -24,14 +24,9 @@ import 'package:portal_ckc/bloc/state/thoi_gian_bieu_state.dart';
 import 'package:portal_ckc/bloc/state/tuan_state.dart';
 import 'package:portal_ckc/bloc/state/user_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
-import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
-import 'package:portal_ckc/presentation/sections/card/schedule_management_class_info_display.dart';
-import 'package:portal_ckc/presentation/sections/card/schedule_management_copy_card.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_detail_editor.dart';
-import 'package:portal_ckc/presentation/sections/card/schedule_management_detail_model.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
-import 'package:collection/collection.dart';
 import 'package:portal_ckc/presentation/sections/dialogs/copy_week_dialog.dart';
 
 class PageScheduleManagementAdmin extends StatefulWidget {
@@ -53,8 +48,6 @@ class _PageScheduleManagementAdminState
   List<DropdownItem> _lecturers = [];
   DropdownItem? _selectedLecturer;
   int selectedWeek = 1;
-  int? _selectedSourceWeekId;
-  int? _selectedTargetWeekId;
 
   List<DropdownItem> _weeks = [];
   DropdownItem? _selectedWeek;
@@ -193,8 +186,6 @@ class _PageScheduleManagementAdminState
                                             _schoolYears = state.nienKhoas.map((
                                               nk,
                                             ) {
-                                              final name =
-                                                  '${nk.namBatDau}-${nk.namKetThuc}';
                                               return DropdownItem(
                                                 value: nk.namBatDau,
                                                 label: nk.tenNienKhoa,
@@ -242,9 +233,7 @@ class _PageScheduleManagementAdminState
                                           );
                                         }
                                         if (state is NienKhoaHocKyError) {
-                                          return Text(
-                                            'Lỗi tải niên khóa: ${state.message}',
-                                          );
+                                          return Text('');
                                         }
                                         return const SizedBox();
                                       },
@@ -293,7 +282,7 @@ class _PageScheduleManagementAdminState
                                       );
                                     }
                                     if (tuanState is TuanError) {
-                                      return Text('Lỗi: ${tuanState.message}');
+                                      return Text('=====');
                                     }
                                     return const SizedBox();
                                   },
@@ -365,7 +354,7 @@ class _PageScheduleManagementAdminState
                               }
 
                               if (state is NganhKhoaError) {
-                                return Text('Lỗi tải bộ môn: ${state.message}');
+                                return Text('');
                               }
 
                               return const SizedBox();
@@ -395,9 +384,7 @@ class _PageScheduleManagementAdminState
                                 );
                               }
                               if (state is UserError) {
-                                return Text(
-                                  "Lỗi tải giảng viên: ${state.message}",
-                                );
+                                return Text("");
                               }
 
                               return const SizedBox();
@@ -438,9 +425,6 @@ class _PageScheduleManagementAdminState
                               : lhp.gv?.id.toString() ==
                                     _selectedLecturer?.value;
 
-                          final hasScheduleInWeek = lhp.thoiKhoaBieu.any(
-                            (tkb) => tkb.idTuan == selectedWeekId,
-                          );
                           print(
                             'Giảng viên đã chọn: ${_selectedLecturer?.value}',
                           );
@@ -681,7 +665,9 @@ class _PageScheduleManagementAdminState
                         );
                       }
                       if (state is LopHocPhanError) {
-                        return Text('Lỗi tải lớp học phần: ${state.message}');
+                        return Text(
+                          'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                        );
                       }
                       return const SizedBox();
                     },

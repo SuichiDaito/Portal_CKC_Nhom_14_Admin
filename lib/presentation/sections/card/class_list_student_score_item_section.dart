@@ -24,7 +24,6 @@ class StudentItemSection extends StatefulWidget {
 
 class _StudentItemSectionState extends State<StudentItemSection> {
   bool _isGradeExpanded = true;
-  bool _isEditing = true;
 
   String _getStatusText(int statusCode) {
     return switch (statusCode) {
@@ -54,10 +53,7 @@ class _StudentItemSectionState extends State<StudentItemSection> {
   Widget build(BuildContext context) {
     final statusCode = widget.student.sinhVien.trangThai ?? 0;
     final hasGrades = widget.student.diemTongKet != null;
-    final bool canEditDiemChuyenCan = widget.trangThaiLop == 0;
-    final bool canEditDiemQuaTrinh = widget.trangThaiLop == 0;
-    final bool canEditDiemThiLan1 = widget.trangThaiLop == 1;
-    final bool canEditDiemThiLan2 = widget.trangThaiLop == 2;
+
     final bool isLocked = widget.trangThaiLop == 3;
 
     return Card(

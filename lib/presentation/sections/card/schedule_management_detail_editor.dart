@@ -9,8 +9,6 @@ import 'package:portal_ckc/bloc/event/thoi_khoa_bieu_event.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_class_info_display.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_day_time_picker.dart';
-import 'package:portal_ckc/presentation/sections/card/schedule_management_detail_model.dart'
-    hide ScheduleDetail;
 
 class ScheduleDetailEditor extends StatefulWidget {
   final LopHocPhan classSchedule;

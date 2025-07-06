@@ -158,7 +158,9 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
 
             if (phongState is PhongError) {
               return Center(
-                child: Text("Lỗi tải phòng: ${phongState.message}"),
+                child: Text(
+                  "Không thể truy cập chức năng này, vui lòng thử lại sau.",
+                ),
               );
             }
 
@@ -173,7 +175,7 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
                   }
 
                   if (state is LopHocPhanError) {
-                    return Center(child: Text("Lỗi: ${state.message}"));
+                    return Center(child: Text("${state.message}"));
                   }
 
                   if (state is LopHocPhanLoaded) {
@@ -329,12 +331,11 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
                     );
                   }
 
-                  return const SizedBox(); // fallback cho LopHocPhanState
+                  return const SizedBox();
                 },
               );
             }
-
-            return const SizedBox(); // ✅ fallback cho PhongState
+            return const SizedBox();
           },
         ),
       ),

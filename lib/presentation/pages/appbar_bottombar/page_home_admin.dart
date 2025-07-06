@@ -10,7 +10,7 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedIndex = 0; // Home tab selected by default
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {

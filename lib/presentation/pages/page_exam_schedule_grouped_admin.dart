@@ -143,7 +143,9 @@ class _PageExamScheduleGroupedAdminState
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (lopState is LopHocPhanError) {
-                  return Center(child: Text('Lỗi: ${lopState.message}'));
+                  return Center(
+                    child: Text('Bạn không có quyền truy cập chức năng này'),
+                  );
                 }
                 if (lopState is! LopHocPhanLoaded) {
                   return const Center(child: Text('Đang tải lớp học phần...'));
@@ -158,7 +160,7 @@ class _PageExamScheduleGroupedAdminState
                     if (userState is UserError) {
                       return Center(child: Text('Lỗi tải giảng viên'));
                     }
-                    final instructors = (userState);
+                    // final instructors = (userState);
 
                     return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
                       builder: (context, nkState) {
@@ -176,28 +178,28 @@ class _PageExamScheduleGroupedAdminState
                         }
                         final nienKhoas =
                             (nkState as NienKhoaHocKyLoaded).nienKhoas;
-                        final filteredClasses = classes.where((lop) {
-                          final okNK = _selectedNienKhoaId == null
-                              ? true
-                              : lop.lop.idNienKhoa.toString() ==
-                                    _selectedNienKhoaId;
+                        // final filteredClasses = classes.where((lop) {
+                        //   final okNK = _selectedNienKhoaId == null
+                        //       ? true
+                        //       : lop.lop.idNienKhoa.toString() ==
+                        //             _selectedNienKhoaId;
 
-                          final okHK = _selectedHocKy == null
-                              ? true
-                              : lop.chuongTrinhDaoTao.chiTiet?.any(
-                                      (ct) => ct.idHocKy == _selectedHocKy!.id,
-                                    ) ??
-                                    false;
+                        //   final okHK = _selectedHocKy == null
+                        //       ? true
+                        //       : lop.chuongTrinhDaoTao.chiTiet?.any(
+                        //               (ct) => ct.idHocKy == _selectedHocKy!.id,
+                        //             ) ??
+                        //             false;
 
-                          final okTenMon = _selectedMonHoc == null
-                              ? true
-                              : lop.tenHocPhan.trim().toLowerCase() ==
-                                    _selectedMonHoc!.tenMon
-                                        .trim()
-                                        .toLowerCase();
+                        //   final okTenMon = _selectedMonHoc == null
+                        //       ? true
+                        //       : lop.tenHocPhan.trim().toLowerCase() ==
+                        //             _selectedMonHoc!.tenMon
+                        //                 .trim()
+                        //                 .toLowerCase();
 
-                          return okNK && okHK && okTenMon;
-                        }).toList();
+                        //   return okNK && okHK && okTenMon;
+                        // }).toList();
 
                         return SingleChildScrollView(
                           child: Column(
