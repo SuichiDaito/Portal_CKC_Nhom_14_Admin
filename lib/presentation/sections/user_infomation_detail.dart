@@ -73,10 +73,10 @@ class AccountInfoSection extends StatelessWidget {
                 },
               ),
               _buildInfoItem('Ngày sinh: ${hoSo?.ngaySinh ?? 'Chưa có'}'),
-              _buildInfoItem(
-                'Trạng thái: ${user.trangThai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt'}',
-              ),
 
+              // _buildInfoItem(
+              //   'Trạng thái: ${user.trangThai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt'}',
+              // ),
               const SizedBox(height: 20),
 
               Container(

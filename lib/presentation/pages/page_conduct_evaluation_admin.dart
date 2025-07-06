@@ -276,14 +276,21 @@ class _PageConductEvaluationAdminState
         child: BlocListener<DiemRlBloc, DiemRLState>(
           listener: (context, state) {
             if (state is DiemRLUpdateSuccess) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.green,
+                ),
+              );
               _reloadData();
-            } else if (state is DiemRLUpdateFailure) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
+            } else if (state is DiemRLUpdateFailure || state is DiemRLError) {
+              final message = state is DiemRLUpdateFailure
+                  ? state.message
+                  : (state as DiemRLError).message;
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red),
+              );
             }
           },
           child: BlocBuilder<DiemRlBloc, DiemRLState>(
@@ -292,28 +299,26 @@ class _PageConductEvaluationAdminState
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state is DiemRLError) {
-                return Center(child: Text(state.message));
-              }
               if (state is DiemRLLoaded) {
                 final sinhViens = state.data.sinhViens;
 
                 if (students.isEmpty) {
                   students = sinhViens
                       .map((sv) => StudentWithScore.fromSinhVien(sv: sv))
-                      .toList()
-                      .cast<StudentWithScore>();
+                      .toList();
                 }
               }
 
               if (selectedNienKhoaId == null) {
                 return const Center(child: CircularProgressIndicator());
               }
+
               final nienKhoaState = context.watch<NienKhoaHocKyBloc>().state;
               if (nienKhoaState is NienKhoaHocKyLoaded) {
                 nienKhoaList = nienKhoaState.nienKhoas;
                 _updateYearsFromNienKhoa(widget.idNienKhoa);
               }
+
               return Column(
                 children: [
                   HeaderFilterSection(
@@ -328,7 +333,6 @@ class _PageConductEvaluationAdminState
                     onSave: _saveScores,
                     onReload: _reloadData,
                   ),
-
                   if (isEditing)
                     BulkActionSection(
                       isEditing: isEditing,
@@ -338,7 +342,6 @@ class _PageConductEvaluationAdminState
                       onSelectAll: _toggleSelectAll,
                       onChangeScore: _applyScoreToSelected,
                     ),
-
                   Expanded(
                     child: StudentListSection(
                       students: students,
@@ -348,7 +351,6 @@ class _PageConductEvaluationAdminState
                       getScoreLabel: _getScoreLabel,
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(right: 16, bottom: 12),
                     child: Align(

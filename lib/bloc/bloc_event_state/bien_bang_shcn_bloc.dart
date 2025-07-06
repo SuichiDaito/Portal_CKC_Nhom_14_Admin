@@ -34,6 +34,8 @@ class BienBangShcnBloc extends Bloc<BienBanEvent, BienBanState> {
     emit(BienBanLoading());
     try {
       final response = await _service.getBienBanListByLop(event.lopId);
+      print('API Response: ${response.body}');
+
       if (response.isSuccessful) {
         final data = response.body['data'];
         final List<BienBanSHCN> bienBans = BienBanSHCN.fromJsonList(data);

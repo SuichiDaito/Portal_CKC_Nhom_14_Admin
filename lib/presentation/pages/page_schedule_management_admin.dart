@@ -20,6 +20,7 @@ import 'package:portal_ckc/bloc/state/lop_hoc_phan_state.dart';
 import 'package:portal_ckc/bloc/state/nganh_khoa_state.dart';
 import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 import 'package:portal_ckc/bloc/state/phong_state.dart';
+import 'package:portal_ckc/bloc/state/thoi_gian_bieu_state.dart';
 import 'package:portal_ckc/bloc/state/tuan_state.dart';
 import 'package:portal_ckc/bloc/state/user_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
@@ -569,73 +570,106 @@ class _PageScheduleManagementAdminState
                                           },
                                         ),
                                         const SizedBox(height: 12),
-                                        ElevatedButton.icon(
-                                          icon: const Icon(
-                                            Icons.copy,
-                                            color: Colors.white,
-                                          ), // icon màu trắng
-                                          label: const Text(
-                                            'Sao chép lịch',
-                                            style: TextStyle(
+                                        BlocListener<
+                                          ThoiKhoaBieuBloc,
+                                          ThoiKhoaBieuState
+                                        >(
+                                          listener: (context, state) {
+                                            if (state
+                                                is CopyNhieuThoiKhoaBieuSuccess) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Sao chép thời khóa biểu thành công!',
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (state
+                                                is ThoiKhoaBieuError) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    state.message ??
+                                                        'Sao chép thất bại!',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: ElevatedButton.icon(
+                                            icon: const Icon(
+                                              Icons.copy,
                                               color: Colors.white,
-                                              fontSize: 16,
-                                            ), // chữ trắng
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Colors.blue, // nền xanh dương
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 16,
-                                              horizontal: 24,
-                                            ), // tăng chiều cao
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    12,
-                                                  ), // bo góc đẹp
+                                            ), // icon màu trắng
+                                            label: const Text(
+                                              'Sao chép lịch',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                              ), // chữ trắng
                                             ),
-                                          ),
-                                          onPressed: () {
-                                            showScheduleCopyDialog(
-                                              context: context,
-                                              weeks: _weeks,
-                                              onCopy: (sourceWeekId, targetWeekId) {
-                                                final tkbIdsToCopy = lophp
-                                                    .thoiKhoaBieu
-                                                    .where(
-                                                      (tkb) =>
-                                                          tkb.idTuan ==
-                                                          sourceWeekId,
-                                                    )
-                                                    .map((tkb) => tkb.id)
-                                                    .toList();
-
-                                                if (tkbIdsToCopy.isEmpty) {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                        'Không có thời khóa biểu để sao chép!',
-                                                      ),
-                                                    ),
-                                                  );
-                                                  return;
-                                                }
-
-                                                context
-                                                    .read<ThoiKhoaBieuBloc>()
-                                                    .add(
-                                                      CopyNhieuThoiKhoaBieuWeekEvent(
-                                                        tkbIds: tkbIdsToCopy,
-                                                        startWeekId:
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.blue, // nền xanh dương
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 16,
+                                                    horizontal: 24,
+                                                  ), // tăng chiều cao
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      12,
+                                                    ), // bo góc đẹp
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              showScheduleCopyDialog(
+                                                context: context,
+                                                weeks: _weeks,
+                                                onCopy: (sourceWeekId, targetWeekId) {
+                                                  final tkbIdsToCopy = lophp
+                                                      .thoiKhoaBieu
+                                                      .where(
+                                                        (tkb) =>
+                                                            tkb.idTuan ==
                                                             sourceWeekId,
-                                                        endWeekId: targetWeekId,
+                                                      )
+                                                      .map((tkb) => tkb.id)
+                                                      .toList();
+
+                                                  if (tkbIdsToCopy.isEmpty) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          'Không có thời khóa biểu để sao chép!',
+                                                        ),
                                                       ),
                                                     );
-                                              },
-                                            );
-                                          },
+                                                    return;
+                                                  }
+
+                                                  context
+                                                      .read<ThoiKhoaBieuBloc>()
+                                                      .add(
+                                                        CopyNhieuThoiKhoaBieuWeekEvent(
+                                                          tkbIds: tkbIdsToCopy,
+                                                          startWeekId:
+                                                              sourceWeekId,
+                                                          endWeekId:
+                                                              targetWeekId,
+                                                        ),
+                                                      );
+                                                },
+                                              );
+                                            },
+                                          ),
                                         ),
                                       ],
                                     ),

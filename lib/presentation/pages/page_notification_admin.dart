@@ -24,87 +24,78 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<ThongBaoBloc, ThongBaoState>(
-        builder: (context, state) {
-          if (state is TBLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-
+      body: BlocListener<ThongBaoBloc, ThongBaoState>(
+        listener: (context, state) {
           if (state is TBFailure) {
-            return Center(child: Text('Lỗi: ${state.error}'));
-          }
+            final message = state.error.toLowerCase().contains('permission')
+                ? 'Bạn không có quyền thực hiện thao tác này.'
+                : state.error;
 
-          if (state is TBListLoaded) {
-            final khoaNoti = state.list
-                .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
-                .toList();
-            final ctctNoti = state.list
-                .where((e) => e.tuAi == 'phong_ctct' && e.trangThai == 1)
-                .toList();
-            // final gvNoti = state.list
-            //     .where((e) => e.tuAi == 'giangvien' && e.trangThai == 1)
-            //     .toList();
-
-            return Column(
-              children: [
-                _buildFilterTabs(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    key: ValueKey(state.list.length),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (selectedFilter == 'Tất cả' ||
-                            selectedFilter == 'Khoa')
-                          NotificationsHomeAdmin(
-                            typeNotification: 'Thông báo khoa',
-                            key: ValueKey('khoa-${state.list.length}'),
-                            notifications: khoaNoti,
-                            onReload: () {
-                              setState(() {}); // 👈 ép cập nhật lại UI
-                              context.read<ThongBaoBloc>().add(
-                                FetchThongBaoList(),
-                              );
-                            },
-                          ),
-
-                        if (selectedFilter == 'Tất cả' ||
-                            selectedFilter == 'Phòng Công Tác Chính Trị')
-                          NotificationsHomeAdmin(
-                            typeNotification: 'phong_ctct',
-                            notifications: ctctNoti,
-                            onReload: () {
-                              setState(() {});
-                              context.read<ThongBaoBloc>().add(
-                                FetchThongBaoList(),
-                              );
-                            },
-                          ),
-                        // if (selectedFilter == 'Tất cả' ||
-                        //     selectedFilter == 'gvcn')
-                        //   NotificationsHomeAdmin(
-                        //     typeNotification: 'Thông báo giảng viên',
-                        //     notifications: gvNoti,
-                        //     onReload: () {
-                        //       setState(() {});
-                        //       context.read<ThongBaoBloc>().add(
-                        //         FetchThongBaoList(),
-                        //       );
-                        //     },
-                        //   ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message), backgroundColor: Colors.red),
             );
           }
-
-          // Mặc định
-          return Center(child: Text('Không có dữ liệu'));
         },
+        child: BlocBuilder<ThongBaoBloc, ThongBaoState>(
+          builder: (context, state) {
+            if (state is TBLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is TBListLoaded) {
+              final khoaNoti = state.list
+                  .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
+                  .toList();
+              final ctctNoti = state.list
+                  .where((e) => e.tuAi == 'phong_ctct' && e.trangThai == 1)
+                  .toList();
+
+              return Column(
+                children: [
+                  _buildFilterTabs(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      key: ValueKey(state.list.length),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (selectedFilter == 'Tất cả' ||
+                              selectedFilter == 'Khoa')
+                            NotificationsHomeAdmin(
+                              typeNotification: 'Thông báo khoa',
+                              key: ValueKey('khoa-${state.list.length}'),
+                              notifications: khoaNoti,
+                              onReload: () {
+                                context.read<ThongBaoBloc>().add(
+                                  FetchThongBaoList(),
+                                );
+                              },
+                            ),
+                          if (selectedFilter == 'Tất cả' ||
+                              selectedFilter == 'Phòng Công Tác Chính Trị')
+                            NotificationsHomeAdmin(
+                              typeNotification: 'phong_ctct',
+                              notifications: ctctNoti,
+                              onReload: () {
+                                context.read<ThongBaoBloc>().add(
+                                  FetchThongBaoList(),
+                                );
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return const Center(child: Text('Không có dữ liệu'));
+          },
+        ),
       ),
+
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

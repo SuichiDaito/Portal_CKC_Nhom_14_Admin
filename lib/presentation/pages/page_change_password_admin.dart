@@ -153,7 +153,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
                           const SizedBox(height: 12),
                           TextFormField(
                             controller: newPassCtrl,
-                            obscureText: true,
+                            obscureText: false,
                             decoration: const InputDecoration(
                               labelText: 'Mật khẩu mới',
                               border: OutlineInputBorder(),
@@ -168,7 +168,7 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
                           const SizedBox(height: 12),
                           TextFormField(
                             controller: confirmPassCtrl,
-                            obscureText: true,
+                            obscureText: false,
                             decoration: const InputDecoration(
                               labelText: 'Nhập lại mật khẩu mới',
                               border: OutlineInputBorder(),
@@ -237,8 +237,6 @@ class _PageDoimatkhauAdminState extends State<PageDoimatkhauAdmin> {
               ],
             ),
           ),
-
-          // AppBar tuỳ chỉnh
           Positioned(
             top: 0,
             left: 0,

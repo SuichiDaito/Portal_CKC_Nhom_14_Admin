@@ -9,6 +9,7 @@ import 'package:portal_ckc/bloc/state/admin_state.dart';
 import 'package:portal_ckc/bloc/state/lich_thi_state.dart';
 import 'package:portal_ckc/presentation/sections/card/class_management_teacher_info_card.dart';
 import 'package:portal_ckc/presentation/sections/card/exam_schedule_view.dart';
+import 'package:portal_ckc/presentation/sections/card/show_dialog_print_exam.dart';
 import 'package:portal_ckc/presentation/sections/card/teaching_schedule_print_schedule_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,13 +49,11 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
   void _showPrintDialog() {
     showDialog(
       context: context,
-      builder: (_) => PrintScheduleDialog(
-        fromWeek: 1,
-        toWeek: 1,
+      builder: (_) => PrintExamDialog(
+        initialFromDate: DateTime.now(),
+        initialToDate: DateTime.now(),
         onPrint: (from, to) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('In lịch từ $from đến $to')));
+          print('In từ ${from.toIso8601String()} đến ${to.toIso8601String()}');
         },
       ),
     );

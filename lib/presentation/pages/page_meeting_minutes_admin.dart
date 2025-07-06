@@ -120,10 +120,14 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
           Expanded(
             child: BlocBuilder<BienBangShcnBloc, BienBanState>(
               builder: (context, state) {
+                print('STATE HIỆN TẠI: $state');
                 if (state is BienBanLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is BienBanLoaded) {
                   List<BienBanSHCN> bienBans = state.bienBanList;
+                  print(
+                    ' ==================Tổng biên bản: ${state.bienBanList.length}',
+                  );
 
                   // 👉 Nếu có ngày được chọn thì lọc theo ngày đó
                   if (selectedDate != null) {
@@ -160,6 +164,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(16),
+
                           title: Text(
                             '${bienBan.lop.tenLop} - ${bienBan.tieuDe}',
                             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -192,9 +197,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                                 '/admin/report_detail_admin',
                                 extra: {
                                   'bienBanId': bienBan.id,
-                                  'lopId': bienBan
-                                      .lop
-                                      .id, // hoặc lopId mà bạn đang có
+                                  'lopId': bienBan.idLop,
                                 },
                               );
 
@@ -219,8 +222,10 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                     },
                   );
                 } else if (state is BienBanError) {
+                  print('LỖI: ${state.message}');
                   return Center(child: Text(state.message));
                 }
+
                 return const SizedBox.shrink();
               },
             ),

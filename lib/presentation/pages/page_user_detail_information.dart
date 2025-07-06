@@ -42,64 +42,75 @@ class _UserDetailInformationPageState extends State<UserDetailInformationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AdminBloc, AdminState>(
-      builder: (context, state) {
-        if (state is AdminLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is AdminSuccess) {
-          final user = state.user;
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 15,
-                    horizontal: 15,
-                  ),
-                  child: AccountInfoSection(user: user),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(child: ButtonLogOutInUser()),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () =>
-                                  _navigateToChangePassword(user.id),
-                              icon: const Icon(Icons.lock),
-                              label: const Text('Đổi mật khẩu'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.blue,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side: const BorderSide(color: Colors.blue),
-                                ),
-                                elevation: 2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return BlocListener<AdminBloc, AdminState>(
+      listener: (context, state) {
+        if (state is AdminError) {
+          final message = state.message.toLowerCase().contains('permission')
+              ? 'Bạn không có quyền thực hiện thao tác này.'
+              : state.message;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message), backgroundColor: Colors.red),
           );
-        } else if (state is AdminError) {
-          return Center(child: Text('Lỗi: ${state.message}'));
-        } else {
-          return const Center(child: Text('Không có dữ liệu'));
         }
       },
+      child: BlocBuilder<AdminBloc, AdminState>(
+        builder: (context, state) {
+          if (state is AdminLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is AdminSuccess) {
+            final user = state.user;
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 15,
+                    ),
+                    child: AccountInfoSection(user: user),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(child: ButtonLogOutInUser()),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () =>
+                                    _navigateToChangePassword(user.id),
+                                icon: const Icon(Icons.lock),
+                                label: const Text('Đổi mật khẩu'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.blue,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: const BorderSide(color: Colors.blue),
+                                  ),
+                                  elevation: 2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(child: Text('Không có dữ liệu'));
+          }
+        },
+      ),
     );
   }
 }

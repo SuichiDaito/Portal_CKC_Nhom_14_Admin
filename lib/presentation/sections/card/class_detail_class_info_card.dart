@@ -6,7 +6,7 @@ class ClassInfoCard extends StatelessWidget {
   final int studentCount;
   final String secretaryName;
   final String teacherName;
-  final List<SinhVien> studentList;
+  final List<StudentWithRole> studentList;
   final void Function(int) onSelectSecretary;
 
   const ClassInfoCard({
@@ -101,9 +101,8 @@ class ClassInfoCard extends StatelessWidget {
   }
 
   void _showSecretarySelectionDialog(BuildContext context) {
-
     final selectableStudents = studentList
-        .where((sv) => sv.trangThai == 0)
+        .where((sv) => sv.sinhVien.trangThai == 0)
         .toList();
 
     showDialog(
@@ -134,15 +133,15 @@ class ClassInfoCard extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundColor: const Color(0xFF1976D2),
                   child: Text(
-                    sv.hoSo.hoTen.substring(0, 1).toUpperCase(),
+                    sv.sinhVien.hoSo.hoTen.substring(0, 1).toUpperCase(),
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
                 title: Text(
-                  sv.hoSo.hoTen,
+                  sv.sinhVien.hoSo.hoTen,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-                subtitle: Text("MSSV: ${sv.maSv}"),
+                subtitle: Text("MSSV: ${sv.sinhVien.maSv}"),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

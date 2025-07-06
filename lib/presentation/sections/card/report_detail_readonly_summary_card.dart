@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
-import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/api/model/admin_thong_tin.dart' hide HoSo;
 
@@ -20,7 +19,7 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
   final String secretaryName;
   final List<ChiTietBienBan> chiTietBienBanList;
   final List<int> absentStudentIds;
-  final List<Map<String, dynamic>> studentList;
+  final List<SinhVien> studentList;
   final Map<int, String> absenceReasons;
 
   const ReportDetailReadonlySummaryCard({
@@ -118,7 +117,7 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
                     print('Danh sách chi tiết biên bản đang rỗng');
                   }
 
-                  final studentList = chiTietBienBanList
+                  final displayedStudents = chiTietBienBanList
                       .map(
                         (e) => {
                           'mssv': e.sinhVien.maSv,

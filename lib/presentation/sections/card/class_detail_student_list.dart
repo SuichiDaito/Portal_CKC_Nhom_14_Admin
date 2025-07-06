@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class StudentList extends StatelessWidget {
-  final List<SinhVien> studentList;
-  final void Function(SinhVien) onTapStudent;
+  final List<StudentWithRole> studentList;
+  final void Function(StudentWithRole) onTapStudent;
 
   const StudentList({
     super.key,
@@ -53,29 +53,31 @@ class StudentList extends StatelessWidget {
             ),
 
             title: Text(
-              student.hoSo.hoTen,
+              student.sinhVien.hoSo.hoTen,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                Text("MSSV: ${student.maSv}"),
+                Text("MSSV: ${student.sinhVien.maSv}"),
                 Text("Chức vụ: ${student.chucVu == 1 ? 'Thư ký' : 'Không có'}"),
               ],
             ),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: student.trangThai == 0
+                color: student.sinhVien.trangThai == 0
                     ? Colors.green[50]
                     : Colors.red[50],
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                'Trạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[student.trangThai] ?? 'Không rõ'}',
+                'Trạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[student.sinhVien.trangThai] ?? 'Không rõ'}',
                 style: TextStyle(
-                  color: student.trangThai == 0 ? Colors.green : Colors.red,
+                  color: student.sinhVien.trangThai == 0
+                      ? Colors.green
+                      : Colors.red,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),

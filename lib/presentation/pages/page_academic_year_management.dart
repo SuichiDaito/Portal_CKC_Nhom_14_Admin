@@ -157,8 +157,12 @@ class _PageAcademicYearManagementState
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         } else if (state is TuanError) {
+          final message = state.message.toLowerCase().contains('permission')
+              ? 'Bạn không có quyền thực hiện thao tác này.'
+              : state.message;
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(content: Text(message), backgroundColor: Colors.red),
           );
         }
       },

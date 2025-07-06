@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:portal_ckc/api/model/admin_ho_so.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 class AbsentStudentManager extends StatelessWidget {
-  final List<Map<String, dynamic>> studentList;
+  final List<SinhVien> studentList;
   final List<int> absentStudentIds;
   final void Function(int) onAddAbsentStudent;
   final void Function(int) onRemoveAbsentStudent;
@@ -25,7 +27,7 @@ class AbsentStudentManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final availableStudents = studentList
-        .where((s) => !absentStudentIds.contains(s['id']))
+        .where((s) => !absentStudentIds.contains(s.id))
         .toList();
 
     return Padding(
@@ -39,19 +41,19 @@ class AbsentStudentManager extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          Autocomplete<Map<String, dynamic>>(
+          Autocomplete<SinhVien>(
             optionsBuilder: (TextEditingValue textEditingValue) {
               if (textEditingValue.text.isEmpty) return const Iterable.empty();
 
               return availableStudents.where((student) {
-                final mssv = student['mssv']!.toLowerCase();
-                final name = student['name']!.toLowerCase();
+                final mssv = student.maSv.toLowerCase();
+                final name = student.hoSo.hoTen.toLowerCase();
                 final query = textEditingValue.text.toLowerCase();
                 return mssv.contains(query) || name.contains(query);
               });
             },
             displayStringForOption: (student) =>
-                '${student['mssv']} - ${student['name']}',
+                '${student.maSv} - ${student.hoSo.hoTen}',
             fieldViewBuilder:
                 (context, controller, focusNode, onFieldSubmitted) {
                   return StatefulBuilder(
@@ -79,9 +81,7 @@ class AbsentStudentManager extends StatelessWidget {
                   );
                 },
             onSelected: (student) {
-              if (student['id'] != null) {
-                onAddAbsentStudent(student['id'] as int);
-              }
+              onAddAbsentStudent(student.id);
               Future.delayed(const Duration(milliseconds: 100), () {
                 FocusManager.instance.primaryFocus?.unfocus();
               });
@@ -94,12 +94,27 @@ class AbsentStudentManager extends StatelessWidget {
             Column(
               children: absentStudentIds.map((id) {
                 final student = studentList.firstWhere(
-                  (s) => s['id'] == id,
-                  orElse: () => <String, Object>{
-                    'id': id,
-                    'mssv': '',
-                    'name': '',
-                  },
+                  (s) => s.id == id,
+                  orElse: () => SinhVien(
+                    id: id,
+                    maSv: '',
+                    chucVu: 0,
+                    trangThai: 0,
+                    hoSo: HoSo(
+                      id: -1,
+                      hoTen: '',
+                      email: '',
+                      password: '',
+                      soDienThoai: '',
+                      ngaySinh: '',
+                      gioiTinh: '',
+                      cccd: '',
+                      diaChi: '',
+                      anh: '',
+                    ),
+                    lop: studentList.first.lop,
+                    diemRenLuyens: [],
+                  ),
                 );
 
                 return Container(
@@ -124,7 +139,7 @@ class AbsentStudentManager extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '${student['mssv']} - ${student['name']}',
+                              '${student.maSv} - ${student.hoSo.hoTen}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,

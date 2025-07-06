@@ -7,7 +7,7 @@ class ClassSearchBar extends StatelessWidget {
   final String selectedStatus;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onStatusChanged;
-  final List<SinhVien> studentList;
+  final List<StudentWithRole> studentList;
   final int idClass;
   final int idNienKhoa;
 

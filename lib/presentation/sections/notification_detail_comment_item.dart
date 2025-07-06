@@ -159,7 +159,6 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
             ],
           ),
 
-          // 🔽 Trường nhập trả lời nếu đang trả lời comment này
           if (commentIdBeingReplied == comment.id)
             Padding(
               padding: const EdgeInsets.only(left: 50.0, top: 8),
@@ -203,14 +202,17 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
               ),
             ),
 
-          // 🔁 Hiển thị bình luận con
           if (comment.binhLuanCon.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(left: 50.0, top: 8),
+              padding: const EdgeInsets.only(left: 10.0, top: 8),
               child: Column(
                 children: comment.binhLuanCon
                     .map(
-                      (reply) => _buildComment(context, reply, replyTo: name),
+                      (reply) => _buildComment(
+                        context,
+                        reply,
+                        replyTo: replyTo ?? name,
+                      ),
                     )
                     .toList(),
               ),

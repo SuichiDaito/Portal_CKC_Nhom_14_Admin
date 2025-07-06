@@ -65,9 +65,13 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
       label: 'Lần ${_currentSchedule.lanThi}',
       icon: Icons.numbers,
     );
-    _durationController = TextEditingController(
-      text: _currentSchedule.thoiGianThi.toString(),
-    );
+    final int durationMinutes = _currentSchedule.thoiGianThi;
+    final int hours = durationMinutes ~/ 60;
+    final int minutes = durationMinutes % 60;
+    final String formattedDuration =
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+
+    _durationController = TextEditingController(text: formattedDuration);
   }
 
   @override
@@ -122,12 +126,15 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
 
   void _saveChanges() {
     try {
+      final parts = _durationController.text.split(':');
+      final int totalMinutes = int.parse(parts[0]) * 60 + int.parse(parts[1]);
+
       final updated = _currentSchedule.copyWith(
         idGiamThi1: int.tryParse(_selectedProctor1?.value ?? '0') ?? 0,
         idGiamThi2: int.tryParse(_selectedProctor2?.value ?? '0') ?? 0,
         idPhongThi: int.tryParse(_selectedRoom?.value ?? '0') ?? 0,
         lanThi: int.tryParse(_selectedExamAttempt?.value ?? '1') ?? 1,
-        thoiGianThi: int.tryParse(_durationController.text) ?? 0,
+        thoiGianThi: totalMinutes,
       );
       widget.onSave(updated);
       _toggleEditMode();
@@ -287,6 +294,17 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
   }
 
   Widget _buildTimeField(String label, String time) {
+    final String formattedTime;
+    if (time.split(':').length == 3) {
+      formattedTime = DateFormat(
+        'HH:mm',
+      ).format(DateFormat('HH:mm:ss').parse(time));
+    } else {
+      formattedTime = DateFormat(
+        'HH:mm',
+      ).format(DateFormat('HH:mm').parse(time));
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -305,7 +323,7 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
                   borderRadius: BorderRadius.circular(4),
                   color: Colors.grey.shade100,
                 ),
-                child: Text(time),
+                child: Text(formattedTime),
               ),
             ),
           ),

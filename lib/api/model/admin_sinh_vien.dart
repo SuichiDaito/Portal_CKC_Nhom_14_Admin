@@ -44,6 +44,61 @@ class SinhVien {
           [],
     );
   }
+  factory SinhVien.empty() {
+    return SinhVien(
+      id: 0,
+      maSv: '',
+      idLop: null,
+      idHoSo: null,
+      chucVu: null,
+      trangThai: 0,
+      hoSo: HoSo.empty(),
+      lop: Lop.empty(),
+      diemRenLuyens: [],
+    );
+  }
+}
+
+class DanhSachSinhVienResponse {
+  final Lop lop;
+  final List<StudentWithRole> students;
+
+  DanhSachSinhVienResponse({required this.lop, required this.students});
+
+  factory DanhSachSinhVienResponse.fromJson(Map<String, dynamic> json) {
+    return DanhSachSinhVienResponse(
+      lop: Lop.fromJson(json['lop']),
+      students: (json['sinh_viens'] as List<dynamic>)
+          .map((e) => StudentWithRole.fromJson(e))
+          .toList(),
+    );
+  }
+}
+
+class StudentWithRole {
+  final int id;
+  final int idLop;
+  final int idSinhVien;
+  final int chucVu;
+  final SinhVien sinhVien;
+
+  StudentWithRole({
+    required this.id,
+    required this.idLop,
+    required this.idSinhVien,
+    required this.chucVu,
+    required this.sinhVien,
+  });
+
+  factory StudentWithRole.fromJson(Map<String, dynamic> json) {
+    return StudentWithRole(
+      id: json['id'],
+      idLop: json['id_lop'],
+      idSinhVien: json['id_sinh_vien'],
+      chucVu: json['chuc_vu'],
+      sinhVien: SinhVien.fromJson(json['sinh_vien']),
+    );
+  }
 }
 
 class StudentWithScore {
@@ -57,13 +112,11 @@ class StudentWithScore {
     this.isSelected = false,
   });
 
-  // Tạo từ JSON gốc của "sinh_vien", có thể truyền thêm `month`, `year` để tự xử lý điểm rèn luyện
   factory StudentWithScore.fromJson(
     Map<String, dynamic> json, {
     required int month,
     required int year,
   }) {
-    // Tìm điểm rèn luyện tương ứng tháng và năm
     String score = '-';
     if (json['diem_ren_luyens'] != null) {
       for (final item in json['diem_ren_luyens']) {

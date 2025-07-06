@@ -49,6 +49,13 @@ class _PageExamScheduleGroupedAdminState
 
   List<ChiTietChuongTrinhDaoTao> _allCTCTDT = [];
   List<MonHoc> _filteredMonHocs = [];
+  String formatTime(String time) {
+    if (time.split(':').length == 3) {
+      return DateFormat('HH:mm').format(DateFormat('HH:mm:ss').parse(time));
+    } else {
+      return DateFormat('HH:mm').format(DateFormat('HH:mm').parse(time));
+    }
+  }
 
   @override
   void initState() {
@@ -151,7 +158,7 @@ class _PageExamScheduleGroupedAdminState
                     if (userState is UserError) {
                       return Center(child: Text('Lỗi tải giảng viên'));
                     }
-                    final instructors = (userState as UserLoaded).users;
+                    final instructors = (userState);
 
                     return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
                       builder: (context, nkState) {
@@ -387,37 +394,40 @@ class _PageExamScheduleGroupedAdminState
                                                                   .thoiGianThi,
                                                           'trang_thai':
                                                               updated.trangThai,
+                                                          'id_tuan': 1,
                                                         }),
                                                       );
                                                     } else {
                                                       context.read<LichThiBloc>().add(
-                                                        UpdateLichThi(
-                                                          updated.id,
-                                                          {
-                                                            'ngay_thi':
-                                                                updated.ngayThi,
-                                                            'gio_bat_dau':
+                                                        UpdateLichThi(updated.id, {
+                                                          'id_lop_hoc_phan':
+                                                              updated
+                                                                  .idLopHocPhan,
+                                                          'ngay_thi':
+                                                              updated.ngayThi,
+                                                          'gio_bat_dau':
+                                                              formatTime(
                                                                 updated
                                                                     .gioBatDau,
-                                                            'id_giam_thi_1':
-                                                                updated
-                                                                    .idGiamThi1,
-                                                            'id_giam_thi_2':
-                                                                updated
-                                                                    .idGiamThi2,
-                                                            'id_phong_thi':
-                                                                updated
-                                                                    .idPhongThi,
-                                                            'lan_thi':
-                                                                updated.lanThi,
-                                                            'thoi_gian_thi':
-                                                                updated
-                                                                    .thoiGianThi,
-                                                            'trang_thai':
-                                                                updated
-                                                                    .trangThai,
-                                                          },
-                                                        ),
+                                                              ),
+                                                          'id_giam_thi_1':
+                                                              updated
+                                                                  .idGiamThi1,
+                                                          'id_giam_thi_2':
+                                                              updated
+                                                                  .idGiamThi2,
+                                                          'id_phong_thi':
+                                                              updated
+                                                                  .idPhongThi,
+                                                          'lan_thi':
+                                                              updated.lanThi,
+                                                          'thoi_gian_thi':
+                                                              updated
+                                                                  .thoiGianThi,
+                                                          'trang_thai':
+                                                              updated.trangThai,
+                                                          'id_tuan': 1,
+                                                        }),
                                                       );
                                                     }
                                                   },

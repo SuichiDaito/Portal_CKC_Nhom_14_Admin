@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
+import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
@@ -46,7 +47,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
   Map<int, bool> isExcusedMap = {};
 
   List<Map<String, dynamic>> weekOptions = [];
-  List<String> rooms = ['P101', 'P102', 'P201', 'Hội trường'];
+  List<String> rooms = [];
 
   @override
   void initState() {
@@ -124,14 +125,8 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                             );
                           }
                           if (adminState is StudentListLoaded) {
-                            final studentList = adminState.sinhViens
-                                .map(
-                                  (sv) => {
-                                    'id': sv.id,
-                                    'mssv': sv.maSv,
-                                    'name': sv.hoSo.hoTen,
-                                  },
-                                )
+                            final studentList = adminState.students
+                                .map((e) => e.sinhVien)
                                 .toList();
 
                             if (!isInitialized) {
@@ -197,10 +192,9 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                                                     : 0,
                                               },
                                           },
+                                          'trang_thai': 0,
                                         };
-                                        print(
-                                          jsonEncode(data),
-                                        ); // test xem có lỗi không
+                                        print(jsonEncode(data));
                                         context.read<BienBangShcnBloc>().add(
                                           UpdateBienBanEvent(
                                             bienBanId: bienBan.id,
@@ -238,10 +232,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
     );
   }
 
-  Widget _buildPendingView(
-    List<Map<String, dynamic>> studentList,
-    BienBanSHCN bienBan,
-  ) {
+  Widget _buildPendingView(List<SinhVien> studentList, BienBanSHCN bienBan) {
     final total = studentList.length;
     final absent = absentStudentIds.length;
     final present = total - absent;
@@ -316,7 +307,21 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                         absenceReasons.remove(id);
                         isExcusedMap.remove(id);
                       });
+
+                      final matches = bienBan.chiTiet
+                          .where((e) => e.sinhVien.id == id)
+                          .toList();
+                      final chiTiet = matches.isNotEmpty ? matches.first : null;
+
+                      if (chiTiet != null) {
+                        context.read<BienBangShcnBloc>().add(
+                          DeleteSinhVienVangEvent(chiTiet.id),
+                        );
+                      } else {
+                        print('Không tìm thấy chiTietId cho sinh viên ID $id');
+                      }
                     },
+
                     absenceReasons: absenceReasons,
                     isExcusedMap: isExcusedMap,
                     onReasonChanged: (id, reason) {

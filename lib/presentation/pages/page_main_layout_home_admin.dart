@@ -61,99 +61,114 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
             HeaderHomeAdminSection(nameLogin: _nameUser),
             const SizedBox(height: 20),
 
-            BlocBuilder<AdminBloc, AdminState>(
-              builder: (context, state) {
-                if (state is AdminLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is AdminSuccess) {
-                  final user = state.user;
-                  final hoSo = user.hoSo;
-                  return UserProfileCardHomeAdmin(
-                    nameUser: hoSo?.hoTen ?? 'Không có tên',
-                    idTeacher: user.id.toString(),
-                    email: hoSo?.email ?? 'Không có email',
+            // Admin Info
+            BlocListener<AdminBloc, AdminState>(
+              listener: (context, state) {
+                if (state is AdminError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
                   );
-                } else if (state is AdminError) {
-                  return Text(
-                    '❌ ${state.message}',
-                    style: const TextStyle(color: Colors.red),
-                  );
-                } else {
-                  return const SizedBox.shrink();
                 }
               },
+              child: BlocBuilder<AdminBloc, AdminState>(
+                builder: (context, state) {
+                  if (state is AdminLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is AdminSuccess) {
+                    final user = state.user;
+                    final hoSo = user.hoSo;
+                    return UserProfileCardHomeAdmin(
+                      nameUser: hoSo?.hoTen ?? 'Không có tên',
+                      idTeacher: user.id.toString(),
+                      email: hoSo?.email ?? 'Không có email',
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              ),
             ),
 
             const SizedBox(height: 20),
 
             _buildFilterTabs(),
-
             const SizedBox(height: 10),
 
-            BlocBuilder<ThongBaoBloc, ThongBaoState>(
-              builder: (context, state) {
-                if (state is TBLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is TBListLoaded) {
-                  final now = DateTime.now();
-                  final recentList = state.list
-                      .where(
-                        (e) => e.ngayGui.isAfter(
-                          now.subtract(const Duration(days: 30)),
-                        ),
-                      )
-                      .toList();
+            // Thông báo
+            BlocListener<ThongBaoBloc, ThongBaoState>(
+              listener: (context, state) {
+                if (state is TBFailure) {
+                  final message =
+                      state.error.toLowerCase().contains('permission')
+                      ? 'Bạn không có quyền truy cập thông báo này.'
+                      : state.error;
 
-                  final khoaNoti = state.list
-                      .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
-                      .toList();
-                  final phongNoti = state.list
-                      .where((e) => e.tuAi == 'phong_ctct' && e.trangThai == 1)
-                      .toList();
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (selectedFilter == 'Tất cả' ||
-                          selectedFilter == 'Khoa')
-                        khoaNoti.isNotEmpty
-                            ? NotificationsHomeAdmin(
-                                typeNotification: 'Thông báo khoa',
-                                notifications: khoaNoti,
-                                onReload: () {
-                                  setState(() {});
-                                  context.read<ThongBaoBloc>().add(
-                                    FetchThongBaoList(),
-                                  );
-                                },
-                              )
-                            : const Text('📭 Chưa có thông báo khoa'),
-
-                      if (selectedFilter == 'Tất cả' ||
-                          selectedFilter == 'Phòng Công Tác Chính Trị')
-                        phongNoti.isNotEmpty
-                            ? NotificationsHomeAdmin(
-                                typeNotification: 'Thông báo phòng ctct',
-                                notifications: phongNoti,
-                                onReload: () {
-                                  setState(() {});
-                                  context.read<ThongBaoBloc>().add(
-                                    FetchThongBaoList(),
-                                  );
-                                },
-                              )
-                            : const Text('Chưa có thông báo phòng ctct'),
-                    ],
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(message),
+                      backgroundColor: Colors.red,
+                    ),
                   );
-                } else if (state is TBFailure) {
-                  return Text(
-                    '❌ ${state.error}',
-                    style: const TextStyle(color: Colors.red),
-                  );
-                } else {
-                  return const SizedBox.shrink();
                 }
               },
+              child: BlocBuilder<ThongBaoBloc, ThongBaoState>(
+                builder: (context, state) {
+                  if (state is TBLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is TBListLoaded) {
+                    final now = DateTime.now();
+
+                    final khoaNoti = state.list
+                        .where((e) => e.tuAi == 'khoa' && e.trangThai == 1)
+                        .toList();
+                    final phongNoti = state.list
+                        .where(
+                          (e) => e.tuAi == 'phong_ctct' && e.trangThai == 1,
+                        )
+                        .toList();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (selectedFilter == 'Tất cả' ||
+                            selectedFilter == 'Khoa')
+                          khoaNoti.isNotEmpty
+                              ? NotificationsHomeAdmin(
+                                  typeNotification: 'Thông báo khoa',
+                                  notifications: khoaNoti,
+                                  onReload: () {
+                                    setState(() {});
+                                    context.read<ThongBaoBloc>().add(
+                                      FetchThongBaoList(),
+                                    );
+                                  },
+                                )
+                              : const Text('📭 Chưa có thông báo khoa'),
+
+                        if (selectedFilter == 'Tất cả' ||
+                            selectedFilter == 'Phòng Công Tác Chính Trị')
+                          phongNoti.isNotEmpty
+                              ? NotificationsHomeAdmin(
+                                  typeNotification: 'Thông báo phòng ctct',
+                                  notifications: phongNoti,
+                                  onReload: () {
+                                    setState(() {});
+                                    context.read<ThongBaoBloc>().add(
+                                      FetchThongBaoList(),
+                                    );
+                                  },
+                                )
+                              : const Text('Chưa có thông báo phòng ctct'),
+                      ],
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              ),
             ),
           ],
         ),

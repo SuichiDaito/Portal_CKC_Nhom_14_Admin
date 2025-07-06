@@ -115,11 +115,11 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
               ],
             ),
             const Divider(),
-            _buildInfoRow(
-              Icons.school,
-              'Khoa:',
-              user.boMon!.nganhHoc!.khoa!.tenKhoa,
-            ),
+            // _buildInfoRow(
+            //   Icons.school,
+            //   'Khoa:',
+            //   user.boMon!.nganhHoc!.khoa!.tenKhoa,
+            // ),
             _buildInfoRow(Icons.account_tree, 'Bộ môn:', user.boMon!.tenBoMon),
             _buildInfoRow(Icons.badge, 'Mã GV:', "GV00${user.id}"),
             _buildInfoRow(Icons.person, 'Tên GV:', user.hoSo!.hoTen),

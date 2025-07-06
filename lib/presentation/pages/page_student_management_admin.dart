@@ -58,18 +58,6 @@ class _PageStudentManagementAdminState
     );
   }
 
-  List<SinhVien> get _filteredStudents {
-    return _allStudents.where((s) {
-      final matchClass =
-          _selectedClass == null ||
-          _selectedClass!.value == 'all' ||
-          s.idLop == _lopTenToId[_selectedClass!.value];
-      final matchStatus =
-          _currentFilter == null || s.trangThai == _currentFilter!.index;
-      return matchClass && matchStatus;
-    }).toList();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -187,7 +175,7 @@ class _PageStudentManagementAdminState
                 const SizedBox(height: 8),
 
                 Expanded(
-                  child: _filteredStudents.isEmpty
+                  child: _allStudents.isEmpty
                       ? const Center(
                           child: Text(
                             'Không tìm thấy sinh viên nào phù hợp.',
@@ -195,9 +183,9 @@ class _PageStudentManagementAdminState
                           ),
                         )
                       : ListView.builder(
-                          itemCount: _filteredStudents.length,
+                          itemCount: _allStudents.length,
                           itemBuilder: (context, index) {
-                            final student = _filteredStudents[index];
+                            final student = _allStudents[index];
                             return StudentListItem(
                               student: student,
                               onDetailPressed: () =>

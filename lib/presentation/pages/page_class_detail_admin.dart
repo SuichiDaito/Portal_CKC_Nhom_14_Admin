@@ -82,65 +82,26 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
             }
 
             if (state is StudentListLoaded) {
-              final studentList = state.sinhViens;
+              final studentWithRoles = state.students;
+              final studentList = studentWithRoles
+                  .map((e) => e.sinhVien)
+                  .toList();
+
               // Tìm sinh viên là thư ký (chucVu == 0)
-              final currentSecretary = studentList.firstWhere(
+              final currentSecretary = state.students.firstWhere(
                 (s) => s.chucVu == 1,
-                orElse: () => SinhVien(
+                orElse: () => StudentWithRole(
                   id: -1,
+                  idLop: -1,
+                  idSinhVien: -1,
                   chucVu: 0,
-                  maSv: '',
-                  trangThai: 0,
-                  hoSo: HoSo(
-                    id: -1,
-                    hoTen: 'Không có thư ký',
-                    email: '',
-                    password: '',
-                    soDienThoai: '',
-                    ngaySinh: '',
-                    gioiTinh: '',
-                    cccd: '',
-                    diaChi: '',
-                    anh: '',
-                  ),
-                  lop: Lop(
-                    id: -1,
-                    tenLop: '',
-                    idNienKhoa: -1,
-                    idGvcn: -1,
-                    siSo: 0,
-                    nienKhoa: NienKhoa(
-                      id: -1,
-                      tenNienKhoa: '',
-                      namBatDau: '',
-                      namKetThuc: '',
-                      trangThai: 0,
-                      hocKys: [],
-                    ),
-                    giangVien: User(
-                      id: -1,
-                      hoSo: HoSo(
-                        id: -1,
-                        hoTen: '',
-                        email: '',
-                        password: '',
-                        soDienThoai: '',
-                        ngaySinh: '',
-                        gioiTinh: '',
-                        cccd: '',
-                        diaChi: '',
-                        anh: '',
-                      ),
-                      taiKhoan: '',
-                      trangThai: 0,
-                      roles: [],
-                    ),
-                  ),
-                  diemRenLuyens: [],
+                  sinhVien: SinhVien.empty(),
                 ),
               );
-
-              final filteredStudents = studentList.where((student) {
+              final filteredStudentWithRoles = studentWithRoles.where((
+                studentWithRole,
+              ) {
+                final student = studentWithRole.sinhVien;
                 final name = student.hoSo.hoTen.toLowerCase();
                 final id = student.maSv.toLowerCase();
                 final matchesQuery =
@@ -161,16 +122,24 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                       className: widget.lop.tenLop,
                       studentCount: studentList.length,
                       teacherName: _teacher?.hoSo?.hoTen ?? 'Đang tải...',
-                      secretaryName: currentSecretary?.hoSo.hoTen ?? 'Chưa có',
-                      studentList: studentList,
+                      secretaryName:
+                          currentSecretary?.sinhVien.hoSo.hoTen ?? 'Chưa có',
+                      studentList: filteredStudentWithRoles,
                       onSelectSecretary: (newSecretaryId) async {
                         final lopBloc = context.read<LopBloc>();
+
+                        final newSecretaryStudentId = studentWithRoles
+                            .firstWhere((s) => s.id == newSecretaryId)
+                            .idSinhVien;
+
+                        final currentSecretaryStudentId =
+                            currentSecretary.idSinhVien;
 
                         if (currentSecretary.id != -1 &&
                             currentSecretary.id != newSecretaryId) {
                           lopBloc.add(
                             ChangeStudentRoleEvent(
-                              sinhVienId: currentSecretary.id,
+                              sinhVienId: currentSecretaryStudentId,
                               chucVu: 0,
                             ),
                           );
@@ -178,13 +147,12 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
 
                         lopBloc.add(
                           ChangeStudentRoleEvent(
-                            sinhVienId: newSecretaryId,
+                            sinhVienId: newSecretaryStudentId,
                             chucVu: 1,
                           ),
                         );
                       },
                     ),
-                    const SizedBox(height: 20),
                     ClassSearchBar(
                       searchQuery: searchQuery,
                       selectedStatus: selectedStatus,
@@ -192,20 +160,20 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                           setState(() => searchQuery = value),
                       onStatusChanged: (value) =>
                           setState(() => selectedStatus = value),
-                      studentList: filteredStudents,
+                      studentList: filteredStudentWithRoles,
                       idClass: widget.lop.id,
                       idNienKhoa: widget.lop.idNienKhoa,
                     ),
                     const SizedBox(height: 16),
                     StudentList(
-                      studentList: filteredStudents,
+                      studentList: filteredStudentWithRoles,
                       onTapStudent: (sv) {
                         showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
                             title: const Text('Thông tin sinh viên'),
                             content: Text(
-                              'Tên: ${sv.hoSo.hoTen}\nMSSV: ${sv.maSv}\nChức vụ: ${sv.chucVu == 1 ? 'Thư ký' : 'Không có'}\nTrạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[sv.trangThai] ?? 'Không rõ'}',
+                              'Tên: ${sv.sinhVien.hoSo.hoTen}// ${sv.sinhVien.id}\nMSSV: ${sv.sinhVien.maSv}\nChức vụ: ${sv.chucVu == 1 ? 'Thư ký' : 'Không có'}\nTrạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[sv.sinhVien.trangThai] ?? 'Không rõ'}',
                             ),
                             actions: [
                               TextButton(

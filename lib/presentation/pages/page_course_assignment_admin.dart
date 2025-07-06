@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_chuong_trinh_dao_tao.dart';
 import 'package:portal_ckc/api/model/admin_hoc_ky.dart';
 import 'package:portal_ckc/api/model/admin_mon_hoc.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nganh_khoa_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/user_bloc.dart';
@@ -26,6 +27,7 @@ class PageCourseAssignmentAdmin extends StatefulWidget {
 
 class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<User> instructors = [];
 
   String? _selectedNienKhoaId;
   HocKy? _selectedHocKy;
@@ -134,7 +136,12 @@ class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
                     if (userState is UserError) {
                       return Center(child: Text('Lỗi tải giảng viên'));
                     }
-                    final instructors = (userState as UserLoaded).users;
+                    if (userState is UserLoaded) {
+                      instructors = userState.users;
+                      // Tiếp tục xử lý
+                    } else {
+                      // Xử lý trường hợp khác (ví dụ: loading, error,...)
+                    }
 
                     return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
                       builder: (context, nkState) {

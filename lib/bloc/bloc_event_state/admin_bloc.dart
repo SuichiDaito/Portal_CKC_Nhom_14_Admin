@@ -45,16 +45,21 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
               await prefs.setInt('user_id', user.id);
-              await prefs.setInt('user_role', user.roles.first.id);
-              await prefs.setString('user_name_role', user.roles.first.name);
+              if (user.roles.isNotEmpty) {
+                await prefs.setInt('user_role', user.roles.first.id);
+                await prefs.setString('user_name_role', user.roles.first.name);
+              } else {
+                await prefs.setInt('user_role', -1);
+                await prefs.setString('user_name_role', 'Chưa có vai trò');
+              }
+
               await prefs.setString(
                 'user_name_fullname',
                 user.hoSo?.hoTen ?? "Lỗi khi tải ",
               );
               print('✅ Token đã được lưu: $token');
               print('✅ User ID đã được lưu: ${user.id}');
-              print('✅ ID roles đã được lưu: ${user.roles.first.id}');
-              print('✅ Name roles đã được lưu: ${user.roles.first.name}');
+
               print('✅ User Name đã được lưu: ${user.hoSo?.hoTen}');
             }
             emit(AdminLoaded(user));
@@ -140,9 +145,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         final body = response.body;
         if (body is Map<String, dynamic> && body.containsKey('sinh_viens')) {
           final dataList = body['sinh_viens'] as List<dynamic>;
-          final sinhViens = dataList.map((e) => SinhVien.fromJson(e)).toList();
-          print("✅ Tổng số sinh viên: ${sinhViens.length}");
-          emit(StudentListLoaded(sinhViens));
+          final studentsWithRole = dataList
+              .map((e) => StudentWithRole.fromJson(e))
+              .toList();
+          print("✅ Tổng số sinh viên: ${studentsWithRole.length}");
+          emit(StudentListLoaded(studentsWithRole));
         } else {
           emit(AdminError('Phản hồi không đúng định dạng (thiếu sinh_viens)'));
         }
