@@ -4,6 +4,7 @@ import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 
 class ClassListSection extends StatefulWidget {
   final List<dynamic> classes;
+
   final Function(String, String, String) onClassInfoChanged;
   final List<User> instructors;
   const ClassListSection({
@@ -83,6 +84,7 @@ class _ClassListSectionState extends State<ClassListSection> {
     final key = classInfo.id.toString();
     final isEditing = _editingStates[key] ?? false;
     final instructorItems = widget.instructors;
+    final bool isLocked = classInfo.trangThaiNopBangDiem == 1;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -159,7 +161,7 @@ class _ClassListSectionState extends State<ClassListSection> {
               const SizedBox(width: 6),
               Expanded(
                 child: AbsorbPointer(
-                  absorbing: !isEditing,
+                  absorbing: !isEditing || isLocked, // khóa nếu isLocked
                   child: DropdownButtonFormField<String>(
                     value: classInfo.gv?.id != null
                         ? classInfo.gv!.id.toString()
@@ -171,11 +173,11 @@ class _ClassListSectionState extends State<ClassListSection> {
                       );
                     }).toList(),
                     onChanged: (value) {
-                      if (value != null) {
+                      if (value != null && !isLocked) {
                         widget.onClassInfoChanged(
-                          classInfo.id.toString(), // ✅ ID lớp học phần
-                          'id_giang_vien', // ✅ field
-                          value, // ✅ ID giảng viên
+                          classInfo.id.toString(),
+                          'id_giang_vien',
+                          value,
                         );
                       }
                     },
@@ -188,8 +190,10 @@ class _ClassListSectionState extends State<ClassListSection> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      filled: !isEditing,
-                      fillColor: !isEditing ? Colors.grey.shade100 : null,
+                      filled: !isEditing || isLocked,
+                      fillColor: (!isEditing || isLocked)
+                          ? Colors.grey.shade100
+                          : null,
                     ),
                   ),
                 ),
@@ -198,14 +202,30 @@ class _ClassListSectionState extends State<ClassListSection> {
               IconButton(
                 icon: Icon(
                   isEditing ? Icons.check : Icons.edit,
-                  color: isEditing ? Colors.green : Colors.grey,
+                  color: isEditing
+                      ? Colors.green
+                      : (isLocked ? Colors.grey.shade400 : Colors.grey),
                 ),
-                tooltip: isEditing ? 'Xác nhận' : 'Chỉnh sửa',
-                onPressed: () {
-                  setState(() {
-                    _editingStates[key] = !isEditing;
-                  });
-                },
+                tooltip: isLocked
+                    ? 'Không thể chỉnh sửa (Đã nộp bảng điểm)'
+                    : (isEditing ? 'Xác nhận' : 'Chỉnh sửa'),
+                onPressed: isLocked
+                    ? () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text(
+                              'Lớp này đã nộp bảng điểm, không thể chỉnh sửa giảng viên!',
+                            ),
+                            backgroundColor: Colors.redAccent,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    : () {
+                        setState(() {
+                          _editingStates[key] = !isEditing;
+                        });
+                      },
               ),
             ],
           ),

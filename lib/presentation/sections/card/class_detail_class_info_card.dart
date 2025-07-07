@@ -108,7 +108,7 @@ class ClassInfoCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white, // Nền trắng
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Center(
           child: Text(
@@ -148,7 +148,7 @@ class ClassInfoCard extends StatelessWidget {
                 tileColor: Colors.grey[100],
                 onTap: () {
                   Navigator.pop(context);
-                  onSelectSecretary(sv.sinhVien.id);
+                  onSelectSecretary(sv.id);
                 },
               );
             },

@@ -49,6 +49,36 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               if (user.roles.isNotEmpty) {
                 await prefs.setInt('user_role', user.roles.first.id);
                 await prefs.setString('user_name_role', user.roles.first.name);
+                final roles = userJson['roles'] as List<dynamic>? ?? [];
+                final Set<String> permNamesSet = {};
+
+                for (final role in roles) {
+                  final perms = role['permissions'] as List<dynamic>? ?? [];
+                  for (final p in perms) {
+                    final name = p['name']?.toString();
+                    if (name != null && name.isNotEmpty) {
+                      permNamesSet.add(name);
+                    }
+                  }
+                }
+
+                final permNamesList = permNamesSet.toList();
+                await prefs.setStringList('user_permissions', permNamesList);
+
+                final Set<String> permIdsSet = {};
+                for (final role in roles) {
+                  final perms = role['permissions'] as List<dynamic>? ?? [];
+                  for (final p in perms) {
+                    final id = p['id']?.toString();
+                    if (id != null && id.isNotEmpty) {
+                      permIdsSet.add(id);
+                    }
+                  }
+                }
+                await prefs.setStringList(
+                  'user_permission_ids',
+                  permIdsSet.toList(),
+                );
               } else {
                 await prefs.setInt('user_role', -1);
                 await prefs.setString('user_name_role', 'Chưa có vai trò');

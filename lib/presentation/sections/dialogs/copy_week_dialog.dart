@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
+import 'package:portal_ckc/bloc/event/thoi_khoa_bieu_event.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
 
@@ -22,21 +25,64 @@ Future<void> showScheduleCopyDialog({
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            DropdownSelector(
-              label: 'Chép từ tuần',
-              selectedItem: weeks.firstOrNull,
-              items: weeks,
-              onChanged: (item) {
-                selectedSourceWeekId = int.tryParse(item?.value ?? '');
+            Autocomplete<DropdownItem>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                return weeks.where((DropdownItem option) {
+                  return option.label.toLowerCase().contains(
+                    textEditingValue.text.toLowerCase(),
+                  );
+                });
+              },
+              displayStringForOption: (DropdownItem option) => option.label,
+              fieldViewBuilder:
+                  (
+                    BuildContext context,
+                    TextEditingController textController,
+                    FocusNode focusNode,
+                    VoidCallback onFieldSubmitted,
+                  ) {
+                    return TextField(
+                      controller: textController,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(
+                        labelText: 'Chép từ tuần',
+                        border: OutlineInputBorder(),
+                      ),
+                    );
+                  },
+              onSelected: (DropdownItem selected) {
+                selectedSourceWeekId = int.tryParse(selected.value);
               },
             ),
             const SizedBox(height: 12),
-            DropdownSelector(
-              label: 'Đến tuần',
-              selectedItem: weeks.firstOrNull,
-              items: weeks,
-              onChanged: (item) {
-                selectedTargetWeekId = int.tryParse(item?.value ?? '');
+            Autocomplete<DropdownItem>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                return weeks.where((DropdownItem option) {
+                  return option.label.toLowerCase().contains(
+                    textEditingValue.text.toLowerCase(),
+                  );
+                });
+              },
+              displayStringForOption: (DropdownItem option) => option.label,
+              fieldViewBuilder:
+                  (
+                    BuildContext context,
+                    TextEditingController textController,
+                    FocusNode focusNode,
+                    VoidCallback onFieldSubmitted,
+                  ) {
+                    return TextField(
+                      controller: textController,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(
+                        labelText: 'Đến tuần',
+                        border: OutlineInputBorder(),
+                      ),
+                    );
+                  },
+              onSelected: (DropdownItem selected) {
+                print("=====${selected.value}=====");
+                selectedTargetWeekId = int.tryParse(selected.value);
               },
             ),
           ],
@@ -59,8 +105,10 @@ Future<void> showScheduleCopyDialog({
                 );
                 return;
               }
-
               onCopy(selectedSourceWeekId!, selectedTargetWeekId!);
+
+              // Sau khi sao chép xong, reload tuần hiện tại
+              context.read<ThoiKhoaBieuBloc>().add(FetchThoiKhoaBieuEvent());
               Navigator.pop(context);
             },
             child: const Text('Xác nhận'),

@@ -18,6 +18,7 @@ class ScheduleDetailEditor extends StatefulWidget {
   final DateTime ngayBatDauTuan;
   final int lhpId;
   final Map<String, List<ThoiKhoaBieu>> tkbTheoThu;
+  final bool canEdit;
 
   const ScheduleDetailEditor({
     Key? key,
@@ -28,6 +29,7 @@ class ScheduleDetailEditor extends StatefulWidget {
     required this.ngayBatDauTuan,
     required this.lhpId,
     required this.tkbTheoThu,
+    required this.canEdit,
   }) : super(key: key);
 
   @override
@@ -38,6 +40,10 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
   late TextEditingController _roomController;
   late List<ScheduleTime> _editedSchedules;
   int? selectedRoomId;
+  bool get canEdit {
+    final now = DateTime.now();
+    return now.isBefore(widget.ngayBatDauTuan);
+  }
 
   bool _isEditing = false;
   DateTime? getDateFromWeekAndDay(String thu, DateTime ngayBatDau) {
@@ -258,6 +264,17 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
               child: CustomButton(
                 text: _isEditing ? 'Lưu' : 'Thay đổi',
                 onPressed: () {
+                  if (!widget.canEdit) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Không thể chỉnh sửa lịch học do lớp đã nhập điểm hoặc tuần này đã bắt đầu!',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
                   if (_isEditing) {
                     _saveChanges();
                   } else {

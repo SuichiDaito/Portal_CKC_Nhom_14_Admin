@@ -24,6 +24,7 @@ import 'package:portal_ckc/bloc/state/thoi_gian_bieu_state.dart';
 import 'package:portal_ckc/bloc/state/tuan_state.dart';
 import 'package:portal_ckc/bloc/state/user_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
+import 'package:portal_ckc/presentation/sections/card/schedule_management_card.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_detail_editor.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
@@ -51,18 +52,6 @@ class _PageScheduleManagementAdminState
 
   List<DropdownItem> _weeks = [];
   DropdownItem? _selectedWeek;
-  String getThuFromDate(DateTime date) {
-    final weekdays = [
-      'Chủ nhật',
-      'Thứ 2',
-      'Thứ 3',
-      'Thứ 4',
-      'Thứ 5',
-      'Thứ 6',
-      'Thứ 7',
-    ];
-    return weekdays[date.weekday % 7];
-  }
 
   DateTime? getDateFromWeekAndDay(String thu, DateTime ngayBatDau) {
     final thuToIndex = {
@@ -89,6 +78,8 @@ class _PageScheduleManagementAdminState
     context.read<UserBloc>().add(FetchUsersEvent());
     context.read<LopHocPhanBloc>().add(FetchALLLopHocPhan());
     context.read<PhongBloc>().add(FetchRoomsEvent());
+    final currentYear = DateTime.now().year;
+    context.read<TuanBloc>().add(FetchTuanEvent(currentYear));
   }
 
   @override
@@ -192,23 +183,13 @@ class _PageScheduleManagementAdminState
                                                 icon: Icons.school,
                                               );
                                             }).toList();
+
                                             _selectedSchoolYear =
                                                 _schoolYears.isNotEmpty
                                                 ? _schoolYears.first
                                                 : null;
-                                            _isSchoolYearLoaded = true;
 
-                                            final namBatDau = int.tryParse(
-                                              _selectedSchoolYear?.label
-                                                      .split('-')
-                                                      .first ??
-                                                  '',
-                                            );
-                                            if (namBatDau != null) {
-                                              context.read<TuanBloc>().add(
-                                                FetchTuanEvent(namBatDau),
-                                              );
-                                            }
+                                            _isSchoolYearLoaded = true;
                                           }
 
                                           return DropdownSelector(
@@ -219,21 +200,11 @@ class _PageScheduleManagementAdminState
                                               setState(() {
                                                 _selectedSchoolYear = item;
                                               });
-
-                                              final namBatDau = int.tryParse(
-                                                item?.label.split('-').first ??
-                                                    '',
-                                              );
-                                              if (namBatDau != null) {
-                                                context.read<TuanBloc>().add(
-                                                  FetchTuanEvent(namBatDau),
-                                                );
-                                              }
                                             },
                                           );
                                         }
                                         if (state is NienKhoaHocKyError) {
-                                          return Text('');
+                                          return const Text('');
                                         }
                                         return const SizedBox();
                                       },
@@ -282,7 +253,7 @@ class _PageScheduleManagementAdminState
                                       );
                                     }
                                     if (tuanState is TuanError) {
-                                      return Text('=====');
+                                      return const Text('=====');
                                     }
                                     return const SizedBox();
                                   },
@@ -414,9 +385,7 @@ class _PageScheduleManagementAdminState
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (state is LopHocPhanLoaded) {
-                        final selectedWeekId = int.tryParse(
-                          _selectedWeek?.value ?? '0',
-                        );
+                        final selectedYear = _selectedSchoolYear?.value;
                         final filteredLopHocPhans = state.lopHocPhans.where((
                           lhp,
                         ) {
@@ -425,241 +394,20 @@ class _PageScheduleManagementAdminState
                               : lhp.gv?.id.toString() ==
                                     _selectedLecturer?.value;
 
-                          print(
-                            'Giảng viên đã chọn: ${_selectedLecturer?.value}',
-                          );
-                          print('Tuần đã chọn: ${_selectedWeek?.value}');
-                          print(
-                            'Tổng số lớp học phần: ${state.lopHocPhans.length}',
-                          );
+                          final matchSchoolYear = selectedYear == null
+                              ? true
+                              : lhp.lop.nienKhoa.namBatDau == selectedYear;
 
-                          for (var lhp in state.lopHocPhans) {
-                            print('Lớp ${lhp.id} - GV: ${lhp.gv?.id}');
-                            for (var tkb in lhp.thoiKhoaBieu) {
-                              print(
-                                '  TKB: idTuan=${tkb.idTuan}, ngày=${tkb.ngay}',
-                              );
-                            }
-                          }
-                          print(
-                            'Giảng viên đã chọn: ${_selectedLecturer?.value}',
-                          );
-                          print('selectedWeekId: $selectedWeekId');
-
-                          return matchGV;
+                          return matchGV && matchSchoolYear;
                         }).toList();
 
                         return Column(
                           children: filteredLopHocPhans.map((lophp) {
-                            return Column(
-                              children: [
-                                Card(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        BlocBuilder<TuanBloc, TuanState>(
-                                          builder: (context, tuanState) {
-                                            if (tuanState is TuanLoaded) {
-                                              final selectedWeekId =
-                                                  int.tryParse(
-                                                    _selectedWeek?.value ?? '0',
-                                                  );
-                                              final danhSachTuan =
-                                                  tuanState.danhSachTuan;
-
-                                              final tuan = danhSachTuan
-                                                  .firstWhere(
-                                                    (t) =>
-                                                        t.tuan ==
-                                                        selectedWeekId,
-                                                    orElse: () =>
-                                                        danhSachTuan.first,
-                                                  );
-                                              final ngayBatDau =
-                                                  tuan.ngayBatDau;
-
-                                              final tkbTrongTuan = lophp
-                                                  .thoiKhoaBieu
-                                                  .where(
-                                                    (tkb) =>
-                                                        tkb.idTuan ==
-                                                        selectedWeekId,
-                                                  )
-                                                  .toList();
-
-                                              Map<String, List<ThoiKhoaBieu>>
-                                              tkbTheoThu = {
-                                                'Thứ 2': [],
-                                                'Thứ 3': [],
-                                                'Thứ 4': [],
-                                                'Thứ 5': [],
-                                                'Thứ 6': [],
-                                                'Thứ 7': [],
-                                                'Chủ nhật': [],
-                                              };
-
-                                              for (var tkb in tkbTrongTuan) {
-                                                final ngayHoc = DateTime.parse(
-                                                  tkb.ngay,
-                                                );
-                                                final thu = getThuFromDate(
-                                                  ngayHoc,
-                                                );
-                                                if (tkbTheoThu.containsKey(
-                                                  thu,
-                                                )) {
-                                                  tkbTheoThu[thu]!.add(tkb);
-                                                }
-                                              }
-
-                                              return BlocBuilder<
-                                                PhongBloc,
-                                                PhongState
-                                              >(
-                                                builder: (context, phongState) {
-                                                  if (phongState
-                                                          is PhongLoaded &&
-                                                      ngayBatDau != null) {
-                                                    final rooms =
-                                                        phongState.rooms;
-
-                                                    return ScheduleDetailEditor(
-                                                      lhpId: lophp.id,
-                                                      classSchedule: lophp,
-                                                      rooms: rooms,
-                                                      selectedWeekId:
-                                                          selectedWeekId!,
-                                                      ngayBatDauTuan:
-                                                          ngayBatDau,
-                                                      onSave: (newDetail) {},
-                                                      tkbTheoThu: tkbTheoThu,
-                                                    );
-                                                  }
-
-                                                  return const CircularProgressIndicator();
-                                                },
-                                              );
-                                            }
-
-                                            return const SizedBox();
-                                          },
-                                        ),
-                                        const SizedBox(height: 12),
-                                        BlocListener<
-                                          ThoiKhoaBieuBloc,
-                                          ThoiKhoaBieuState
-                                        >(
-                                          listener: (context, state) {
-                                            if (state
-                                                is CopyNhieuThoiKhoaBieuSuccess) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    'Sao chép thời khóa biểu thành công!',
-                                                  ),
-                                                ),
-                                              );
-                                            } else if (state
-                                                is ThoiKhoaBieuError) {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    state.message ??
-                                                        'Sao chép thất bại!',
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          child: ElevatedButton.icon(
-                                            icon: const Icon(
-                                              Icons.copy,
-                                              color: Colors.white,
-                                            ), // icon màu trắng
-                                            label: const Text(
-                                              'Sao chép lịch',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                              ), // chữ trắng
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  Colors.blue, // nền xanh dương
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 16,
-                                                    horizontal: 24,
-                                                  ), // tăng chiều cao
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      12,
-                                                    ), // bo góc đẹp
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              showScheduleCopyDialog(
-                                                context: context,
-                                                weeks: _weeks,
-                                                onCopy: (sourceWeekId, targetWeekId) {
-                                                  final tkbIdsToCopy = lophp
-                                                      .thoiKhoaBieu
-                                                      .where(
-                                                        (tkb) =>
-                                                            tkb.idTuan ==
-                                                            sourceWeekId,
-                                                      )
-                                                      .map((tkb) => tkb.id)
-                                                      .toList();
-
-                                                  if (tkbIdsToCopy.isEmpty) {
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                          'Không có thời khóa biểu để sao chép!',
-                                                        ),
-                                                      ),
-                                                    );
-                                                    return;
-                                                  }
-
-                                                  context
-                                                      .read<ThoiKhoaBieuBloc>()
-                                                      .add(
-                                                        CopyNhieuThoiKhoaBieuWeekEvent(
-                                                          tkbIds: tkbIdsToCopy,
-                                                          startWeekId:
-                                                              sourceWeekId,
-                                                          endWeekId:
-                                                              targetWeekId,
-                                                        ),
-                                                      );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            return LopHocPhanCard(
+                              trangThaiNhapDiem: lophp.trangThaiNopBangDiem,
+                              lophp: lophp,
+                              selectedWeek: _selectedWeek,
+                              weeks: _weeks,
                             );
                           }).toList(),
                         );

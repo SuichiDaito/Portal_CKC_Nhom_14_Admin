@@ -72,27 +72,6 @@ class ClassSearchBar extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            const Text(
-              "Trạng thái: ",
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(width: 8),
-            DropdownButton<String>(
-              value: selectedStatus,
-              items: const [
-                DropdownMenuItem(value: "Tất cả", child: Text("Tất cả")),
-                DropdownMenuItem(value: "Đang học", child: Text("Đang học")),
-                DropdownMenuItem(value: "Đã nghỉ", child: Text("Đã nghỉ")),
-              ],
-              onChanged: (value) {
-                if (value != null) onStatusChanged(value);
-              },
-            ),
-          ],
-        ),
       ],
     );
   }

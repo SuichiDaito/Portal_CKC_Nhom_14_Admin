@@ -87,7 +87,7 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                 orElse: () => StudentWithRole.empty(),
               );
 
-              final secretaryName = secretary?.sinhVien.hoSo.hoTen ?? 'Chưa có';
+              final secretaryName = secretary.sinhVien.hoSo.hoTen ?? 'Chưa có';
 
               final filtered = studentWithRoles.where((sr) {
                 final name = sr.sinhVien.hoSo.hoTen.toLowerCase();
@@ -109,23 +109,9 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                       onSelectSecretary: (newSecretaryId) async {
                         final lopBloc = context.read<LopBloc>();
 
-                        final newSecretaryStudentId = newSecretaryId.toInt();
-
-                        final currentSecretaryStudentId = secretary.sinhVien.id;
-
-                        if (secretary.id != -1 &&
-                            secretary.id != newSecretaryId) {
-                          lopBloc.add(
-                            ChangeStudentRoleEvent(
-                              sinhVienId: currentSecretaryStudentId,
-                              chucVu: 0,
-                            ),
-                          );
-                        }
-
                         lopBloc.add(
                           ChangeStudentRoleEvent(
-                            sinhVienId: newSecretaryStudentId,
+                            sinhVienId: newSecretaryId,
                             chucVu: 1,
                           ),
                         );

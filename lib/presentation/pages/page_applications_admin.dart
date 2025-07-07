@@ -30,12 +30,23 @@ class ApplicationsAdminPage extends StatelessWidget {
 
           _buildSection(
             context: context,
-            title: 'Dành cho Admin',
+            title: 'Dành cho phòng Công tác',
             icon: Icons.school,
             iconColor: Colors.green,
             backgroundColor: Colors.green.withOpacity(0.05),
             borderColor: Colors.green.withOpacity(0.2),
-            gridItems: _getAdminFeatures(),
+            gridItems: _getCTCTFeatures(),
+          ),
+          const SizedBox(height: 24),
+
+          _buildSection(
+            context: context,
+            title: 'Dành cho phòng Đào tạo',
+            icon: Icons.school,
+            iconColor: Colors.blueGrey,
+            backgroundColor: Colors.blueGrey.withOpacity(0.05),
+            borderColor: Colors.blueGrey.withOpacity(0.2),
+            gridItems: _getPDTFeatures(),
           ),
         ],
       ),
@@ -166,7 +177,30 @@ class ApplicationsAdminPage extends StatelessWidget {
     );
   }
 
-  List<_FeatureItem> _getAdminFeatures() {
+  List<_FeatureItem> _getCTCTFeatures() {
+    return [
+      _FeatureItem(
+        icon: Icons.person,
+        title: 'Quản lý sinh viên',
+        color: Colors.indigo,
+        value: 'student_management_admin',
+      ),
+      _FeatureItem(
+        icon: Icons.description,
+        title: 'Quản lý cấp giấy tờ',
+        color: Colors.brown,
+        value: 'decument_request_management_admin',
+      ),
+      _FeatureItem(
+        icon: Icons.person_2,
+        title: 'Quản lý giảng viên',
+        color: Colors.blueGrey,
+        value: 'teacher_management_admin',
+      ),
+    ];
+  }
+
+  List<_FeatureItem> _getPDTFeatures() {
     return [
       _FeatureItem(
         icon: Icons.calendar_today,
@@ -191,24 +225,6 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Quản lý phòng học',
         color: Colors.deepOrange,
         value: 'room_management_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.person,
-        title: 'Quản lý sinh viên',
-        color: Colors.indigo,
-        value: 'student_management_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.description,
-        title: 'Quản lý cấp giấy tờ',
-        color: Colors.brown,
-        value: 'decument_request_management_admin',
-      ),
-      _FeatureItem(
-        icon: Icons.person_2,
-        title: 'Quản lý giảng viên',
-        color: Colors.blueGrey,
-        value: 'teacher_management_admin',
       ),
       _FeatureItem(
         icon: Icons.book,

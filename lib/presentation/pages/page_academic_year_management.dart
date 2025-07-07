@@ -171,13 +171,7 @@ class _PageAcademicYearManagementState
                                     context.read<TuanBloc>().add(
                                       FetchTuanEvent(namBatDau),
                                     );
-                                    ElevatedButton(
-                                      onPressed: () => showTuanListDialog(
-                                        context,
-                                        namBatDau,
-                                      ),
-                                      child: const Text('Xem tuần trong năm'),
-                                    );
+                                    showTuanListDialog(context, namBatDau);
                                   }
                                 },
                               ),
