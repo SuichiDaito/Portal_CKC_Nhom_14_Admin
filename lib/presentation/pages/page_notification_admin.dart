@@ -107,24 +107,12 @@ class _NotificationPageState extends State<NotificationPage> {
             heroTag: 'archiveBtn',
             icon: const Icon(Icons.archive),
             label: const Text('Kho'),
-            backgroundColor: Colors.grey,
+            backgroundColor: Colors.white,
             onPressed: () {
               context.push('/notifications/user');
             },
           ),
-          const SizedBox(height: 12),
-          FloatingActionButton.extended(
-            heroTag: 'createBtn',
-            icon: const Icon(Icons.add),
-            label: const Text('Tạo'),
-            onPressed: () async {
-              final result = await context.push('/notifications/create');
-
-              if (result == true) {
-                context.read<ThongBaoBloc>().add(FetchThongBaoList());
-              }
-            },
-          ),
+          SizedBox(height: 50),
         ],
       ),
     );

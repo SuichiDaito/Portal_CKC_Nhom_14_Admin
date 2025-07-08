@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
@@ -16,25 +17,36 @@ class PageCreateNotificationAdmin extends StatefulWidget {
 
 class _PageCreateNotificationAdminState
     extends State<PageCreateNotificationAdmin> {
-  late BuildContext _buildContext;
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   String _selectedCapTren = 'khoa';
-
   DateTime _selectedDate = DateTime.now();
-  final List<String> _selectedFileNames = [
-    'congvan_sinhvien.pdf',
-    'thongbao_hethoc.docx',
-    'kehoach_giangday.xlsx',
-  ];
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _buildContext = context;
+    // Nhận thông báo truyền vào (nếu có)
+    final ThongBao? thongBao = GoRouterState.of(context).extra as ThongBao?;
+
+    // Nếu là sửa thì gán giá trị cũ
+    if (thongBao != null && _titleController.text.isEmpty) {
+      _titleController.text = thongBao.tieuDe;
+      _contentController.text = thongBao.noiDung;
+      _selectedCapTren = thongBao.tuAi;
+    }
+
+    final isEditing = thongBao != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tạo thông báo'),
+        title: Text(isEditing ? 'Sửa thông báo' : 'Tạo thông báo'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -82,7 +94,7 @@ class _PageCreateNotificationAdminState
                         decoration: const InputDecoration(
                           labelText: 'Nội dung',
                         ),
-                        maxLines: 2,
+                        maxLines: 3,
                         validator: (value) => value == null || value.isEmpty
                             ? 'Vui lòng nhập nội dung'
                             : null,
@@ -114,71 +126,77 @@ class _PageCreateNotificationAdminState
                           }
                         },
                       ),
-                      const SizedBox(height: 16),
-
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       ElevatedButton.icon(
-                        onPressed: null,
-                        icon: const Icon(Icons.attach_file),
-                        label: const Text('Chọn file đính kèm'),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.grey,
-                          backgroundColor: Colors.grey.shade200,
-                          side: const BorderSide(color: Colors.grey),
+                        onPressed: () async {
+                          final now = DateTime.now();
+                          final date = await showDatePicker(
+                            context: context,
+                            initialDate: now,
+                            firstDate: DateTime(now.year - 1),
+                            lastDate: DateTime(now.year + 1),
+                          );
+
+                          if (date != null) {
+                            final time = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.fromDateTime(now),
+                            );
+
+                            if (time != null) {
+                              setState(() {
+                                _selectedDate = DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  time.hour,
+                                  time.minute,
+                                );
+                              });
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.calendar_today),
+                        label: Text(
+                          'Chọn ngày gửi: ${DateFormat('dd/MM/yyyy HH:mm').format(_selectedDate)}',
                         ),
                       ),
-
-                      if (_selectedFileNames.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: _selectedFileNames.map((fileName) {
-                              return ListTile(
-                                dense: true,
-                                leading: const Icon(
-                                  Icons.insert_drive_file,
-                                  color: Colors.blue,
-                                ),
-                                title: Text(fileName),
-                                subtitle: const Text(
-                                  '20.0 KB',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            final now = DateTime.now().toUtc(); // dùng giờ UTC
-                            final validNgayGui =
-                                _selectedDate.toUtc().isBefore(now)
-                                ? _selectedDate.toUtc()
-                                : now;
-
                             final formattedNgayGui = DateFormat(
                               "yyyy-MM-dd'T'HH:mm",
-                            ).format(validNgayGui);
+                            ).format(_selectedDate.toUtc());
 
-                            print('Gửi ngay_gui: $formattedNgayGui');
-
-                            context.read<ThongBaoBloc>().add(
-                              CreateThongBao(
-                                title: _titleController.text,
-                                content: _contentController.text,
-                                capTren: _selectedCapTren,
-                                ngayGui: formattedNgayGui,
-                                files: _selectedFileNames,
-                              ),
-                            );
+                            if (isEditing) {
+                              context.read<ThongBaoBloc>().add(
+                                UpdateThongBao(
+                                  id: thongBao.id,
+                                  ngayGui: formattedNgayGui,
+                                  title: _titleController.text,
+                                  content: _contentController.text,
+                                  trangThai: thongBao.trangThai,
+                                  tuAi: _selectedCapTren,
+                                ),
+                              );
+                            } else {
+                              context.read<ThongBaoBloc>().add(
+                                CreateThongBao(
+                                  title: _titleController.text,
+                                  content: _contentController.text,
+                                  capTren: _selectedCapTren,
+                                  ngayGui: formattedNgayGui,
+                                  files: const [],
+                                ),
+                              );
+                            }
                           }
                         },
-                        icon: const Icon(Icons.send),
-                        label: const Text('Gửi thông báo'),
+                        icon: Icon(isEditing ? Icons.save : Icons.send),
+                        label: Text(
+                          isEditing ? 'Cập nhật thông báo' : 'Gửi thông báo',
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
@@ -197,41 +215,5 @@ class _PageCreateNotificationAdminState
         },
       ),
     );
-  }
-
-  Future<void> _pickDateTime() async {
-    final now = DateTime.now();
-    final date = await showDatePicker(
-      context: _buildContext,
-      initialDate: now,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 1),
-    );
-
-    if (date == null) return;
-
-    final time = await showTimePicker(
-      context: _buildContext,
-      initialTime: TimeOfDay.fromDateTime(now),
-    );
-
-    if (time == null) return;
-
-    setState(() {
-      _selectedDate = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _contentController.dispose();
-    super.dispose();
   }
 }

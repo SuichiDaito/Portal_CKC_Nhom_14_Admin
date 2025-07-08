@@ -69,7 +69,6 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
       backgroundColor: const Color(0xFFF4F6F9),
       body: Column(
         children: [
-          // ... Thông tin lớp như cũ
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
@@ -128,8 +127,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                   print(
                     ' ==================Tổng biên bản: ${state.bienBanList.length}',
                   );
-
-                  // 👉 Nếu có ngày được chọn thì lọc theo ngày đó
+                  //LỌC THEO NGÀY
                   if (selectedDate != null) {
                     bienBans = bienBans.where((bienBan) {
                       return bienBan.thoiGianBatDau.year ==
@@ -194,10 +192,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                             onPressed: () async {
                               final result = await context.push(
                                 '/admin/report_detail_admin',
-                                extra: {
-                                  'bienBanId': bienBan.id,
-                                  'lopId': bienBan.idLop,
-                                },
+                                extra: {'bienBan': bienBan},
                               );
 
                               if (result == 'refresh' && mounted) {
@@ -232,6 +227,21 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final result = await context.push(
+            '/admin/create_meeting_minutes_admin',
+            extra: widget.lop,
+          );
+
+          if (result == 'refresh' && mounted) {
+            _loadBienBan();
+          }
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Tạo biên bản'),
+        backgroundColor: const Color(0xFF1976D2),
       ),
     );
   }

@@ -18,7 +18,7 @@ class KhoaLoaded extends NganhKhoaState {
 
 /// Tải thành công danh sách ngành học
 class NganhHocLoaded extends NganhKhoaState {
-  final List<NganhHoc> danhSachNganh;
+  final List<ChuyenNganh> danhSachNganh;
 
   NganhHocLoaded(this.danhSachNganh);
 }
@@ -26,7 +26,7 @@ class NganhHocLoaded extends NganhKhoaState {
 /// Tải thành công cả ngành học và khoa
 class KhoaNganhLoaded extends NganhKhoaState {
   final List<Khoa> danhSachKhoa;
-  final List<NganhHoc> danhSachNganh;
+  final List<ChuyenNganh> danhSachNganh;
 
   KhoaNganhLoaded({required this.danhSachKhoa, required this.danhSachNganh});
 }

@@ -54,6 +54,17 @@ final class _$AdminService extends AdminService {
   }
 
   @override
+  Future<Response<Map<String, dynamic>>> updateTeacherRole(
+    int userId,
+    Map<String, dynamic> data,
+  ) {
+    final Uri $url = Uri.parse('/admin/users/${userId}/role');
+    final $body = data;
+    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
+  }
+
+  @override
   Future<Response<Map<String, dynamic>>> getRooms() {
     final Uri $url = Uri.parse('/admin/phong');
     final Request $request = Request('GET', $url, client.baseUrl);

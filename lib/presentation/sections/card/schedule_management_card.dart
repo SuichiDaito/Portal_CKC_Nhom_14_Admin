@@ -114,6 +114,7 @@ class LopHocPhanCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                            SizedBox(height: 20),
                             if (!canEdit)
                               Container(
                                 padding: const EdgeInsets.all(12),

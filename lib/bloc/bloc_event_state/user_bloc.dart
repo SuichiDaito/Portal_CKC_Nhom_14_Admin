@@ -11,6 +11,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   UserBloc() : service = CallApiAdmin.adminService, super(UserInitial()) {
     on<FetchUsersEvent>(_onFetchUsers);
+    on<UpdateUserRoleEvent>(_onUpdateUserRole);
   }
 
   Future<void> _onFetchUsers(
@@ -33,6 +34,27 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     } catch (e) {
       emit(UserError("Lỗi khi gọi API: $e"));
+    }
+  }
+
+  Future<void> _onUpdateUserRole(
+    UpdateUserRoleEvent event,
+    Emitter<UserState> emit,
+  ) async {
+    emit(UserRoleUpdating());
+    try {
+      final response = await service.updateTeacherRole(event.userId, {
+        'role_id': event.roleId,
+      });
+
+      if (response.isSuccessful && response.body != null) {
+        final body = response.body as Map<String, dynamic>;
+        emit(UserRoleUpdated(body['message'] ?? 'Cập nhật thành công'));
+      } else {
+        emit(UserRoleUpdateError('Không thể cập nhật chức vụ'));
+      }
+    } catch (e) {
+      emit(UserRoleUpdateError('Lỗi khi cập nhật: $e'));
     }
   }
 }

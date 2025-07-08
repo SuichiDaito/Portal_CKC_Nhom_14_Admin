@@ -9,15 +9,13 @@ class BienBangShcnBloc extends Bloc<BienBanEvent, BienBanState> {
 
   BienBangShcnBloc() : super(BienBanInitial()) {
     on<FetchBienBan>(_onFetchBienBan);
-    on<CreateBienBan>(_onCreateBienBan);
     on<ConfirmBienBan>(_onConfirmBienBan);
     on<DeleteSinhVienVangEvent>(_onDeleteSinhVienVang);
     // Chi tiết biên bản
     on<FetchBienBanDetail>(_onFetchBienBanDetail);
 
     // Thông tin tạo mới
-    on<FetchBienBanCreateInfo>(_onFetchCreateBienBanInfo);
-
+    on<CreateBienBanEvent>(_onCreateBienBan);
     // Thông tin chỉnh sửa
     on<FetchBienBanEditInfo>(_onFetchEditBienBanInfo);
 
@@ -49,19 +47,19 @@ class BienBangShcnBloc extends Bloc<BienBanEvent, BienBanState> {
   }
 
   Future<void> _onCreateBienBan(
-    CreateBienBan event,
+    CreateBienBanEvent event,
     Emitter<BienBanState> emit,
   ) async {
     emit(BienBanLoading());
     try {
       final response = await _service.createBienBan(event.lopId, event.data);
       if (response.isSuccessful) {
-        emit(BienBanActionSuccess("Thêm biên bản thành công"));
+        emit(BienBanActionSuccess("Tạo biên bản thành công"));
       } else {
-        emit(BienBanError("Thêm biên bản thất bại"));
+        emit(BienBanError("Tạo biên bản thất bại"));
       }
     } catch (e) {
-      emit(BienBanError("Thêm biên bản thất bại: $e"));
+      emit(BienBanError("Lỗi khi tạo biên bản: $e"));
     }
   }
 
@@ -113,23 +111,6 @@ class BienBangShcnBloc extends Bloc<BienBanEvent, BienBanState> {
       }
     } catch (e) {
       emit(BienBanError("Lỗi khi tải chi tiết biên bản: $e"));
-    }
-  }
-
-  Future<void> _onFetchCreateBienBanInfo(
-    FetchBienBanCreateInfo event,
-    Emitter<BienBanState> emit,
-  ) async {
-    emit(BienBanLoading());
-    try {
-      final response = await _service.getBienBanCreateInfo(event.lopId);
-      if (response.isSuccessful) {
-        emit(BienBanLoaded(response.body['data']));
-      } else {
-        emit(BienBanError("Không thể lấy thông tin tạo biên bản"));
-      }
-    } catch (e) {
-      emit(BienBanError("Lỗi: $e"));
     }
   }
 

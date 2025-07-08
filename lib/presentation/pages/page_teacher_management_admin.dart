@@ -43,15 +43,17 @@ class _PageTeacherManagementAdminState
 
   int? _getRoleIdFromPosition(TeacherPosition? position) {
     switch (position) {
-      case TeacherPosition.director:
+      case TeacherPosition.admin:
         return 1;
-      case TeacherPosition.dean:
+      case TeacherPosition.truongPhongDaoTao:
         return 2;
-      case TeacherPosition.viceDean:
+      case TeacherPosition.truongPhongCongTacCT:
         return 3;
-      case TeacherPosition.staff:
+      case TeacherPosition.giangVienBoMon:
         return 4;
-      case TeacherPosition.lecturer:
+      case TeacherPosition.giangVienChuNhiem:
+        return 5;
+      case TeacherPosition.truongKhoa:
         return 5;
       default:
         return null;
@@ -64,7 +66,8 @@ class _PageTeacherManagementAdminState
     if (_selectedFaculty != null && _selectedFaculty!.value != 'all') {
       teachers = teachers
           .where(
-            (t) => t.boMon?.nganhHoc?.khoa?.tenKhoa == _selectedFaculty!.label,
+            (t) =>
+                t.boMon?.chuyenNganh?.khoa?.tenKhoa == _selectedFaculty!.label,
           )
           .toList();
     }
@@ -106,19 +109,22 @@ class _PageTeacherManagementAdminState
     );
   }
 
-  void _showTeacherDetailBottomSheet(User teacher) {
-    showModalBottomSheet(
+  void _showTeacherDetailBottomSheet(User teacher) async {
+    final updated = await showModalBottomSheet<User>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
-      builder: (context) => TeacherDetailBottomSheet(
+      builder: (bottomSheetContext) => TeacherDetailBottomSheet(
         teacher: teacher,
-        onUpdatePosition: (updatedTeacher) =>
-            _updateTeacherPosition(updatedTeacher),
+        onUpdatePosition: (User value) {},
       ),
     );
+
+    if (updated != null) {
+      context.read<UserBloc>().add(FetchUsersEvent());
+    }
   }
 
   void _filterDepartmentsByKhoa(String? khoaLabel) {
@@ -127,7 +133,7 @@ class _PageTeacherManagementAdminState
           .where(
             (b) => khoaLabel == null || khoaLabel == 'Tất cả các khoa'
                 ? true
-                : b.nganhHoc?.khoa?.tenKhoa == khoaLabel,
+                : b.chuyenNganh?.khoa?.tenKhoa == khoaLabel,
           )
           .toList();
 
@@ -164,7 +170,7 @@ class _PageTeacherManagementAdminState
               if (state is BoMonLoaded) {
                 _allDepartments = state.boMons;
                 final khoaSet = _allDepartments
-                    .map((b) => b.nganhHoc?.khoa?.tenKhoa)
+                    .map((b) => b.chuyenNganh?.khoa?.tenKhoa)
                     .toSet();
                 _faculties = khoaSet
                     .map(
@@ -199,7 +205,6 @@ class _PageTeacherManagementAdminState
 
                 if (state is UserLoaded) {
                   _allTeachers = state.users;
-
                   return Column(
                     children: [
                       Card(

@@ -15,3 +15,17 @@ class UserError extends UserState {
   final String message;
   UserError(this.message);
 }
+
+class UserRoleUpdating extends UserState {}
+
+class UserRoleUpdated extends UserState {
+  final String message;
+
+  UserRoleUpdated(this.message);
+}
+
+class UserRoleUpdateError extends UserState {
+  final String error;
+
+  UserRoleUpdateError(this.error);
+}

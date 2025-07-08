@@ -268,7 +268,7 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          'Không thể chỉnh sửa lịch học do lớp đã nhập điểm hoặc tuần này đã bắt đầu!',
+                          'Không thể thay đổi lịch học do lớp đã nhập điểm hoặc tuần này đã bắt đầu!',
                         ),
                       ),
                     );

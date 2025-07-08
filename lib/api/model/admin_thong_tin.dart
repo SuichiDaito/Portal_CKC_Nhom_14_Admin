@@ -3,11 +3,12 @@ import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 import 'package:portal_ckc/api/model/admin_vai_tro.dart';
 
 enum TeacherPosition {
-  director,
-  dean, // Trưởng khoa
-  viceDean, // Phó khoa
-  lecturer, // Giảng viên
-  staff, // Nhân viên
+  admin,
+  truongPhongDaoTao,
+  truongPhongCongTacCT,
+  giangVienBoMon,
+  giangVienChuNhiem,
+  truongKhoa,
 }
 
 class User {
@@ -47,19 +48,23 @@ class User {
   }
   User copyWith({
     int? id,
+    int? idHoSo,
+    int? idBoMon,
     String? taiKhoan,
-    String? email,
-    String? phoneNumber,
+    int? trangThai,
     HoSo? hoSo,
     BoMon? boMon,
-    List<dynamic>? roles,
-    required TeacherPosition position,
+    List<Role>? roles,
   }) {
     return User(
       id: id ?? this.id,
+      idHoSo: idHoSo ?? this.idHoSo,
+      idBoMon: idBoMon ?? this.idBoMon,
       taiKhoan: taiKhoan ?? this.taiKhoan,
       trangThai: trangThai ?? this.trangThai,
-      roles: [],
+      hoSo: hoSo ?? this.hoSo,
+      boMon: boMon ?? this.boMon,
+      roles: roles ?? this.roles,
     );
   }
 

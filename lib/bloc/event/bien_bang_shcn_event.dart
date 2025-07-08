@@ -35,6 +35,12 @@ class FetchBienBanCreateInfo extends BienBanEvent {
   FetchBienBanCreateInfo(this.lopId);
 }
 
+class CreateBienBanEvent extends BienBanEvent {
+  final int lopId;
+  final Map<String, dynamic> data;
+  CreateBienBanEvent({required this.lopId, required this.data});
+}
+
 class FetchBienBanEditInfo extends BienBanEvent {
   final int bienBanId;
   FetchBienBanEditInfo(this.bienBanId);
@@ -50,3 +56,5 @@ class DeleteBienBanEvent extends BienBanEvent {
   final int bienBanId;
   DeleteBienBanEvent(this.bienBanId);
 }
+
+abstract class BienBanShcnEvent {}

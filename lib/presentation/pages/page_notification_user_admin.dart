@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_event.dart';
@@ -162,79 +163,20 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                           color: Colors.green,
                                         ),
                                         onPressed: () async {
-                                          final TextEditingController
-                                          titleController =
-                                              TextEditingController(
-                                                text: tb.tieuDe,
-                                              );
-                                          final TextEditingController
-                                          contentController =
-                                              TextEditingController(
-                                                text: tb.noiDung,
-                                              );
-
-                                          final result = await showDialog<bool>(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                              title: const Text(
-                                                'Sửa thông báo',
-                                              ),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  TextField(
-                                                    controller: titleController,
-                                                    decoration:
-                                                        const InputDecoration(
-                                                          labelText: 'Tiêu đề',
-                                                        ),
-                                                  ),
-                                                  TextField(
-                                                    controller:
-                                                        contentController,
-                                                    maxLines: 5,
-                                                    decoration:
-                                                        const InputDecoration(
-                                                          labelText: 'Nội dung',
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                        context,
-                                                        false,
-                                                      ),
-                                                  child: const Text('Huỷ'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(
-                                                        context,
-                                                        true,
-                                                      ),
-                                                  child: const Text('Lưu'),
-                                                ),
-                                              ],
-                                            ),
+                                          final result = await context.push(
+                                            '/notifications/create',
+                                            extra:
+                                                tb, // truyền object thông báo qua để sửa
                                           );
 
                                           if (result == true) {
                                             context.read<ThongBaoBloc>().add(
-                                              UpdateThongBao(
-                                                id: tb.id,
-                                                ngayGui: tb.ngayGui.toString(),
-                                                title: titleController.text,
-                                                content: contentController.text,
-                                                trangThai: tb.trangThai,
-                                                tuAi: tb.tuAi,
-                                              ),
+                                              FetchThongBaoList(),
                                             );
                                           }
                                         },
                                       ),
+
                                       const SizedBox(width: 4),
                                       IconButton(
                                         tooltip: 'Chọn lớp',
@@ -326,6 +268,25 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
             return const Center(child: Text('Không có dữ liệu'));
           },
         ),
+      ),
+
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'createBtn',
+            icon: const Icon(Icons.add),
+            label: const Text('Tạo'),
+            onPressed: () async {
+              final result = await context.push('/notifications/create');
+
+              if (result == true) {
+                context.read<ThongBaoBloc>().add(FetchThongBaoList());
+              }
+            },
+          ),
+          SizedBox(height: 50),
+        ],
       ),
     );
   }

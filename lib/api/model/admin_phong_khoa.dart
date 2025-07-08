@@ -9,17 +9,17 @@ class Khoa {
   }
 }
 
-class NganhHoc {
+class ChuyenNganh {
   final int id;
-  final String tenNganh;
+  final String tenChuyenNganh;
   final Khoa? khoa;
 
-  NganhHoc({required this.id, required this.tenNganh, this.khoa});
+  ChuyenNganh({required this.id, required this.tenChuyenNganh, this.khoa});
 
-  factory NganhHoc.fromJson(Map<String, dynamic> json) {
-    return NganhHoc(
+  factory ChuyenNganh.fromJson(Map<String, dynamic> json) {
+    return ChuyenNganh(
       id: json['id'],
-      tenNganh: json['ten_nganh'] ?? '',
+      tenChuyenNganh: json['ten_chuyen_nganh'] ?? '',
       khoa: json['khoa'] != null ? Khoa.fromJson(json['khoa']) : null,
     );
   }
@@ -28,16 +28,16 @@ class NganhHoc {
 class BoMon {
   final int id;
   final String tenBoMon;
-  final NganhHoc? nganhHoc;
+  final ChuyenNganh? chuyenNganh;
 
-  BoMon({required this.id, required this.tenBoMon, this.nganhHoc});
+  BoMon({required this.id, required this.tenBoMon, this.chuyenNganh});
 
   factory BoMon.fromJson(Map<String, dynamic> json) {
     return BoMon(
       id: json['id'],
       tenBoMon: json['ten_bo_mon'] ?? '',
-      nganhHoc: json['nganh_hoc'] != null
-          ? NganhHoc.fromJson(json['nganh_hoc'])
+      chuyenNganh: json['chuyen_nganh'] != null
+          ? ChuyenNganh.fromJson(json['chuyen_nganh'])
           : null,
     );
   }

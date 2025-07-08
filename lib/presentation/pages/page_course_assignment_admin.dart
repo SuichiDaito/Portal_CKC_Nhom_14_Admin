@@ -142,9 +142,6 @@ class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
                     }
                     if (userState is UserLoaded) {
                       instructors = userState.users;
-                      // Tiếp tục xử lý
-                    } else {
-                      // Xử lý trường hợp khác (ví dụ: loading, error,...)
                     }
 
                     return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(

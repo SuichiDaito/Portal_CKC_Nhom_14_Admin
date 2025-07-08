@@ -102,7 +102,6 @@ class _ClassListSectionState extends State<ClassListSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Tên lớp
           Text(
             classInfo.lop.tenLop,
             style: const TextStyle(
@@ -113,7 +112,6 @@ class _ClassListSectionState extends State<ClassListSection> {
           ),
           const SizedBox(height: 12),
 
-          // Môn học + Loại lớp
           Row(
             children: [
               Expanded(
@@ -133,7 +131,6 @@ class _ClassListSectionState extends State<ClassListSection> {
           ),
           const SizedBox(height: 6),
 
-          // Khoa + Niên khóa
           Row(
             children: [
               Expanded(
@@ -146,14 +143,8 @@ class _ClassListSectionState extends State<ClassListSection> {
           ),
           const SizedBox(height: 6),
 
-          // // Học kỳ
-          // _buildInfoRow(
-          //   Icons.date_range_outlined,
-          //   'Học kỳ: ${classInfo.lop}',
-          // ),
           const SizedBox(height: 6),
 
-          // Giảng viên + chỉnh sửa
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -161,15 +152,19 @@ class _ClassListSectionState extends State<ClassListSection> {
               const SizedBox(width: 6),
               Expanded(
                 child: AbsorbPointer(
-                  absorbing: !isEditing || isLocked, // khóa nếu isLocked
+                  absorbing: !isEditing || isLocked,
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     value: classInfo.gv?.id != null
                         ? classInfo.gv!.id.toString()
                         : null,
                     items: instructorItems.map((instructor) {
                       return DropdownMenuItem<String>(
                         value: instructor.id.toString(),
-                        child: Text(instructor.hoSo?.hoTen ?? 'Không tên'),
+                        child: Text(
+                          instructor.hoSo?.hoTen ?? 'Không tên',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       );
                     }).toList(),
                     onChanged: (value) {

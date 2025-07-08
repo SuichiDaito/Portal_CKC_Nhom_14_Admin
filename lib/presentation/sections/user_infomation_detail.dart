@@ -63,7 +63,7 @@ class AccountInfoSection extends StatelessWidget {
               _buildInfoItem('Mã giảng viên: GV00${user.id}'),
               _buildInfoItem('Họ và tên: ${hoSo?.hoTen ?? 'Chưa có'}'),
               _buildInfoItem(
-                'Phòng/khoa: ${user.boMon?.nganhHoc?.khoa?.tenKhoa ?? "Không xác định"}',
+                'Phòng/khoa: ${user.boMon?.chuyenNganh?.tenChuyenNganh ?? "Không xác định"}',
               ),
               FutureBuilder<String>(
                 future: getRoleName(),

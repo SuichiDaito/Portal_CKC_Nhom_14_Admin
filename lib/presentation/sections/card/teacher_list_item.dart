@@ -14,21 +14,6 @@ class TeacherListItem extends StatelessWidget {
     required this.onResetPasswordPressed,
   }) : super(key: key);
 
-  Color _getRoleColor(String? roleName) {
-    switch (roleName?.toLowerCase()) {
-      case 'trưởng khoa':
-        return Colors.red.shade700;
-      case 'phó khoa':
-        return Colors.orange.shade700;
-      case 'giảng viên':
-        return Colors.blue.shade700;
-      case 'nhân viên':
-        return Colors.green.shade700;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -57,15 +42,13 @@ class TeacherListItem extends StatelessWidget {
             _buildInfoRow(
               Icons.school,
               'Khoa',
-              teacher.boMon?.nganhHoc?.khoa?.tenKhoa,
+              teacher.boMon?.chuyenNganh?.khoa?.tenKhoa,
             ),
             const SizedBox(height: 8),
             _buildInfoRow(Icons.group, 'Bộ môn', teacher.boMon?.tenBoMon),
             const SizedBox(height: 8),
             _buildInfoRow(Icons.badge, 'Mã giảng viên', 'GV00${teacher.id}'),
             const SizedBox(height: 8),
-            // _buildInfoRow(Icons.person, 'Họ và tên', teacher.hoSo?.hoTen),
-            // const SizedBox(height: 8),
             _buildRoleRow(
               Icons.work,
               'Chức vụ',
@@ -86,16 +69,6 @@ class TeacherListItem extends StatelessWidget {
                     vertical: 8,
                   ),
                 ),
-                // const SizedBox(width: 8),
-                // CustomButton(
-                //   text: 'Đặt lại MK',
-                //   onPressed: onResetPasswordPressed,
-                //   backgroundColor: Colors.orange,
-                //   padding: const EdgeInsets.symmetric(
-                //     horizontal: 12,
-                //     vertical: 8,
-                //   ),
-                // ),
               ],
             ),
           ],
@@ -126,9 +99,8 @@ class TeacherListItem extends StatelessWidget {
   }
 
   Widget _buildRoleRow(IconData icon, String label, String? roleName) {
-    final color = _getRoleColor(roleName);
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: Colors.blueGrey, size: 20),
         const SizedBox(width: 10),
@@ -140,19 +112,23 @@ class TeacherListItem extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: color),
-          ),
-          child: Text(
-            roleName ?? 'Không rõ',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.blue.shade100),
+            ),
+            child: Text(
+              roleName ?? 'Không rõ',
+              style: TextStyle(
+                color: Colors.blue.shade300,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              softWrap: true,
+              overflow: TextOverflow.visible,
             ),
           ),
         ),

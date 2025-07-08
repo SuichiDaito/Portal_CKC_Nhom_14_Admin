@@ -24,7 +24,7 @@ class NganhKhoaBloc extends Bloc<NganhKhoaEvent, NganhKhoaState> {
       final response = await _service.getDanhSachNganhHoc();
       if (response.isSuccessful && response.body != null) {
         final nganhList = (response.body!["nganhHoc"] as List)
-            .map((e) => NganhHoc.fromJson(e))
+            .map((e) => ChuyenNganh.fromJson(e))
             .toList();
         emit(NganhHocLoaded(nganhList));
       } else {

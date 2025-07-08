@@ -1,3 +1,4 @@
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +28,7 @@ import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
 import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 import 'package:portal_ckc/presentation/sections/card/exam_schedule_card.dart';
+import 'package:portal_ckc/presentation/sections/card/exam_schedule_group_card.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:collection/collection.dart';
 
@@ -40,7 +42,7 @@ class _PageExamScheduleGroupedAdminState
     extends State<PageExamScheduleGroupedAdmin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isCTCTDTInitialized = false;
-
+  Map<int, bool> expandedMap = {};
   String? _selectedNienKhoaId;
   HocKy? _selectedHocKy;
   MonHoc? _selectedMonHoc;
@@ -112,349 +114,347 @@ class _PageExamScheduleGroupedAdminState
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NganhKhoaBloc, NganhKhoaState>(
-      builder: (context, nganhKhoaState) {
-        if (nganhKhoaState is CTCTDTLoaded && !_isCTCTDTInitialized) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              _allCTCTDT = nganhKhoaState.chiTiet;
-              _filterSubjectsByHocKy();
-              _isCTCTDTInitialized = true;
+    return Scaffold(
+      body: BlocBuilder<NganhKhoaBloc, NganhKhoaState>(
+        builder: (context, nganhKhoaState) {
+          if (nganhKhoaState is CTCTDTLoaded && !_isCTCTDTInitialized) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _allCTCTDT = nganhKhoaState.chiTiet;
+                _filterSubjectsByHocKy();
+                _isCTCTDTInitialized = true;
+              });
             });
-          });
-        }
+          }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Quản lý lịch thi',
-              style: TextStyle(color: Colors.white),
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                'Quản lý lịch thi',
+                style: TextStyle(color: Colors.white),
+              ),
+              centerTitle: true,
+              backgroundColor: Colors.blue,
+              iconTheme: const IconThemeData(color: Colors.white),
             ),
-            centerTitle: true,
-            backgroundColor: Colors.blue,
-            iconTheme: const IconThemeData(color: Colors.white),
-          ),
 
-          body: Form(
-            key: _formKey,
-            child: BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
-              builder: (context, lopState) {
-                if (lopState is LopHocPhanLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (lopState is LopHocPhanError) {
-                  return Center(
-                    child: Text('Bạn không có quyền truy cập chức năng này'),
-                  );
-                }
-                if (lopState is! LopHocPhanLoaded) {
-                  return const Center(child: Text('Đang tải lớp học phần...'));
-                }
-                final classes = lopState.lopHocPhans;
+            body: Form(
+              key: _formKey,
+              child: BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
+                builder: (context, lopState) {
+                  if (lopState is LopHocPhanLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (lopState is LopHocPhanError) {
+                    return Center(
+                      child: Text('Bạn không có quyền truy cập chức năng này'),
+                    );
+                  }
+                  if (lopState is! LopHocPhanLoaded) {
+                    return const Center(
+                      child: Text('Đang tải lớp học phần...'),
+                    );
+                  }
+                  final classes = lopState.lopHocPhans;
 
-                return BlocBuilder<UserBloc, UserState>(
-                  builder: (context, userState) {
-                    if (userState is UserLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (userState is UserError) {
-                      return Center(child: Text('Lỗi tải giảng viên'));
-                    }
-                    // final instructors = (userState);
+                  return BlocBuilder<UserBloc, UserState>(
+                    builder: (context, userState) {
+                      if (userState is UserLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (userState is UserError) {
+                        return Center(child: Text('Lỗi tải giảng viên'));
+                      }
+                      // final instructors = (userState);
 
-                    return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
-                      builder: (context, nkState) {
-                        if (nkState is NienKhoaHocKyLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (nkState is NienKhoaHocKyError) {
-                          return Center(
-                            child: Text(
-                              'Lỗi tải niên khóa: ${nkState.message}',
-                            ),
-                          );
-                        }
-                        final nienKhoas =
-                            (nkState as NienKhoaHocKyLoaded).nienKhoas;
-                        // final filteredClasses = classes.where((lop) {
-                        //   final okNK = _selectedNienKhoaId == null
-                        //       ? true
-                        //       : lop.lop.idNienKhoa.toString() ==
-                        //             _selectedNienKhoaId;
+                      return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
+                        builder: (context, nkState) {
+                          if (nkState is NienKhoaHocKyLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (nkState is NienKhoaHocKyError) {
+                            return Center(
+                              child: Text(
+                                'Lỗi tải niên khóa: ${nkState.message}',
+                              ),
+                            );
+                          }
+                          final nienKhoas =
+                              (nkState as NienKhoaHocKyLoaded).nienKhoas;
 
-                        //   final okHK = _selectedHocKy == null
-                        //       ? true
-                        //       : lop.chuongTrinhDaoTao.chiTiet?.any(
-                        //               (ct) => ct.idHocKy == _selectedHocKy!.id,
-                        //             ) ??
-                        //             false;
-
-                        //   final okTenMon = _selectedMonHoc == null
-                        //       ? true
-                        //       : lop.tenHocPhan.trim().toLowerCase() ==
-                        //             _selectedMonHoc!.tenMon
-                        //                 .trim()
-                        //                 .toLowerCase();
-
-                        //   return okNK && okHK && okTenMon;
-                        // }).toList();
-
-                        return SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Card(
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: CourseInfoSection(
-                                      selectedNienKhoaId: _selectedNienKhoaId,
-                                      selectedHocKy: _selectedHocKy,
-                                      subjects: _filteredMonHocs
-                                          .map((m) => m.tenMon)
-                                          .toList(),
-                                      nienKhoas: nienKhoas,
-                                      hocKyList: _hocKyList,
-                                      selectedSubject:
-                                          _selectedMonHoc?.tenMon ?? '',
-                                      onNienKhoaChanged: (value) {
-                                        final sel = nienKhoas.firstWhere(
-                                          (e) => e.id.toString() == value,
-                                        );
-                                        setState(() {
-                                          _selectedNienKhoaId = value;
-                                          _hocKyList = sel.hocKys;
-                                          _selectedHocKy = null;
-                                          _filteredMonHocs.clear();
-                                          _hasUnsavedChanges = true;
-                                        });
-                                      },
-                                      onHocKyChanged: _onHocKySelected,
-                                      onSubjectChanged: (subject) {
-                                        setState(() {
-                                          _selectedMonHoc = _filteredMonHocs
-                                              .firstWhere(
-                                                (m) => m.tenMon == subject,
-                                              );
-                                          _hasUnsavedChanges = true;
-                                        });
-                                      },
-                                      onSave: _saveChanges,
+                          return SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Card(
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: CourseInfoSection(
+                                        selectedNienKhoaId: _selectedNienKhoaId,
+                                        selectedHocKy: _selectedHocKy,
+                                        subjects: _filteredMonHocs
+                                            .map((m) => m.tenMon)
+                                            .toList(),
+                                        nienKhoas: nienKhoas,
+                                        hocKyList: _hocKyList,
+                                        selectedSubject:
+                                            _selectedMonHoc?.tenMon ?? '',
+                                        onNienKhoaChanged: (value) {
+                                          final sel = nienKhoas.firstWhere(
+                                            (e) => e.id.toString() == value,
+                                          );
+                                          setState(() {
+                                            _selectedNienKhoaId = value;
+                                            _hocKyList = sel.hocKys;
+                                            _selectedHocKy = null;
+                                            _filteredMonHocs.clear();
+                                            _hasUnsavedChanges = true;
+                                          });
+                                        },
+                                        onHocKyChanged: _onHocKySelected,
+                                        onSubjectChanged: (subject) {
+                                          setState(() {
+                                            _selectedMonHoc = _filteredMonHocs
+                                                .firstWhere(
+                                                  (m) => m.tenMon == subject,
+                                                );
+                                            _hasUnsavedChanges = true;
+                                          });
+                                        },
+                                        onSave: _saveChanges,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
 
-                              BlocBuilder<LichThiBloc, LichThiState>(
-                                builder: (context, lichState) {
-                                  if (lichState is! LichThiLoaded) {
-                                    return const CircularProgressIndicator();
-                                  }
-                                  final lichThis = lichState.lichThiList;
+                                BlocBuilder<LichThiBloc, LichThiState>(
+                                  builder: (context, lichState) {
+                                    if (lichState is! LichThiLoaded) {
+                                      return const CircularProgressIndicator();
+                                    }
+                                    final lichThis = lichState.lichThiList;
 
-                                  return BlocBuilder<PhongBloc, PhongState>(
-                                    builder: (context, phongState) {
-                                      if (phongState is! PhongLoaded) {
-                                        return const CircularProgressIndicator();
-                                      }
-                                      final rooms = phongState.rooms;
+                                    return BlocBuilder<PhongBloc, PhongState>(
+                                      builder: (context, phongState) {
+                                        if (phongState is! PhongLoaded) {
+                                          return const CircularProgressIndicator();
+                                        }
+                                        final rooms = phongState.rooms;
 
-                                      return BlocBuilder<UserBloc, UserState>(
-                                        builder: (context, userState) {
-                                          if (userState is! UserLoaded) {
-                                            return const CircularProgressIndicator();
-                                          }
-                                          final giangViens = userState.users;
+                                        return BlocBuilder<UserBloc, UserState>(
+                                          builder: (context, userState) {
+                                            if (userState is! UserLoaded) {
+                                              return const CircularProgressIndicator();
+                                            }
+                                            final giangViens = userState.users;
 
-                                          final filteredLops = classes.where((
-                                            lop,
-                                          ) {
-                                            final matchNienKhoa =
-                                                _selectedNienKhoaId == null
-                                                ? true
-                                                : lop.lop.idNienKhoa
-                                                          .toString() ==
-                                                      _selectedNienKhoaId;
+                                            final filteredLops = classes.where((
+                                              lop,
+                                            ) {
+                                              final matchNienKhoa =
+                                                  _selectedNienKhoaId == null
+                                                  ? true
+                                                  : lop.lop.idNienKhoa
+                                                            .toString() ==
+                                                        _selectedNienKhoaId;
 
-                                            final matchHocKy =
-                                                _selectedHocKy == null
-                                                ? true
-                                                : lop.chuongTrinhDaoTao.chiTiet
-                                                          ?.any(
-                                                            (ct) =>
-                                                                ct.idHocKy ==
-                                                                _selectedHocKy!
-                                                                    .id,
-                                                          ) ??
-                                                      false;
+                                              final matchHocKy =
+                                                  _selectedHocKy == null
+                                                  ? true
+                                                  : lop
+                                                            .chuongTrinhDaoTao
+                                                            .chiTiet
+                                                            ?.any(
+                                                              (ct) =>
+                                                                  ct.idHocKy ==
+                                                                  _selectedHocKy!
+                                                                      .id,
+                                                            ) ??
+                                                        false;
 
-                                            final matchMonHoc =
-                                                _selectedMonHoc == null
-                                                ? true
-                                                : lop.tenHocPhan
-                                                          .trim()
-                                                          .toLowerCase() ==
-                                                      _selectedMonHoc!.tenMon
-                                                          .trim()
-                                                          .toLowerCase();
+                                              final matchMonHoc =
+                                                  _selectedMonHoc == null
+                                                  ? true
+                                                  : lop.tenHocPhan
+                                                            .trim()
+                                                            .toLowerCase() ==
+                                                        _selectedMonHoc!.tenMon
+                                                            .trim()
+                                                            .toLowerCase();
 
-                                            return matchNienKhoa &&
-                                                matchHocKy &&
-                                                matchMonHoc;
-                                          }).toList();
+                                              return matchNienKhoa &&
+                                                  matchHocKy &&
+                                                  matchMonHoc;
+                                            }).toList();
 
-                                          return Column(
-                                            children: filteredLops.map((lop) {
-                                              final ExamSchedule? lich =
-                                                  lichThis.firstWhereOrNull(
-                                                    (e) =>
-                                                        e.idLopHocPhan ==
-                                                        lop.id,
-                                                  );
+                                            return Column(
+                                              children: filteredLops.map((lop) {
+                                                final lopLichThis = lichThis
+                                                    .where(
+                                                      (e) =>
+                                                          e.idLopHocPhan ==
+                                                          lop.id,
+                                                    )
+                                                    .toList();
 
-                                              final defaultSchedule =
-                                                  ExamSchedule(
-                                                    id: 0,
-                                                    idLopHocPhan: lop.id,
-                                                    ngayThi: DateFormat(
-                                                      'yyyy-MM-dd',
-                                                    ).format(DateTime.now()),
-                                                    gioBatDau: '08:00',
-                                                    idGiamThi1: 0,
-                                                    idGiamThi2: 0,
-                                                    idPhongThi: 0,
-                                                    lanThi: 1,
-                                                    thoiGianThi: 90,
-                                                    trangThai: 0,
-                                                    lopHocPhan: lop,
-                                                    giamThi1: User.empty(),
-                                                    giamThi2: User.empty(),
-                                                    phong: null,
-                                                  );
+                                                final defaultSchedule =
+                                                    ExamSchedule(
+                                                      id: 0,
+                                                      idLopHocPhan: lop.id,
+                                                      ngayThi: DateFormat(
+                                                        'yyyy-MM-dd',
+                                                      ).format(DateTime.now()),
+                                                      gioBatDau: '08:00',
+                                                      idGiamThi1: 0,
+                                                      idGiamThi2: 0,
+                                                      idPhongThi: 0,
+                                                      lanThi: 1,
+                                                      thoiGianThi: 90,
+                                                      trangThai: 0,
+                                                      lopHocPhan: lop,
+                                                      giamThi1: User.empty(),
+                                                      giamThi2: User.empty(),
+                                                      phong: null,
+                                                    );
 
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8,
+                                                final isNew =
+                                                    (lopLichThis == null);
+
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 8,
+                                                      ),
+                                                  child: ExamScheduleGroupCard(
+                                                    key: ValueKey(
+                                                      'group-${lop.id}',
                                                     ),
-                                                child: ExamScheduleCard(
-                                                  schedule:
-                                                      lich ?? defaultSchedule,
-                                                  lecturers: giangViens
-                                                      .map(
-                                                        (gv) => DropdownItem(
-                                                          value: gv.id
-                                                              .toString(),
-                                                          label:
-                                                              gv.hoSo?.hoTen ??
-                                                              'Không tên',
-                                                          icon: Icons.person,
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                                  rooms: rooms
-                                                      .map(
-                                                        (r) => DropdownItem(
-                                                          value: r.id
-                                                              .toString(),
-                                                          label: r.ten,
-                                                          icon: Icons.room,
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                                  onSave: (updated) {
-                                                    if (updated.id == 0) {
-                                                      context.read<LichThiBloc>().add(
-                                                        CreateLichThi({
-                                                          'id_lop_hoc_phan':
-                                                              updated
-                                                                  .idLopHocPhan,
-                                                          'ngay_thi':
-                                                              updated.ngayThi,
-                                                          'gio_bat_dau':
-                                                              updated.gioBatDau,
-                                                          'id_giam_thi_1':
-                                                              updated
-                                                                  .idGiamThi1,
-                                                          'id_giam_thi_2':
-                                                              updated
-                                                                  .idGiamThi2,
-                                                          'id_phong_thi':
-                                                              updated
-                                                                  .idPhongThi,
-                                                          'lan_thi':
-                                                              updated.lanThi,
-                                                          'thoi_gian_thi':
-                                                              updated
-                                                                  .thoiGianThi,
-                                                          'trang_thai':
-                                                              updated.trangThai,
-                                                          'id_tuan': 1,
-                                                        }),
-                                                      );
-                                                    } else {
-                                                      context.read<LichThiBloc>().add(
-                                                        UpdateLichThi(updated.id, {
-                                                          'id_lop_hoc_phan':
-                                                              updated
-                                                                  .idLopHocPhan,
-                                                          'ngay_thi':
-                                                              updated.ngayThi,
-                                                          'gio_bat_dau':
-                                                              formatTime(
+                                                    lopHocPhan: lop,
+                                                    className: lop.tenHocPhan,
+                                                    subjectName: lop.lop.tenLop,
+                                                    schedules: lopLichThis,
+                                                    lecturers: giangViens
+                                                        .map(
+                                                          (gv) => DropdownItem(
+                                                            value: gv.id
+                                                                .toString(),
+                                                            label:
+                                                                gv
+                                                                    .hoSo
+                                                                    ?.hoTen ??
+                                                                'Không tên',
+                                                            icon: Icons.person,
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                                    rooms: rooms
+                                                        .map(
+                                                          (r) => DropdownItem(
+                                                            value: r.id
+                                                                .toString(),
+                                                            label: r.ten,
+                                                            icon: Icons.room,
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                                    onSave: (updated) {
+                                                      if (updated.id == 0) {
+                                                        context.read<LichThiBloc>().add(
+                                                          CreateLichThi({
+                                                            'id_lop_hoc_phan':
+                                                                updated
+                                                                    .idLopHocPhan,
+                                                            'ngay_thi':
+                                                                updated.ngayThi,
+                                                            'gio_bat_dau':
                                                                 updated
                                                                     .gioBatDau,
-                                                              ),
-                                                          'id_giam_thi_1':
-                                                              updated
-                                                                  .idGiamThi1,
-                                                          'id_giam_thi_2':
-                                                              updated
-                                                                  .idGiamThi2,
-                                                          'id_phong_thi':
-                                                              updated
-                                                                  .idPhongThi,
-                                                          'lan_thi':
-                                                              updated.lanThi,
-                                                          'thoi_gian_thi':
-                                                              updated
-                                                                  .thoiGianThi,
-                                                          'trang_thai':
-                                                              updated.trangThai,
-                                                          'id_tuan': 1,
-                                                        }),
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                              );
-                                            }).toList(),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
+                                                            'id_giam_thi_1':
+                                                                updated
+                                                                    .idGiamThi1,
+                                                            'id_giam_thi_2':
+                                                                updated
+                                                                    .idGiamThi2,
+                                                            'id_phong_thi':
+                                                                updated
+                                                                    .idPhongThi,
+                                                            'lan_thi':
+                                                                updated.lanThi,
+                                                            'thoi_gian_thi':
+                                                                updated
+                                                                    .thoiGianThi,
+                                                            'trang_thai':
+                                                                updated
+                                                                    .trangThai,
+                                                            'id_tuan': 1,
+                                                          }),
+                                                        );
+                                                      } else {
+                                                        context.read<LichThiBloc>().add(
+                                                          UpdateLichThi(updated.id, {
+                                                            'id_lop_hoc_phan':
+                                                                updated
+                                                                    .idLopHocPhan,
+                                                            'ngay_thi':
+                                                                updated.ngayThi,
+                                                            'gio_bat_dau':
+                                                                formatTime(
+                                                                  updated
+                                                                      .gioBatDau,
+                                                                ),
+                                                            'id_giam_thi_1':
+                                                                updated
+                                                                    .idGiamThi1,
+                                                            'id_giam_thi_2':
+                                                                updated
+                                                                    .idGiamThi2,
+                                                            'id_phong_thi':
+                                                                updated
+                                                                    .idPhongThi,
+                                                            'lan_thi':
+                                                                updated.lanThi,
+                                                            'thoi_gian_thi':
+                                                                updated
+                                                                    .thoiGianThi,
+                                                            'trang_thai':
+                                                                updated
+                                                                    .trangThai,
+                                                            'id_tuan': 1,
+                                                          }),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

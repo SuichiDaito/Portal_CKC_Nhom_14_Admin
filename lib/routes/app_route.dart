@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/diem_rl_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
@@ -18,6 +19,7 @@ import 'package:portal_ckc/presentation/pages/page_conduct_evaluation_admin.dart
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_course_section_student_list.dart';
 import 'package:portal_ckc/presentation/pages/page_create_notification_admin.dart';
+import 'package:portal_ckc/presentation/pages/page_create_meeting_minutes_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_admin.dart';
 import 'package:portal_ckc/presentation/pages/page_exam_schedule_grouped_admin.dart';
@@ -163,17 +165,23 @@ class RouteName {
           return PageMeetingMinutesAdmin(lop: lop);
         },
       ),
-      //Chi tiết biên bản sinh hoạt chủ nhiệm
       GoRoute(
         path: '/admin/report_detail_admin',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          final bienBanId = extra['bienBanId'] as int;
-          final lopId = extra['lopId'] as int;
+          final bienBan = extra['bienBan'] as BienBanSHCN;
 
-          return PageReportDetailAdmin(bienBanId: bienBanId, lopId: lopId);
+          return PageReportDetailAdmin(bienBan: bienBan);
         },
       ),
+      GoRoute(
+        path: '/admin/create_meeting_minutes_admin',
+        builder: (context, state) {
+          final lop = state.extra as Lop;
+          return PageCreateMeetingMinutesAdmin(lop: lop);
+        },
+      ),
+
       //Thời khóa biểu giảng viên
       GoRoute(
         path: '/admin/teaching_schedule_admin',

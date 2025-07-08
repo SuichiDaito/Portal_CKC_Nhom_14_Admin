@@ -62,15 +62,17 @@ class FilterButtonsRowTeacher extends StatelessWidget {
   TeacherPosition? _mapRoleIdToPosition(int id) {
     switch (id) {
       case 1:
-        return TeacherPosition.director; // trưởng phòng đào tạo
+        return TeacherPosition.admin;
       case 2:
-        return TeacherPosition.dean; // trưởng khoa
+        return TeacherPosition.truongPhongDaoTao;
       case 3:
-        return TeacherPosition.viceDean; // trưởng bộ môn
+        return TeacherPosition.truongPhongCongTacCT;
       case 4:
-        return TeacherPosition.staff; // trưởng phòng CTSV
+        return TeacherPosition.giangVienBoMon;
       case 5:
-        return TeacherPosition.lecturer; // giảng viên
+        return TeacherPosition.giangVienChuNhiem;
+      case 6:
+        return TeacherPosition.truongKhoa;
       default:
         return null;
     }

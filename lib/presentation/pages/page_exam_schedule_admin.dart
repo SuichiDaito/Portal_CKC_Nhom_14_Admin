@@ -98,7 +98,7 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
                     teacherName: user.hoSo?.hoTen ?? 'Không rõ',
                     teacherId: '${user.id}',
                     department:
-                        user.boMon?.nganhHoc?.khoa?.tenKhoa ??
+                        user.boMon?.chuyenNganh?.khoa?.tenKhoa ??
                         'Chưa có thông tin',
                   );
                 } else if (state is AdminLoading) {

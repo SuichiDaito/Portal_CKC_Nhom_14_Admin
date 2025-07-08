@@ -47,6 +47,7 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
     BuildContext context,
     BinhLuan comment, {
     String? replyTo,
+    bool isRootComment = true,
   }) {
     final name = comment.nguoiBinhLuan.hoSo.hoTen;
     final noiDung = replyTo != null
@@ -121,17 +122,18 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                           ),
                           Row(
                             children: [
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    commentIdBeingReplied = comment.id;
-                                  });
-                                },
-                                child: const Text(
-                                  'Trả lời',
-                                  style: TextStyle(fontSize: 13),
+                              if (isRootComment)
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      commentIdBeingReplied = comment.id;
+                                    });
+                                  },
+                                  child: const Text(
+                                    'Trả lời',
+                                    style: TextStyle(fontSize: 13),
+                                  ),
                                 ),
-                              ),
                               if (isOwner || isQuanLy)
                                 IconButton(
                                   icon: const Icon(
@@ -140,11 +142,43 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
-                                    context.read<ThongBaoBloc>().add(
-                                      DeleteCommentEvent(comment.id),
-                                    );
-                                    context.read<ThongBaoBloc>().add(
-                                      FetchThongBaoDetail(widget.idThongBao),
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: const Text('Xác nhận'),
+                                        content: const Text(
+                                          'Bạn có chắc chắn muốn xóa bình luận này?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.of(
+                                              ctx,
+                                            ).pop(), // Đóng dialog
+                                            child: const Text('Hủy'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(
+                                                ctx,
+                                              ).pop(); // Đóng dialog
+                                              context.read<ThongBaoBloc>().add(
+                                                DeleteCommentEvent(comment.id),
+                                              );
+                                              context.read<ThongBaoBloc>().add(
+                                                FetchThongBaoDetail(
+                                                  widget.idThongBao,
+                                                ),
+                                              );
+                                            },
+                                            child: const Text(
+                                              'Xóa',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                 ),
@@ -212,6 +246,7 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                         context,
                         reply,
                         replyTo: replyTo ?? name,
+                        isRootComment: false,
                       ),
                     )
                     .toList(),

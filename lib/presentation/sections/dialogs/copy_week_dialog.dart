@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
 import 'package:portal_ckc/bloc/event/thoi_khoa_bieu_event.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
-import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
 
 Future<void> showScheduleCopyDialog({
   required BuildContext context,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
-class AbsentStudentManager extends StatelessWidget {
+class AbsentStudentManager extends StatefulWidget {
   final List<StudentWithRole> studentList;
   final List<int> absentStudentIds;
   final void Function(int) onAddAbsentStudent;
@@ -25,9 +24,14 @@ class AbsentStudentManager extends StatelessWidget {
   });
 
   @override
+  State<AbsentStudentManager> createState() => _AbsentStudentManagerState();
+}
+
+class _AbsentStudentManagerState extends State<AbsentStudentManager> {
+  @override
   Widget build(BuildContext context) {
-    final availableStudents = studentList
-        .where((s) => !absentStudentIds.contains(s.id))
+    final availableStudents = widget.studentList
+        .where((s) => !widget.absentStudentIds.contains(s.idSinhVien))
         .toList();
 
     return Padding(
@@ -41,10 +45,10 @@ class AbsentStudentManager extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
+          /// Autocomplete...
           Autocomplete<StudentWithRole>(
             optionsBuilder: (TextEditingValue textEditingValue) {
               if (textEditingValue.text.isEmpty) return const Iterable.empty();
-
               return availableStudents.where((student) {
                 final mssv = student.sinhVien.maSv.toLowerCase();
                 final name = student.sinhVien.hoSo.hoTen.toLowerCase();
@@ -81,28 +85,23 @@ class AbsentStudentManager extends StatelessWidget {
                   );
                 },
             onSelected: (student) {
-              onAddAbsentStudent(student.id);
+              widget.onAddAbsentStudent(student.idSinhVien);
               Future.delayed(const Duration(milliseconds: 100), () {
                 FocusManager.instance.primaryFocus?.unfocus();
               });
+              setState(() {}); // ✅ Refresh UI sau khi chọn
             },
           ),
-
           const SizedBox(height: 12),
 
-          if (absentStudentIds.isNotEmpty)
+          if (widget.absentStudentIds.isNotEmpty)
             Column(
-              children: absentStudentIds.map((id) {
-                final secretary = availableStudents.firstWhere(
-                  (s) => s.chucVu == 1,
-                  orElse: () => StudentWithRole(
-                    id: -1,
-                    idLop: -1,
-                    idSinhVien: -1,
-                    chucVu: 0,
-                    sinhVien: SinhVien.empty(),
-                  ),
+              children: widget.absentStudentIds.map((id) {
+                final student = widget.studentList.firstWhere(
+                  (s) => s.idSinhVien == id,
+                  orElse: () => StudentWithRole.empty(),
                 );
+
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(12),
@@ -125,7 +124,7 @@ class AbsentStudentManager extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '${secretary.sinhVien.maSv} - ${secretary.sinhVien.hoSo.hoTen}',
+                              '${student.sinhVien.maSv} - ${student.sinhVien.hoSo.hoTen}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -134,27 +133,33 @@ class AbsentStudentManager extends StatelessWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.close),
-                            onPressed: () => onRemoveAbsentStudent(id),
+                            onPressed: () {
+                              widget.onRemoveAbsentStudent(id);
+                              setState(() {});
+                            },
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        initialValue: absenceReasons[id] ?? '',
+                        initialValue: widget.absenceReasons[id] ?? '',
                         decoration: const InputDecoration(
                           labelText: 'Lý do vắng',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => onReasonChanged(id, value),
+                        onChanged: (value) {
+                          widget.onReasonChanged(id, value);
+                        },
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Checkbox(
-                            value: isExcusedMap[id] ?? false,
+                            value: widget.isExcusedMap[id] ?? false,
                             onChanged: (value) {
                               if (value != null) {
-                                onExcusedChanged(id, value);
+                                widget.onExcusedChanged(id, value);
+                                setState(() {});
                               }
                             },
                           ),

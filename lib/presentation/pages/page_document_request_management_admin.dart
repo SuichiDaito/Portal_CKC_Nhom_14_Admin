@@ -78,7 +78,7 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
               currentFilter: _currentFilter,
               onFilterChanged: (status) {
                 setState(() {
-                  // _currentFilter = status as DocumentRequestStatus?;
+                  _currentFilter = status as DocumentRequestStatus?;
                   _selectedRequestIds.clear();
                 });
               },
@@ -143,14 +143,12 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
                           onSelected: (isSelected) =>
                               _toggleSelection(request.id, isSelected ?? false),
                           onConfirm: () {
-                            final userId =
-                                1; // TODO: Replace with actual user ID
+                            final userId = 1;
                             context.read<DangKyGiayBloc>().add(
                               ConfirmMultipleGiayXacNhanEvent(
                                 ids: [int.parse(request.id)],
                                 userId: userId,
-                                trangThai:
-                                    1, // bạn cần thêm field này trong event nếu chưa có
+                                trangThai: 1,
                               ),
                             );
                           },

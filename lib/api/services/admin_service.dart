@@ -24,12 +24,17 @@ abstract class AdminService extends ChopperService {
   @Get(path: '/giangvien/{id}')
   Future<Response> getUserDetail(@Path('id') int id);
 
-  // ✅ API Đổi mật khẩu cho giảng viên
+  //API Đổi mật khẩu cho giảng viên
   @Post(path: '/doi-mat-khau')
   Future<Response<Map<String, dynamic>>> changePassword(
     @Body() Map<String, dynamic> body,
   );
-
+  //API đổi chức vụ giảng viên
+  @Put(path: '/users/{id}/role')
+  Future<Response<Map<String, dynamic>>> updateTeacherRole(
+    @Path('id') int userId,
+    @Body() Map<String, dynamic> data,
+  );
   //=================PHÒNG=============
   //API LẤY DANH SÁCH PHÒNG
   @Get(path: '/phong')

@@ -41,7 +41,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
 
   List<DropdownItem> _weeks = [];
   DropdownItem? _selectedWeek;
-
   Map<String, Map<String, List<Subject>>> convertToScheduleData(
     List<LopHocPhan> list,
     int selectedWeekId,
@@ -64,11 +63,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
             DateTime.tryParse(tkb.ngay ?? '') ?? DateTime.now();
         final String thu = _convertWeekdayToVietnamese(ngay.weekday);
         final int tietBatDau = tkb.tietBatDau ?? 0;
-        for (final lhp in list) {
-          for (final tkb in lhp.thoiKhoaBieu ?? []) {
-            print('tkb.idTuan: ${tkb.idTuan}, selectedWeekId: $selectedWeekId');
-          }
-        }
 
         String buoi = 'Sáng';
         if (tietBatDau >= 7 && tietBatDau <= 12) {
@@ -90,6 +84,15 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
         result[thu]?[buoi]?.add(subject);
       }
     }
+
+    // ✅ Chỉ giữ lại các thứ có lịch dạy
+    result.removeWhere((thu, buoiMap) {
+      final totalSubjects = buoiMap.values.fold<int>(
+        0,
+        (sum, subjects) => sum + subjects.length,
+      );
+      return totalSubjects == 0;
+    });
 
     return result;
   }
@@ -136,26 +139,25 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
   @override
   void initState() {
     super.initState();
-    context.read<LopHocPhanBloc>().add(FetchLopHocPhanTheoGiangVien());
-    context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
+    // Fetch tuần theo năm 2025 ngay khi load widget
+    context.read<TuanBloc>().add(FetchTuanEvent(2025));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Quản lý Thời Khóa Biểu',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         backgroundColor: Colors.blue,
-
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           if (selectedDay != null)
             IconButton(
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
               onPressed: () {
                 setState(() {
                   selectedDay = null;
@@ -164,20 +166,20 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
               tooltip: 'Hiển thị tất cả',
             ),
           IconButton(
-            icon: Icon(Icons.print),
+            icon: const Icon(Icons.print),
             onPressed: () => _showPrintDialog(),
             tooltip: 'In thời khóa biểu',
           ),
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color.fromARGB(255, 30, 81, 123),
-              const Color.fromARGB(255, 56, 76, 208),
+              Color.fromARGB(255, 30, 81, 123),
+              Color.fromARGB(255, 56, 76, 208),
             ],
           ),
         ),
@@ -195,8 +197,8 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Lọc theo Niên khóa & Tuần',
+                    const Text(
+                      'Lọc theo Tuần',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -204,130 +206,91 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child:
-                              BlocBuilder<
-                                NienKhoaHocKyBloc,
-                                NienKhoaHocKyState
-                              >(
-                                builder: (context, state) {
-                                  if (state is NienKhoaHocKyLoading) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  if (state is NienKhoaHocKyLoaded) {
-                                    if (!_isSchoolYearLoaded) {
-                                      _schoolYears = state.nienKhoas.map((nk) {
-                                        return DropdownItem(
-                                          value: nk.namBatDau,
-                                          label: nk.tenNienKhoa,
-                                          icon: Icons.school,
-                                        );
-                                      }).toList();
-                                      _selectedSchoolYear =
-                                          _schoolYears.isNotEmpty
-                                          ? _schoolYears.first
-                                          : null;
-                                      _isSchoolYearLoaded = true;
+                    BlocBuilder<TuanBloc, TuanState>(
+                      builder: (context, tuanState) {
+                        if (tuanState is TuanLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (tuanState is TuanLoaded) {
+                          _weeks = tuanState.danhSachTuan.map((tuan) {
+                            return DropdownItem(
+                              value: tuan.id.toString(),
+                              label: 'Tuần ${tuan.tuan}',
+                              icon: Icons.calendar_today,
+                            );
+                          }).toList();
 
-                                      final namBatDau = int.tryParse(
-                                        _selectedSchoolYear?.label
-                                                .split('-')
-                                                .first ??
-                                            '',
-                                      );
-                                      if (namBatDau != null) {
-                                        context.read<TuanBloc>().add(
-                                          FetchTuanEvent(namBatDau),
-                                        );
-                                      }
-                                    }
+                          if (_selectedWeek == null) {
+                            final today = DateTime.now();
 
-                                    return DropdownSelector(
-                                      label: 'Niên khóa',
-                                      selectedItem: _selectedSchoolYear,
-                                      items: _schoolYears,
-                                      onChanged: (item) {
-                                        setState(() {
-                                          _selectedSchoolYear = item;
-                                        });
-
-                                        final namBatDau = int.tryParse(
-                                          item?.label.split('-').first ?? '',
-                                        );
-                                        if (namBatDau != null) {
-                                          context.read<TuanBloc>().add(
-                                            FetchTuanEvent(namBatDau),
-                                          );
-                                        }
-                                      },
-                                    );
-                                  }
-                                  if (state is NienKhoaHocKyError) {
-                                    return Text(
-                                      'Lỗi tải niên khóa: ${state.message}',
-                                    );
-                                  }
-                                  return const SizedBox();
-                                },
-                              ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: BlocBuilder<TuanBloc, TuanState>(
-                            builder: (context, tuanState) {
-                              if (tuanState is TuanLoading) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              if (tuanState is TuanLoaded) {
-                                _weeks = tuanState.danhSachTuan.map((tuan) {
-                                  return DropdownItem(
-                                    value: tuan.id.toString(),
-                                    label: 'Tuần ${tuan.tuan}',
-                                    icon: Icons.calendar_today,
+                            final matchingWeek = tuanState.danhSachTuan
+                                .firstWhere((tuan) {
+                                  final fromDate = DateTime.tryParse(
+                                    tuan.ngayBatDau?.toString() ?? '',
                                   );
-                                }).toList();
+                                  final toDate = DateTime.tryParse(
+                                    tuan.ngayKetThuc?.toString() ?? '',
+                                  );
 
-                                _selectedWeek ??= _weeks.first;
+                                  if (fromDate == null || toDate == null)
+                                    return false;
+                                  return today.isAfter(
+                                        fromDate.subtract(
+                                          const Duration(days: 1),
+                                        ),
+                                      ) &&
+                                      today.isBefore(
+                                        toDate.add(const Duration(days: 1)),
+                                      );
+                                }, orElse: () => tuanState.danhSachTuan.first);
 
-                                return DropdownSelector(
-                                  label: 'Tuần',
-                                  selectedItem: _selectedWeek,
-                                  items: _weeks,
-                                  onChanged: (item) {
-                                    setState(() {
-                                      _selectedWeek = item;
-                                      selectedWeek =
-                                          int.tryParse(item?.value ?? '') ?? 1;
-                                    });
+                            _selectedWeek = DropdownItem(
+                              value: matchingWeek.id.toString(),
+                              label: 'Tuần ${matchingWeek.tuan}',
+                              icon: Icons.calendar_today,
+                            );
 
-                                    context.read<LopHocPhanBloc>().add(
-                                      FetchLopHocPhanTheoGiangVien(),
-                                    );
-                                  },
-                                );
-                              }
-                              if (tuanState is TuanError) {
-                                return Text(
-                                  'Không thể truy cập chức năng này, vui lòng thử lại sau.',
-                                );
-                              }
-                              return const SizedBox();
+                            // Auto fetch Lớp học phần
+                            selectedWeek =
+                                int.tryParse(_selectedWeek?.value ?? '') ?? 1;
+                            context.read<LopHocPhanBloc>().add(
+                              FetchLopHocPhanTheoGiangVien(),
+                            );
+                          }
+
+                          return DropdownSelector(
+                            label: 'Tuần',
+                            selectedItem: _selectedWeek,
+                            items: _weeks,
+                            onChanged: (item) {
+                              setState(() {
+                                _selectedWeek = item;
+                                selectedWeek =
+                                    int.tryParse(item?.value ?? '') ?? 1;
+                              });
+
+                              context.read<LopHocPhanBloc>().add(
+                                FetchLopHocPhanTheoGiangVien(),
+                              );
                             },
-                          ),
-                        ),
-                      ],
+                          );
+                        }
+                        if (tuanState is TuanError) {
+                          return const Text(
+                            'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                          );
+                        }
+                        return const SizedBox();
+                      },
                     ),
                   ],
                 ),
               ),
             ),
 
+            // Các phần khác giữ nguyên:
             DaySelector(
               selectedDay: selectedDay,
               onDayTap: (String day) {
@@ -341,7 +304,7 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
               child: BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
                 builder: (context, state) {
                   if (state is LopHocPhanLoading) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (state is LopHocPhanLoaded) {
                     final selectedWeekId =
                         int.tryParse(_selectedWeek?.value ?? '') ?? 1;
@@ -364,7 +327,7 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                   } else if (state is LopHocPhanError) {
                     return Center(child: Text('Lỗi: ${state.message}'));
                   }
-                  return Center(child: Text('Không có dữ liệu'));
+                  return const Center(child: Text('Không có dữ liệu'));
                 },
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_phieu_len_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
@@ -93,6 +94,33 @@ class ChiTietBienBan {
       lyDo: json['ly_do'] ?? '',
       loai: json['loai'] ?? 0,
       sinhVien: SinhVien.fromJson(json['sinh_vien']),
+    );
+  }
+}
+
+class MeetingMinutesCreateData {
+  final Lop lop;
+  final List<StudentWithRole> thuKy;
+  final List<Tuan> tuans;
+  final List<StudentWithRole> sinhViens;
+
+  MeetingMinutesCreateData({
+    required this.lop,
+    required this.thuKy,
+    required this.tuans,
+    required this.sinhViens,
+  });
+
+  factory MeetingMinutesCreateData.fromJson(Map<String, dynamic> json) {
+    return MeetingMinutesCreateData(
+      lop: Lop.fromJson(json['lop']),
+      thuKy: (json['thuKy'] as List)
+          .map((e) => StudentWithRole.fromJson(e))
+          .toList(),
+      tuans: (json['tuans'] as List).map((e) => Tuan.fromJson(e)).toList(),
+      sinhViens: (json['sinhViens'] as List)
+          .map((e) => StudentWithRole.fromJson(e))
+          .toList(),
     );
   }
 }

@@ -4,7 +4,9 @@ import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
 import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart' hide HoSo;
 
 class ReportDetailReadonlySummaryCard extends StatelessWidget {
   final int selectedWeek;
@@ -111,25 +113,8 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Text('Họ và tên HSSV vắng, lý do:'),
                 ...absentStudentIds.map((id) {
-                  if (chiTietBienBanList.isNotEmpty) {
-                    print(chiTietBienBanList[0].sinhVien.hoSo.hoTen);
-                  } else {
-                    print('Danh sách chi tiết biên bản đang rỗng');
-                  }
-
-                  final displayedStudents = chiTietBienBanList
-                      .map(
-                        (e) => {
-                          'mssv': e.sinhVien.maSv,
-                          'name': e.sinhVien.maSv,
-                        },
-                      )
-                      .toList();
-
-                  final reason = absenceReasons['$id'] ?? 'Không rõ lý do';
-
                   final ctbb = chiTietBienBanList.firstWhere(
-                    (e) => e.sinhVien.id == id, // ✅ so sánh ID thực tế (int)
+                    (e) => e.sinhVien.id == id,
                     orElse: () => ChiTietBienBan(
                       id: -1,
                       idBienBanShcn: -1,
@@ -146,6 +131,8 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
                     ),
                   );
 
+                  final reason =
+                      absenceReasons[id] ?? ctbb.lyDo ?? 'Không rõ lý do';
                   final isExcused = ctbb.loai == 1;
 
                   return Text(

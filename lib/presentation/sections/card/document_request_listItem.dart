@@ -89,13 +89,15 @@ class DocumentRequestListItem extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 const Text(
                   'Trạng thái:',
                   style: TextStyle(fontSize: 15, color: Colors.black87),
                 ),
-                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -115,8 +117,6 @@ class DocumentRequestListItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (request.status == DocumentRequestStatus.pending)
-                  const Spacer(),
                 if (request.status == DocumentRequestStatus.pending)
                   ElevatedButton.icon(
                     onPressed: onConfirm,

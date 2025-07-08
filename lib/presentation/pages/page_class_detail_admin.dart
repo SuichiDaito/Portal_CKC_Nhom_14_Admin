@@ -137,7 +137,7 @@ class _PageClassDetailAdminState extends State<PageClassDetailAdmin> {
                           builder: (_) => AlertDialog(
                             title: const Text('Thông tin sinh viên'),
                             content: Text(
-                              'Tên: ${sv.sinhVien.hoSo.hoTen}// ${sv.sinhVien.id}\nMSSV: ${sv.sinhVien.maSv}\nChức vụ: ${sv.chucVu == 1 ? 'Thư ký' : 'Không có'}\nTrạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[sv.sinhVien.trangThai] ?? 'Không rõ'}',
+                              'Tên: ${sv.sinhVien.hoSo.hoTen}\nMSSV: ${sv.sinhVien.maSv}\nChức vụ: ${sv.chucVu == 1 ? 'Thư ký' : 'Không có'}\nTrạng thái: ${{0: 'Đang học', 1: 'Bảo lưu', 2: 'Đã tốt nghiệp'}[sv.sinhVien.trangThai] ?? 'Không rõ'}',
                             ),
                             actions: [
                               TextButton(
