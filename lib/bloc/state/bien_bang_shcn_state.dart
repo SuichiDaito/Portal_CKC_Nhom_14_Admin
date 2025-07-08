@@ -34,3 +34,17 @@ class BienBanDetailLoaded extends BienBanState {
 
   BienBanDetailLoaded(this.bienBan);
 }
+
+class MeetingMinutesCreateDataLoading extends BienBanState {}
+
+class MeetingMinutesCreateDataLoaded extends BienBanState {
+  final MeetingMinutesCreateData data;
+
+  MeetingMinutesCreateDataLoaded(this.data);
+}
+
+class MeetingMinutesCreateDataError extends BienBanState {
+  final String message;
+
+  MeetingMinutesCreateDataError(this.message);
+}

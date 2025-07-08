@@ -1,4 +1,3 @@
-// screens/class_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +6,6 @@ import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_hoc_phan_event.dart';
 import 'package:portal_ckc/bloc/state/lop_hoc_phan_state.dart';
 import 'package:portal_ckc/presentation/sections/card/class_roster_class_item_card.dart';
-import 'package:portal_ckc/presentation/sections/card/class_roster_teacher_info_card.dart';
 import 'package:portal_ckc/presentation/sections/class_roster_filter_section.dart';
 
 class PageClassRosterAdmin extends StatefulWidget {
@@ -49,34 +47,6 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
     });
   }
 
-  // void _onClassTap(LopHocPhan lop) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: Text('Chi tiết lớp ${lop.lop?.tenLop ?? ''}'),
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text('Môn: ${lop.tenHocPhan}'),
-  //           Text('Trạng thái: ${lop.trangThaiText}'),
-  //           Text('Số SV ĐK: ${lop.soLuongDangKy}'),
-  //         ],
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Đóng'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Đóng'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +66,9 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is LopHocPhanError) {
-            return Center(child: Text('Lỗi: ${state.message}'));
+            return Center(
+              child: Text('Bạn không có quyền truy cập chức năng này'),
+            );
           }
           if (state is LopHocPhanLoaded) {
             allClasses = state.lopHocPhans;
@@ -117,7 +89,6 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
               },
               child: CustomScrollView(
                 slivers: [
-                  // Filter Section
                   SliverToBoxAdapter(
                     child: FilterSection(
                       subjects: uniqueSubjects,
@@ -136,7 +107,6 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
                     ),
                   ),
 
-                  // Class Count
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -154,7 +124,6 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
                     ),
                   ),
 
-                  // Class List
                   SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       final lop = filteredClasses[index];
@@ -183,13 +152,15 @@ class _PageClassRosterAdminState extends State<PageClassRosterAdmin> {
 
 extension TrangThaiText on LopHocPhan {
   String get trangThaiText {
-    switch (trangThai) {
+    switch (trangThaiNopBangDiem) {
       case 0:
-        return 'Chưa diễn ra';
+        return 'Đang diễn ra';
       case 1:
         return 'Đang diễn ra';
       case 2:
-        return 'Đã kết thúc';
+        return 'Đang diễn ra';
+      case 3:
+        return 'Đã nộp điểm';
       default:
         return 'Không xác định';
     }

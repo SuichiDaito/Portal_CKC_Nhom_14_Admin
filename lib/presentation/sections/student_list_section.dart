@@ -22,6 +22,8 @@ class StudentListSection extends StatefulWidget {
 }
 
 class _StudentListSectionState extends State<StudentListSection> {
+  final List<String> scoreOptions = ['A', 'B', 'C', 'D'];
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -61,14 +63,16 @@ class _StudentListSectionState extends State<StudentListSection> {
             subtitle: Text('MSSV: ${student.id}'),
             trailing: widget.isEditing
                 ? DropdownButton<String>(
-                    value: student.conductScore,
+                    value: scoreOptions.contains(student.conductScore)
+                        ? student.conductScore
+                        : null,
                     onChanged: (value) {
                       setState(() {
                         student.conductScore = value ?? student.conductScore;
                       });
                       widget.onScoreChanged(value, index);
                     },
-                    items: ['A', 'B', 'C', 'D'].map((score) {
+                    items: scoreOptions.map((score) {
                       return DropdownMenuItem(value: score, child: Text(score));
                     }).toList(),
                   )

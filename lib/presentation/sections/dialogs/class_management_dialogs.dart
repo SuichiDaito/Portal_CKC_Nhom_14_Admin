@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:portal_ckc/api/model/admin_lop.dart';
-import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
-import 'package:portal_ckc/bloc/event/bien_bang_shcn_event.dart';
 
-import 'package:portal_ckc/presentation/sections/card/class_management_card.dart';
-
-void showClassMeetingListDialog(
+void showClassListDialog(
   BuildContext context,
   List<Lop> classList,
   Function(Lop) onTapClass,
@@ -55,19 +49,12 @@ void showClassMeetingListDialog(
                     ),
                     subtitle: Text('${classInfo.siSo} sinh viên '),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () async {
-                      Navigator.pop(context); // đóng dialog
-                      final result = await context.push(
-                        '/admin/meeting_minutes_admin',
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(
+                        '/admin/class_detail_admin',
                         extra: classInfo,
-                      );
-
-                      // Nếu quay lại từ chi tiết → reload
-                      if (result == 'refresh') {
-                        context.read<BienBangShcnBloc>().add(
-                          FetchBienBan(classInfo.id),
-                        );
-                      }
+                      ); // lop là đối tượng Lop
                     },
                   );
                 },

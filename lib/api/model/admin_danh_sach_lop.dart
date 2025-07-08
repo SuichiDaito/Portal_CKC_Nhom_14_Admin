@@ -4,7 +4,7 @@ import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 class LopChiTietResponse {
   final bool success;
   final Lop lop;
-  final List<SinhVien> sinhViens;
+  final List<StudentWithRole> sinhViens;
 
   LopChiTietResponse({
     required this.success,
@@ -17,20 +17,39 @@ class LopChiTietResponse {
       success: json['success'],
       lop: Lop.fromJson(json['lop']),
       sinhViens: (json['sinh_viens'] as List)
-          .map((e) => SinhVien.fromJson(e))
+          .map((e) => StudentWithRole.fromJson(e))
           .toList(),
     );
   }
 }
 
-class LopListResponse {
-  final List<Lop> data;
+class StudentWithRole {
+  final int id;
+  final int idLop;
+  final int idSinhVien;
+  final int chucVu;
+  final SinhVien sinhVien;
 
-  LopListResponse({required this.data});
-
-  factory LopListResponse.fromJson(Map<String, dynamic> json) {
-    return LopListResponse(
-      data: (json['data'] as List).map((item) => Lop.fromJson(item)).toList(),
+  StudentWithRole({
+    required this.id,
+    required this.idLop,
+    required this.idSinhVien,
+    required this.chucVu,
+    required this.sinhVien,
+  });
+  StudentWithRole.empty()
+    : id = -1,
+      idLop = -1,
+      idSinhVien = -1,
+      chucVu = 0,
+      sinhVien = SinhVien.empty();
+  factory StudentWithRole.fromJson(Map<String, dynamic> json) {
+    return StudentWithRole(
+      id: json['id'],
+      idLop: json['id_lop'],
+      idSinhVien: json['id_sinh_vien'],
+      chucVu: json['chuc_vu'],
+      sinhVien: SinhVien.fromJson(json['sinh_vien']),
     );
   }
 }

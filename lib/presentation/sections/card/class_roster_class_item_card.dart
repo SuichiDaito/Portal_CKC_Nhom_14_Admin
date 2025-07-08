@@ -12,7 +12,7 @@ class ClassItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final String className = classModel.lop.tenLop ?? 'Chưa rõ';
     final String subject = classModel.tenHocPhan;
-    final String status = _getTrangThaiText(classModel.trangThai);
+    final String status = _getTrangThaiText(classModel.trangThaiNopBangDiem);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -130,14 +130,16 @@ class ClassItemCard extends StatelessWidget {
     );
   }
 
-  String _getTrangThaiText(int? trangThai) {
-    switch (trangThai) {
+  String _getTrangThaiText(int? TrangThaiNopDiem) {
+    switch (TrangThaiNopDiem) {
       case 0:
-        return 'Chưa diễn ra';
+        return 'Đang diễn ra';
       case 1:
         return 'Đang diễn ra';
       case 2:
-        return 'Đã kết thúc';
+        return 'Đang diễn ra';
+      case 3:
+        return 'Đã nộp điểm';
       default:
         return 'Không rõ';
     }
@@ -152,9 +154,9 @@ class ClassItemCard extends StatelessWidget {
         backgroundColor = Colors.green[100]!;
         textColor = Colors.green[700]!;
         break;
-      case 'đã kết thúc':
-        backgroundColor = Colors.grey[200]!;
-        textColor = Colors.grey[800]!;
+      case 'đã nộp điểm':
+        backgroundColor = const Color.fromARGB(255, 94, 173, 215)!;
+        textColor = Colors.white;
         break;
       case 'chưa diễn ra':
         backgroundColor = Colors.blue[100]!;

@@ -33,10 +33,12 @@ class FetchStudentList extends AdminEvent {
 class ChangePasswordEvent extends AdminEvent {
   final String currentPassword;
   final String newPassword;
+  final String confirmPassword;
 
   ChangePasswordEvent({
     required this.currentPassword,
     required this.newPassword,
+    required this.confirmPassword,
   });
 }
 

@@ -5,7 +5,6 @@ import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/phieu_len_lop_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_event.dart';
 import 'package:portal_ckc/bloc/event/phieu_len_lop_event.dart';
-import 'package:portal_ckc/bloc/state/lop_state.dart';
 import 'package:portal_ckc/bloc/state/phieu_len_lop_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
@@ -86,12 +85,10 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
               ),
             ];
 
-            // Gán lớp mặc định nếu chưa có
             _selectedClass ??= _classNames.first;
 
             return Column(
               children: [
-                /// Dropdown lớp
                 Card(
                   margin: const EdgeInsets.all(16),
                   elevation: 4,
@@ -114,7 +111,6 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
                   ),
                 ),
 
-                /// Danh sách phiếu
                 Expanded(
                   child: _filteredPhieu.isEmpty
                       ? const Center(
@@ -137,7 +133,7 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              color: Colors.blue.shade50, // Màu nền nhẹ
+                              color: Colors.blue.shade50,
                               child: ListTile(
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -151,10 +147,9 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
                                   ),
                                 ),
                                 title: Text(
-                                  phieu.noiDung ?? '---',
+                                  phieu.lopHocPhan?.lop.tenLop ?? '---',
                                   maxLines: 2,
-                                  overflow: TextOverflow
-                                      .ellipsis, // Dấu "..." khi dài quá
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -162,7 +157,7 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
                                 ),
 
                                 subtitle: Text(
-                                  'Lớp: ${phieu.lopHocPhan?.lop.tenLop ?? '---'} | Môn: ${phieu.lopHocPhan?.tenHocPhan ?? '---'}',
+                                  'Môn: ${phieu.lopHocPhan?.tenHocPhan ?? '---'}\nGiảng viên: ${phieu.lopHocPhan?.gv?.hoSo?.hoTen ?? "---"}',
                                   style: const TextStyle(fontSize: 14),
                                 ),
                                 trailing: Text(
@@ -177,8 +172,7 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
                                         top: Radius.circular(20),
                                       ),
                                     ),
-                                    backgroundColor:
-                                        Colors.white, // Màu nền trắng
+                                    backgroundColor: Colors.white,
                                     isScrollControlled: true,
                                     builder: (context) => Padding(
                                       padding: EdgeInsets.only(
@@ -277,7 +271,11 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
           }
 
           if (phieuState is PhieuLenLopError) {
-            return Center(child: Text('Lỗi phiếu: ${phieuState.error}'));
+            return Center(
+              child: Text(
+                'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+              ),
+            );
           }
 
           return const SizedBox();

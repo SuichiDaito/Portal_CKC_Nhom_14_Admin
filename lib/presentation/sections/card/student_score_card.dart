@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/sections/card/edit_score_dialog.dart';
+import 'package:portal_ckc/presentation/sections/dialogs/edit_score_dialog.dart';
 
 class StudentScoreCard extends StatelessWidget {
   final String maSv;

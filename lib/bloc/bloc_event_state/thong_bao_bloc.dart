@@ -3,6 +3,7 @@ import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
+import 'package:http/http.dart' show MultipartFile;
 
 class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
   final _service = CallApiAdmin.adminService;
@@ -62,11 +63,14 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
   ) async {
     emit(TBLoading());
     try {
-      final response = await _service.createThongBao({
-        'title': event.title,
-        'content': event.content,
-        'cap_tren': event.capTren,
-      });
+      final response = await _service.createThongBaoWithFiles(
+        event.title,
+        event.content,
+        event.capTren,
+        DateTime.now().toIso8601String(),
+        // event.files ?? [],
+      );
+
       if (response.isSuccessful) {
         emit(TBSuccess('Tạo thông báo thành công'));
       } else {
@@ -84,9 +88,13 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
     emit(TBLoading());
     try {
       final response = await _service.updateThongBao(event.id, {
-        'title': event.title,
-        'content': event.content,
+        'tieu_de': event.title,
+        'ngay_gui': event.ngayGui,
+        'noi_dung': event.content,
+        'trang_thai': event.trangThai,
+        'tu_ai': event.tuAi, // Thêm biến mới nếu cần
       });
+
       if (response.isSuccessful) {
         emit(TBSuccess('Cập nhật thông báo thành công'));
       } else {

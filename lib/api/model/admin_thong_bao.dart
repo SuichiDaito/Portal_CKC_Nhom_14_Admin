@@ -3,9 +3,6 @@ import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 
 import 'package:portal_ckc/api/model/admin_thong_tin.dart';
-import 'admin_lop.dart';
-import 'admin_sinh_vien.dart';
-import 'admin_thong_tin.dart';
 
 class ThongBao {
   final int id;
@@ -20,6 +17,8 @@ class ThongBao {
   final User? giangVien;
   final List<ChiTietThongBao> chiTiet;
   final List<BinhLuan> binhLuans;
+  final List<FileModel> files;
+
   ThongBao({
     required this.id,
     required this.idGv,
@@ -33,6 +32,7 @@ class ThongBao {
     this.giangVien,
     required this.chiTiet,
     required this.binhLuans,
+    required this.files,
   });
 
   factory ThongBao.fromJson(Map<String, dynamic> json) => ThongBao(
@@ -61,6 +61,9 @@ class ThongBao {
         (json['binh_luans'] as List?)
             ?.map((e) => BinhLuan.fromJson(e))
             .toList() ??
+        [],
+    files:
+        (json['file'] as List?)?.map((e) => FileModel.fromJson(e)).toList() ??
         [],
   );
 }
@@ -145,4 +148,15 @@ class NguoiBinhLuan {
         json['type'] ??
         '', // hoặc tự gán bên ngoài từ key `nguoi_binh_luan_type`
   );
+}
+
+class FileModel {
+  final int id;
+  final String tenFile;
+  final String url;
+
+  FileModel({required this.id, required this.tenFile, required this.url});
+
+  factory FileModel.fromJson(Map<String, dynamic> json) =>
+      FileModel(id: json['id'], tenFile: json['ten_file'], url: json['url']);
 }

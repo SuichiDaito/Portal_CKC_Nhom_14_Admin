@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/comment.dart';
 
 class NotificationDetailInputTextField extends StatefulWidget {
   final TextEditingController commentController;

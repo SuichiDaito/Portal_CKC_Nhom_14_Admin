@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
+import 'package:portal_ckc/bloc/event/thoi_khoa_bieu_event.dart';
 
 class DayTimePicker extends StatefulWidget {
   final bool enabled;
-  final List<Map<String, dynamic>> schedules;
-  final ValueChanged<List<Map<String, dynamic>>> onScheduleChanged;
+  final List<ScheduleTime> schedules;
+  final ValueChanged<List<ScheduleTime>> onScheduleChanged;
 
   const DayTimePicker({
     Key? key,
@@ -23,7 +27,7 @@ class _DayTimePickerState extends State<DayTimePicker> {
   int? _selectedDay;
   int _startLesson = 1;
   int _endLesson = 1;
-  List<Map<String, dynamic>> _selectedSchedules = [];
+  List<ScheduleTime> _selectedSchedules = [];
 
   @override
   void initState() {
@@ -34,11 +38,25 @@ class _DayTimePickerState extends State<DayTimePicker> {
   void _addSchedule() {
     if (_selectedDay == null) return;
 
-    final newSchedule = {
-      'day': _selectedDay!,
-      'start': _startLesson,
-      'end': _endLesson,
-    };
+    final index = _selectedDay == 8 ? 6 : _selectedDay! - 2;
+    final thuText = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ nhật',
+    ][index];
+
+    final newSchedule = ScheduleTime(
+      id: 0,
+      ngay: _daysOfWeek[index],
+      tietBatDau: _startLesson,
+      tietKetThuc: _endLesson,
+      phong: '',
+      thu: thuText,
+    );
 
     setState(() {
       _selectedSchedules.add(newSchedule);
@@ -52,6 +70,14 @@ class _DayTimePickerState extends State<DayTimePicker> {
   }
 
   void _removeSchedule(int index) {
+    final removedSchedule = _selectedSchedules[index];
+
+    if (removedSchedule.id != null) {
+      context.read<ThoiKhoaBieuBloc>().add(
+        DeleteThoiKhoaBieuEvent(removedSchedule.id!),
+      );
+    }
+
     setState(() {
       _selectedSchedules.removeAt(index);
     });
@@ -72,23 +98,78 @@ class _DayTimePickerState extends State<DayTimePicker> {
         ..._selectedSchedules.asMap().entries.map((entry) {
           final index = entry.key;
           final schedule = entry.value;
-          final dayIndex = schedule['day'] - 2;
-          final dayText = (dayIndex >= 0 && dayIndex < _daysOfWeek.length)
-              ? _daysOfWeek[dayIndex]
-              : 'CN';
-          return ListTile(
-            title: Text(
-              '$dayText: Tiết ${schedule['start']} - ${schedule['end']}',
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            trailing: widget.enabled
-                ? IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _removeSchedule(index),
-                  )
-                : null,
+            elevation: 2,
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 16,
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 20,
+                        color: Colors.blueAccent,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        schedule.thu,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.schedule,
+                        size: 20,
+                        color: Colors.deepPurple,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Tiết: ${schedule.tietBatDau} - ${schedule.tietKetThuc}',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.meeting_room,
+                        size: 20,
+                        color: Colors.green,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Phòng: ${schedule.phong}',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              trailing: widget.enabled
+                  ? IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _removeSchedule(index),
+                    )
+                  : null,
+            ),
           );
         }),
-
         if (widget.enabled) ...[
           const SizedBox(height: 16),
           const Text(
@@ -100,7 +181,7 @@ class _DayTimePickerState extends State<DayTimePicker> {
             spacing: 8.0,
             runSpacing: 8.0,
             children: List.generate(_daysOfWeek.length, (index) {
-              final dayValue = index + 2;
+              final dayValue = index + 2; // T2 -> 2, CN -> 8
               final isSelected = _selectedDay == dayValue;
               return GestureDetector(
                 onTap: () {
@@ -130,7 +211,6 @@ class _DayTimePickerState extends State<DayTimePicker> {
             }),
           ),
           const SizedBox(height: 16),
-
           Row(
             children: [
               Expanded(

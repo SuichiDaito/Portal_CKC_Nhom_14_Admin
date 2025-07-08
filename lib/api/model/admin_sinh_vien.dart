@@ -1,3 +1,4 @@
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_diem_ren_luyen_response.dart';
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
@@ -44,6 +45,35 @@ class SinhVien {
           [],
     );
   }
+  factory SinhVien.empty() {
+    return SinhVien(
+      id: 0,
+      maSv: '',
+      idLop: null,
+      idHoSo: null,
+      chucVu: null,
+      trangThai: 0,
+      hoSo: HoSo.empty(),
+      lop: Lop.empty(),
+      diemRenLuyens: [],
+    );
+  }
+}
+
+class DanhSachSinhVienResponse {
+  final Lop lop;
+  final List<StudentWithRole> students;
+
+  DanhSachSinhVienResponse({required this.lop, required this.students});
+
+  factory DanhSachSinhVienResponse.fromJson(Map<String, dynamic> json) {
+    return DanhSachSinhVienResponse(
+      lop: Lop.fromJson(json['lop']),
+      students: (json['sinh_viens'] as List<dynamic>)
+          .map((e) => StudentWithRole.fromJson(e))
+          .toList(),
+    );
+  }
 }
 
 class StudentWithScore {
@@ -57,13 +87,11 @@ class StudentWithScore {
     this.isSelected = false,
   });
 
-  // Tạo từ JSON gốc của "sinh_vien", có thể truyền thêm `month`, `year` để tự xử lý điểm rèn luyện
   factory StudentWithScore.fromJson(
     Map<String, dynamic> json, {
     required int month,
     required int year,
   }) {
-    // Tìm điểm rèn luyện tương ứng tháng và năm
     String score = '-';
     if (json['diem_ren_luyens'] != null) {
       for (final item in json['diem_ren_luyens']) {
@@ -97,7 +125,6 @@ class StudentWithScore {
   }
 
   factory StudentWithScore.fromSinhVien({required SinhVien sv}) {
-    // Nếu có điểm rèn luyện thì lấy xếp loại
     String score = '-';
     if (sv.diemRenLuyens.isNotEmpty) {
       score = convertXepLoaiToString(sv.diemRenLuyens.first.xepLoai);

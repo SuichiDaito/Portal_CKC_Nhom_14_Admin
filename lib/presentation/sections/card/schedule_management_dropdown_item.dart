@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DropdownItem {
   final String value;
   final String label;
-  final IconData icon;
+  final IconData? icon;
 
   DropdownItem({required this.value, required this.label, required this.icon});
 

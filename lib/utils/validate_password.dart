@@ -1,6 +1,1 @@
-class ValidatePassword {
-
-
-
-  
-}
+class ValidatePassword {}

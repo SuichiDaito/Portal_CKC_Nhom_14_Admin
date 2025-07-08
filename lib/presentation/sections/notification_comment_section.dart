@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
-import 'package:portal_ckc/api/model/comment.dart';
 import 'package:portal_ckc/presentation/sections/notification_detail_comment_item.dart';
 import 'package:portal_ckc/presentation/sections/textfield/comment_input_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,8 +34,8 @@ class CommentSection extends State<NotificationCommentSection> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      currentUserChucVu = prefs.getInt('user_role');
       currentUserId = prefs.getInt('user_id');
-      currentUserChucVu = prefs.getInt('user_chuc_vu'); // Nếu bạn đã lưu
     });
   }
 
@@ -74,14 +73,14 @@ class CommentSection extends State<NotificationCommentSection> {
           ),
           NotificationDetailInputTextField(
             commentController: widget.commentController,
-            onPressed: widget.onPressed, // ✅ fix ở đây
+            onPressed: widget.onPressed,
           ),
 
           NotificationCommentItem(
             idThongBao: widget.idThongBao,
             comments: widget.comments,
             currentUserId: currentUserId!,
-            currentUserChucVu: currentUserChucVu ?? 1,
+            currentUserChucVu: currentUserChucVu ?? 0,
           ),
           const SizedBox(height: 30),
         ],

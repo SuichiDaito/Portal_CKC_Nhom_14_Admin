@@ -45,6 +45,8 @@ class Room {
       status: status ?? this.status,
     );
   }
+
+  static Room empty() => Room(id: 0, ten: '', soLuong: 0, loaiPhong: 0);
 }
 
 enum RoomType { lectureHall, laboratory, meetingRoom, other }

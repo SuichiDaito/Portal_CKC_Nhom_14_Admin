@@ -19,3 +19,9 @@ class LopHocPhanError extends LopHocPhanState {
   final String message;
   LopHocPhanError(this.message);
 }
+
+class PhanCongGiangVienSuccess extends LopHocPhanState {
+  final String message;
+
+  PhanCongGiangVienSuccess({required this.message});
+}

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 
 class StudentListItem extends StatelessWidget {
-  final SinhVien student;
+  final StudentWithRole student;
   final VoidCallback onDetailPressed;
   final VoidCallback onResetPasswordPressed;
 
@@ -70,7 +70,7 @@ class StudentListItem extends StatelessWidget {
                       const Icon(Icons.person, color: Colors.blue),
                       const SizedBox(width: 8),
                       Text(
-                        student.hoSo?.hoTen ?? 'Chưa có tên',
+                        student.sinhVien.hoSo?.hoTen ?? 'Chưa có tên',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -80,11 +80,19 @@ class StudentListItem extends StatelessWidget {
                   ),
                   const Divider(height: 24, thickness: 1),
 
-                  _buildInfoRow(Icons.badge, 'MSSV', student.maSv),
+                  _buildInfoRow(Icons.badge, 'MSSV', student.sinhVien.maSv),
                   const SizedBox(height: 8),
-                  _buildInfoRow(Icons.email, 'Email', student.hoSo?.email),
+                  _buildInfoRow(
+                    Icons.email,
+                    'Email',
+                    student.sinhVien.hoSo?.email,
+                  ),
                   const SizedBox(height: 8),
-                  _buildInfoRow(Icons.phone, 'SĐT', student.hoSo?.soDienThoai),
+                  _buildInfoRow(
+                    Icons.phone,
+                    'SĐT',
+                    student.sinhVien.hoSo?.soDienThoai,
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -102,17 +110,17 @@ class StudentListItem extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: _getStatusColor(
-                            student.trangThai,
+                            student.sinhVien.trangThai,
                           ).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: _getStatusColor(student.trangThai),
+                            color: _getStatusColor(student.sinhVien.trangThai),
                           ),
                         ),
                         child: Text(
-                          _getStatusText(student.trangThai),
+                          _getStatusText(student.sinhVien.trangThai),
                           style: TextStyle(
-                            color: _getStatusColor(student.trangThai),
+                            color: _getStatusColor(student.sinhVien.trangThai),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -130,12 +138,6 @@ class StudentListItem extends StatelessWidget {
                         onPressed: onDetailPressed,
                         backgroundColor: Colors.blue,
                       ),
-                      // const SizedBox(width: 8),
-                      // CustomButton(
-                      //   text: 'Đặt lại mật khẩu',
-                      //   onPressed: onResetPasswordPressed,
-                      //   backgroundColor: Colors.orange,
-                      // ),
                     ],
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
+import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
@@ -12,21 +13,13 @@ import 'package:portal_ckc/bloc/event/tuan_event.dart';
 import 'package:portal_ckc/bloc/state/bien_bang_shcn_state.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
 import 'package:portal_ckc/bloc/state/tuan_state.dart';
-import 'package:portal_ckc/presentation/sections/card/report_detail_absent_student_manager.dart';
-import 'package:portal_ckc/presentation/sections/card/report_detail_build_content_input.dart';
-import 'package:portal_ckc/presentation/sections/card/report_detail_fixed_info_card.dart';
-import 'package:portal_ckc/presentation/sections/card/report_detail_readonly_summary_card.dart';
-import 'package:portal_ckc/presentation/sections/card/report_detail_editable_section.dart';
+import 'package:portal_ckc/presentation/sections/dialogs/approve_bien_ban_dialog.dart';
+import 'package:portal_ckc/presentation/sections/report_detail_pending_view.dart';
 
 class PageReportDetailAdmin extends StatefulWidget {
-  final int bienBanId;
-  final int lopId;
+  final BienBanSHCN bienBan;
 
-  const PageReportDetailAdmin({
-    super.key,
-    required this.bienBanId,
-    required this.lopId,
-  });
+  const PageReportDetailAdmin({super.key, required this.bienBan});
 
   @override
   State<PageReportDetailAdmin> createState() => _PageReportDetailAdminState();
@@ -36,7 +29,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
   bool isEditing = false;
   String selectedWeek = '1';
   DateTime selectedDate = DateTime.now();
-  String selectedRoom = 'P101';
+  String selectedRoom = 'F7.1';
   TimeOfDay selectedTime = TimeOfDay(hour: 7, minute: 0);
   String content = '';
   bool isInitialized = false;
@@ -46,14 +39,21 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
   Map<int, bool> isExcusedMap = {};
 
   List<Map<String, dynamic>> weekOptions = [];
-  List<String> rooms = ['P101', 'P102', 'P201', 'Hội trường'];
+  List<String> rooms = [];
 
   @override
   void initState() {
     super.initState();
-    context.read<BienBangShcnBloc>().add(FetchBienBanDetail(widget.bienBanId));
-    context.read<AdminBloc>().add(FetchStudentList(widget.lopId));
+    context.read<BienBangShcnBloc>().add(FetchBienBanDetail(widget.bienBan.id));
+    context.read<AdminBloc>().add(FetchStudentList(widget.bienBan.idLop));
     context.read<TuanBloc>().add(FetchTuanEvent(selectedDate.year));
+  }
+
+  void _showApproveDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => ApproveBienBanDialog(bienBanId: widget.bienBan.id),
+    );
   }
 
   @override
@@ -80,7 +80,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                 context,
               ).showSnackBar(SnackBar(content: Text(state.message)));
               context.read<BienBangShcnBloc>().add(
-                FetchBienBanDetail(widget.bienBanId),
+                FetchBienBanDetail(widget.bienBan.id),
               );
               setState(() {
                 isEditing = false;
@@ -124,15 +124,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                             );
                           }
                           if (adminState is StudentListLoaded) {
-                            final studentList = adminState.sinhViens
-                                .map(
-                                  (sv) => {
-                                    'id': sv.id,
-                                    'mssv': sv.maSv,
-                                    'name': sv.hoSo.hoTen,
-                                  },
-                                )
-                                .toList();
+                            final studentList = adminState.students;
 
                             if (!isInitialized) {
                               absentStudentIds = bienBan.chiTiet
@@ -161,11 +153,74 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                             return Column(
                               children: [
                                 Expanded(
-                                  child: _buildPendingView(
-                                    studentList,
-                                    bienBan,
+                                  child: ReportDetailPendingView(
+                                    studentList: studentList,
+                                    bienBan: bienBan,
+                                    isEditing: isEditing,
+                                    canEdit: (bienBan.trangThai ?? 0) == 0,
+                                    absentStudentIds: absentStudentIds,
+                                    absenceReasons: absenceReasons,
+                                    isExcusedMap: isExcusedMap,
+                                    selectedWeek: selectedWeek,
+                                    selectedDate: selectedDate,
+                                    selectedRoom: selectedRoom,
+                                    selectedTime: selectedTime,
+                                    content: content,
+                                    weekOptions: weekOptions,
+                                    rooms: rooms,
+                                    onToggleEdit: () =>
+                                        setState(() => isEditing = !isEditing),
+                                    onApprove: _showApproveDialog,
+                                    onAddAbsentStudent: (id) {
+                                      setState(() {
+                                        absentStudentIds.add(id);
+                                        absenceReasons[id] = '';
+                                        isExcusedMap[id] = false;
+                                      });
+                                    },
+                                    onRemoveAbsentStudent: (id) {
+                                      setState(() {
+                                        absentStudentIds.remove(id);
+                                        absenceReasons.remove(id);
+                                        isExcusedMap.remove(id);
+                                      });
+
+                                      final matches = bienBan.chiTiet
+                                          .where((e) => e.sinhVien.id == id)
+                                          .toList();
+                                      final chiTiet = matches.isNotEmpty
+                                          ? matches.first
+                                          : null;
+
+                                      if (chiTiet != null) {
+                                        context.read<BienBangShcnBloc>().add(
+                                          DeleteSinhVienVangEvent(chiTiet.id),
+                                        );
+                                      }
+                                    },
+                                    onReasonChanged: (id, reason) {
+                                      setState(() {
+                                        absenceReasons[id] = reason;
+                                      });
+                                    },
+                                    onExcusedChanged: (id, isExcused) {
+                                      setState(() {
+                                        isExcusedMap[id] = isExcused;
+                                      });
+                                    },
+                                    onWeekChanged: (val) =>
+                                        setState(() => selectedWeek = val),
+                                    onDateChanged: (val) =>
+                                        setState(() => selectedDate = val),
+                                    onRoomChanged: (val) =>
+                                        setState(() => selectedRoom = val),
+                                    onTimeChanged: (val) =>
+                                        setState(() => selectedTime = val),
+                                    onContentChanged: (val) =>
+                                        setState(() => content = val),
                                   ),
                                 ),
+
                                 if (isEditing && bienBan.trangThai == 0)
                                   Padding(
                                     padding: const EdgeInsets.all(16.0),
@@ -198,9 +253,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                                               },
                                           },
                                         };
-                                        print(
-                                          jsonEncode(data),
-                                        ); // test xem có lỗi không
+                                        print(jsonEncode(data));
                                         context.read<BienBangShcnBloc>().add(
                                           UpdateBienBanEvent(
                                             bienBanId: bienBan.id,
@@ -234,157 +287,6 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
             },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPendingView(
-    List<Map<String, dynamic>> studentList,
-    BienBanSHCN bienBan,
-  ) {
-    final total = studentList.length;
-    final absent = absentStudentIds.length;
-    final present = total - absent;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ReportDetailFixedInfoCard(
-            isEditing: isEditing,
-            canEdit: (bienBan.trangThai ?? 0) == 0,
-            onToggleEdit: () => setState(() => isEditing = !isEditing),
-            onApprove: _showApproveDialog,
-          ),
-
-          const SizedBox(height: 12),
-          if (isEditing && bienBan.trangThai == 0) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    "BIÊN BẢNG SINH HOẠT CHỦ NHIỆM",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  ReportDetailEditableSection(
-                    selectedWeek: selectedWeek,
-                    selectedDate: selectedDate,
-                    selectedRoom: selectedRoom,
-                    selectedTime: selectedTime,
-                    weeks: weekOptions
-                        .map((e) => e['value']! as String)
-                        .toList(),
-                    rooms: rooms,
-                    onWeekChanged: (val) => setState(() => selectedWeek = val),
-                    onDateChanged: (val) => setState(() => selectedDate = val),
-                    onRoomChanged: (val) => setState(() => selectedRoom = val),
-                    onTimeChanged: (val) => setState(() => selectedTime = val),
-                  ),
-                  const SizedBox(height: 12),
-                  ReportDetailBuildContentInput(
-                    content: content,
-                    onChanged: (val) => setState(() => content = val),
-                  ),
-                  const SizedBox(height: 12),
-                  AbsentStudentManager(
-                    studentList: studentList,
-                    absentStudentIds: absentStudentIds,
-                    onAddAbsentStudent: (id) {
-                      setState(() {
-                        absentStudentIds.add(id);
-                        absenceReasons[id] = '';
-                        isExcusedMap[id] = false;
-                      });
-                    },
-                    onRemoveAbsentStudent: (id) {
-                      setState(() {
-                        absentStudentIds.remove(id);
-                        absenceReasons.remove(id);
-                        isExcusedMap.remove(id);
-                      });
-                    },
-                    absenceReasons: absenceReasons,
-                    isExcusedMap: isExcusedMap,
-                    onReasonChanged: (id, reason) {
-                      setState(() {
-                        absenceReasons[id] = reason;
-                      });
-                    },
-                    onExcusedChanged: (id, isExcused) {
-                      setState(() {
-                        isExcusedMap[id] = isExcused;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ] else
-            ReportDetailReadonlySummaryCard(
-              selectedWeek: int.tryParse(selectedWeek) ?? 0,
-              selectedDate: selectedDate,
-              selectedTime: selectedTime,
-              selectedRoom: selectedRoom,
-              total: total,
-              present: present,
-              absent: absent,
-              content: content,
-              absentStudentIds: absentStudentIds,
-              studentList: studentList,
-              absenceReasons: absenceReasons,
-              secretaryName: '',
-              teacherName: '',
-              chiTietBienBanList:
-                  context.read<BienBangShcnBloc>().state is BienBanDetailLoaded
-                  ? (context.read<BienBangShcnBloc>().state
-                            as BienBanDetailLoaded)
-                        .bienBan
-                        .chiTiet
-                  : [],
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showApproveDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Xác nhận duyệt biên bản'),
-        content: const Text('Bạn có chắc muốn duyệt biên bản này không?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<BienBangShcnBloc>().add(
-                ConfirmBienBan(widget.bienBanId),
-              );
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Đang duyệt biên bản...")),
-              );
-            },
-            child: const Text('Duyệt'),
-          ),
-        ],
       ),
     );
   }

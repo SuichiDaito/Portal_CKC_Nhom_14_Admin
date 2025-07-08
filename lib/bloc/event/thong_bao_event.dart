@@ -1,3 +1,5 @@
+import 'package:http/http.dart' show MultipartFile;
+
 abstract class ThongBaoEvent {}
 
 class FetchThongBaoList extends ThongBaoEvent {}
@@ -8,15 +10,36 @@ class FetchThongBaoDetail extends ThongBaoEvent {
 }
 
 class CreateThongBao extends ThongBaoEvent {
-  final String title, content;
-  final int capTren;
-  CreateThongBao(this.title, this.content, this.capTren);
+  final String title;
+  final String content;
+  final String capTren;
+  final String ngayGui;
+  final List<String>? files;
+
+  CreateThongBao({
+    required this.title,
+    required this.content,
+    required this.capTren,
+    required this.ngayGui,
+    this.files,
+  });
 }
 
 class UpdateThongBao extends ThongBaoEvent {
   final int id;
-  final String title, content;
-  UpdateThongBao(this.id, this.title, this.content);
+  final String title;
+  final String content;
+  final int? trangThai;
+  final String tuAi;
+  final String ngayGui;
+  UpdateThongBao({
+    required this.id,
+    required this.title,
+    required this.content,
+    this.trangThai,
+    required this.tuAi,
+    required this.ngayGui,
+  });
 }
 
 class DeleteThongBao extends ThongBaoEvent {

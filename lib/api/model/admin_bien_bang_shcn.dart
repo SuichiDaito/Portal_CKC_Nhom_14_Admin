@@ -1,3 +1,4 @@
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_phieu_len_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
@@ -12,6 +13,7 @@ class BienBanSHCN {
   final int soLuongSinhVien;
   final int vangMat;
   final int trangThai;
+  final int idLop;
   final Lop lop;
   final Tuan tuan;
   final SinhVien thuky;
@@ -19,6 +21,7 @@ class BienBanSHCN {
   final List<ChiTietBienBan> chiTiet;
   BienBanSHCN({
     required this.id,
+    required this.idLop,
     required this.tieuDe,
     required this.noiDung,
     required this.thoiGianBatDau,
@@ -36,17 +39,24 @@ class BienBanSHCN {
   factory BienBanSHCN.fromJson(Map<String, dynamic> json) {
     return BienBanSHCN(
       id: json['id'],
+      idLop: json['id_lop'] ?? 0,
       tieuDe: json['tieu_de'] ?? '',
       noiDung: json['noi_dung'] ?? '',
-      thoiGianBatDau: DateTime.parse(json['thoi_gian_bat_dau']),
-      thoiGianKetThuc: DateTime.parse(json['thoi_gian_ket_thuc']),
-      soLuongSinhVien: json['so_luong_sinh_vien'],
-      vangMat: json['vang_mat'],
-      trangThai: json['trang_thai'],
-      lop: Lop.fromJson(json['lop']),
-      tuan: Tuan.fromJson(json['tuan']),
-      thuky: SinhVien.fromJson(json['thuky']),
-      gvcn: User.fromJson(json['gvcn']),
+      thoiGianBatDau: json['thoi_gian_bat_dau'] != null
+          ? DateTime.parse(json['thoi_gian_bat_dau'])
+          : DateTime.now(),
+      thoiGianKetThuc: json['thoi_gian_ket_thuc'] != null
+          ? DateTime.parse(json['thoi_gian_ket_thuc'])
+          : DateTime.now(),
+      soLuongSinhVien: json['so_luong_sinh_vien'] ?? 0,
+      vangMat: json['vang_mat'] ?? 0,
+      trangThai: json['trang_thai'] ?? 0,
+      lop: json['lop'] != null ? Lop.fromJson(json['lop']) : Lop.empty(),
+      tuan: json['tuan'] != null ? Tuan.fromJson(json['tuan']) : Tuan.empty(),
+      thuky: json['thuky'] != null
+          ? SinhVien.fromJson(json['thuky'])
+          : SinhVien.empty(),
+      gvcn: json['gvcn'] != null ? User.fromJson(json['gvcn']) : User.empty(),
       chiTiet:
           (json['chi_tiet_bien_ban_s_h_c_n'] as List<dynamic>?)
               ?.map((e) => ChiTietBienBan.fromJson(e))
@@ -54,6 +64,7 @@ class BienBanSHCN {
           [],
     );
   }
+
   static List<BienBanSHCN> fromJsonList(List<dynamic> jsonList) {
     return jsonList
         .map((json) => BienBanSHCN.fromJson(json as Map<String, dynamic>))
@@ -83,6 +94,33 @@ class ChiTietBienBan {
       lyDo: json['ly_do'] ?? '',
       loai: json['loai'] ?? 0,
       sinhVien: SinhVien.fromJson(json['sinh_vien']),
+    );
+  }
+}
+
+class MeetingMinutesCreateData {
+  final Lop lop;
+  final List<StudentWithRole> thuKy;
+  final List<Tuan> tuans;
+  final List<StudentWithRole> sinhViens;
+
+  MeetingMinutesCreateData({
+    required this.lop,
+    required this.thuKy,
+    required this.tuans,
+    required this.sinhViens,
+  });
+
+  factory MeetingMinutesCreateData.fromJson(Map<String, dynamic> json) {
+    return MeetingMinutesCreateData(
+      lop: Lop.fromJson(json['lop']),
+      thuKy: (json['thuKy'] as List)
+          .map((e) => StudentWithRole.fromJson(e))
+          .toList(),
+      tuans: (json['tuans'] as List).map((e) => Tuan.fromJson(e)).toList(),
+      sinhViens: (json['sinhViens'] as List)
+          .map((e) => StudentWithRole.fromJson(e))
+          .toList(),
     );
   }
 }

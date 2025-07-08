@@ -3,7 +3,7 @@ abstract class DiemRLEvent {}
 class FetchDiemRenLuyen extends DiemRLEvent {
   final int lopId;
   final int thoiGian;
-  final int nam; // thêm năm học
+  final int nam;
 
   FetchDiemRenLuyen(this.lopId, this.thoiGian, this.nam);
 }

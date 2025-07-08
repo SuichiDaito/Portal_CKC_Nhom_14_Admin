@@ -1,3 +1,4 @@
+import 'package:portal_ckc/api/model/admin_chuong_trinh_dao_tao.dart';
 import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
 
 abstract class NganhKhoaState {}
@@ -17,7 +18,7 @@ class KhoaLoaded extends NganhKhoaState {
 
 /// Tải thành công danh sách ngành học
 class NganhHocLoaded extends NganhKhoaState {
-  final List<NganhHoc> danhSachNganh;
+  final List<ChuyenNganh> danhSachNganh;
 
   NganhHocLoaded(this.danhSachNganh);
 }
@@ -25,7 +26,7 @@ class NganhHocLoaded extends NganhKhoaState {
 /// Tải thành công cả ngành học và khoa
 class KhoaNganhLoaded extends NganhKhoaState {
   final List<Khoa> danhSachKhoa;
-  final List<NganhHoc> danhSachNganh;
+  final List<ChuyenNganh> danhSachNganh;
 
   KhoaNganhLoaded({required this.danhSachKhoa, required this.danhSachNganh});
 }
@@ -40,4 +41,10 @@ class NganhKhoaError extends NganhKhoaState {
 class BoMonLoaded extends NganhKhoaState {
   final List<BoMon> boMons;
   BoMonLoaded(this.boMons);
+}
+
+class CTCTDTLoaded extends NganhKhoaState {
+  final List<ChiTietChuongTrinhDaoTao> chiTiet;
+
+  CTCTDTLoaded(this.chiTiet);
 }

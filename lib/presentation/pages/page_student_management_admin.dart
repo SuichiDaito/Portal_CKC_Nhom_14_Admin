@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_event.dart';
@@ -24,27 +25,29 @@ class _PageStudentManagementAdminState
     extends State<PageStudentManagementAdmin> {
   DropdownItem? _selectedClass;
   StudentStatus? _currentFilter;
-  List<SinhVien> _allStudents = [];
+  List<StudentWithRole> _allStudents = [];
   List<DropdownItem> _classNames = [];
   Map<String, int> _lopTenToId = {};
   bool _isDataLoaded = false;
 
-  void _resetStudentPassword(SinhVien student) {
+  void _resetStudentPassword(StudentWithRole student) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã yêu cầu đặt lại mật khẩu cho MSSV: ${student.maSv}'),
+        content: Text(
+          'Đã yêu cầu đặt lại mật khẩu cho MSSV: ${student.sinhVien.maSv}',
+        ),
       ),
     );
   }
 
-  void _updateStudentStatus(SinhVien updatedStudent) {
+  void _updateStudentStatus(StudentWithRole updatedStudent) {
     setState(() {
       final index = _allStudents.indexWhere((s) => s.id == updatedStudent.id);
       if (index != -1) _allStudents[index] = updatedStudent;
     });
   }
 
-  void _showStudentDetailBottomSheet(SinhVien student) {
+  void _showStudentDetailBottomSheet(StudentWithRole student) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -58,22 +61,10 @@ class _PageStudentManagementAdminState
     );
   }
 
-  List<SinhVien> get _filteredStudents {
-    return _allStudents.where((s) {
-      final matchClass =
-          _selectedClass == null ||
-          _selectedClass!.value == 'all' ||
-          s.idLop == _lopTenToId[_selectedClass!.value];
-      final matchStatus =
-          _currentFilter == null || s.trangThai == _currentFilter!.index;
-      return matchClass && matchStatus;
-    }).toList();
-  }
-
   @override
   void initState() {
     super.initState();
-    // Load lớp đầu tiên (tuỳ chỉnh ID nếu cần)
+
     context.read<LopBloc>().add(FetchLopDetail(1));
     context.read<LopBloc>().add(FetchAllLopEvent());
   }
@@ -116,7 +107,6 @@ class _PageStudentManagementAdminState
                   : _classNames.first;
             }
 
-            // Gọi FetchLopDetail nếu chưa có dữ liệu
             final selectedName = _selectedClass?.value;
             if (selectedName != null && selectedName != 'all') {
               final selectedId = _lopTenToId[selectedName]!;
@@ -145,7 +135,6 @@ class _PageStudentManagementAdminState
 
             return Column(
               children: [
-                // BỘ LỌC LỚP
                 Card(
                   margin: const EdgeInsets.all(16),
                   elevation: 4,
@@ -178,7 +167,6 @@ class _PageStudentManagementAdminState
                   ),
                 ),
 
-                // BỘ LỌC TRẠNG THÁI
                 FilterButtonsRow(
                   currentFilter: _currentFilter,
                   onFilterChanged: (status) {
@@ -189,9 +177,8 @@ class _PageStudentManagementAdminState
                 ),
                 const SizedBox(height: 8),
 
-                // DANH SÁCH SINH VIÊN
                 Expanded(
-                  child: _filteredStudents.isEmpty
+                  child: _allStudents.isEmpty
                       ? const Center(
                           child: Text(
                             'Không tìm thấy sinh viên nào phù hợp.',
@@ -199,9 +186,9 @@ class _PageStudentManagementAdminState
                           ),
                         )
                       : ListView.builder(
-                          itemCount: _filteredStudents.length,
+                          itemCount: _allStudents.length,
                           itemBuilder: (context, index) {
-                            final student = _filteredStudents[index];
+                            final student = _allStudents[index];
                             return StudentListItem(
                               student: student,
                               onDetailPressed: () =>
@@ -217,7 +204,11 @@ class _PageStudentManagementAdminState
           }
 
           if (state is LopDetailError) {
-            return Center(child: Text('Lỗi: ${state.message}'));
+            return Center(
+              child: Text(
+                'Không thể truy cập chức năng này, vui lòng thử lại sau',
+              ),
+            );
           }
 
           return const SizedBox();

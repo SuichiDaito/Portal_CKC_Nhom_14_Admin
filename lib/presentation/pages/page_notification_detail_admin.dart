@@ -55,6 +55,9 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                       headerNotification: tb.tieuDe,
                       contentNotification: tb.noiDung,
                       lengthComment: tb.chiTiet.length.toString(),
+                      files: tb.files
+                          .map((f) => {'ten_file': f.tenFile, 'url': f.url})
+                          .toList(),
                     ),
 
                     const SizedBox(height: 16),
@@ -63,7 +66,6 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                       commentController: _commentController,
                       idThongBao: tb.id,
                       onPressed: () {
-                        //BÌNH LUẬN MỚI
                         final content = _commentController.text.trim();
                         if (content.isNotEmpty) {
                           context.read<ThongBaoBloc>().add(
@@ -86,7 +88,11 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
             } else if (state is TBFailure) {
               return Center(child: Text('❌ ${state.error}'));
             } else {
-              return const Center(child: Text('Không có dữ liệu.'));
+              return const Center(
+                child: Text(
+                  'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                ),
+              );
             }
           },
         ),
@@ -112,7 +118,7 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
       ),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => context.pop(),
+        onPressed: () => context.pop(true),
       ),
       title: const Text(
         'Chi Tiết Thông Báo',

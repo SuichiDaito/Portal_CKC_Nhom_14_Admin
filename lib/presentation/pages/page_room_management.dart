@@ -52,9 +52,7 @@ class _PageRoomManagementState extends State<PageRoomManagement> {
     return BlocListener<PhongBloc, PhongState>(
       listener: (context, state) {
         if (state is PhongSuccess) {
-          context.read<PhongBloc>().add(
-            FetchRoomsEvent(),
-          ); // 🔄 Tải lại danh sách
+          context.read<PhongBloc>().add(FetchRoomsEvent());
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -100,8 +98,7 @@ class _PageRoomManagementState extends State<PageRoomManagement> {
                       const Text(
                         'Lọc theo loại phòng',
                         style: TextStyle(
-                          color:
-                              Colors.white, // ✅ Màu trắng cho label bên ngoài
+                          color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -211,15 +208,17 @@ class _PageRoomManagementState extends State<PageRoomManagement> {
                       itemBuilder: (context, index) {
                         final room = filteredRooms[index];
                         return GestureDetector(
-                          onTap: () => _showAddEditRoomSheet(
-                            room: room,
-                          ), // 👈 sửa từ onLongPress
+                          onTap: () => _showAddEditRoomSheet(room: room),
                           child: RoomListItem(index: index, room: room),
                         );
                       },
                     );
                   } else if (state is PhongError) {
-                    return Center(child: Text('Lỗi: ${state.message}'));
+                    return Center(
+                      child: Text(
+                        'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                      ),
+                    );
                   } else {
                     return const SizedBox();
                   }

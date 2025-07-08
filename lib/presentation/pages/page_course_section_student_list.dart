@@ -45,6 +45,9 @@ class _PageCourseSectionStudentListState
         body: BlocListener<CapNhatDiemBloc, CapNhatDiemState>(
           listener: (context, state) {
             if (state is CapNhatDiemSuccess) {
+              context.read<SinhVienLhpBloc>().add(
+                FetchSinhVienLhp(widget.idLopHocPhan),
+              );
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
@@ -69,6 +72,7 @@ class _PageCourseSectionStudentListState
               } else if (state is SinhVienLhpLoaded) {
                 final classInfo = state.lopHocPhan;
                 final students = state.danhSach;
+                final trangThaiLop = classInfo?.trangThaiNopBangDiem;
 
                 return ListView(
                   padding: const EdgeInsets.only(bottom: 16),
@@ -83,11 +87,77 @@ class _PageCourseSectionStudentListState
                               classInfo.chuongTrinhDaoTao.tenChuongTrinhDaoTao,
                         ),
                       ),
+
+                    /// ✅ Nút nộp bảng điểm hoặc card hoàn tất
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: trangThaiLop == 3
+                            ? Card(
+                                color: Colors.green.shade50,
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green.shade600,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Lớp học phần đã hoàn tất',
+                                        style: TextStyle(
+                                          color: Colors.green.shade800,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : ElevatedButton.icon(
+                                onPressed: () {
+                                  context.read<CapNhatDiemBloc>().add(
+                                    UpdateTrangThaiNopDiemEvent(
+                                      widget.idLopHocPhan,
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.upload),
+                                label: const Text(
+                                  'Nộp bảng điểm',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    /// ✅ Danh sách sinh viên
                     ...students.map(
                       (student) => StudentItemSection(
+                        trangThaiLop: trangThaiLop ?? 0,
                         student: student,
                         showCheckbox: false,
-                        isGradeInputMode: false,
                         onCheckboxChanged: (s, selected) {
                           setState(() {
                             s.isSelected = selected;
@@ -105,13 +175,13 @@ class _PageCourseSectionStudentListState
                               student.sinhVien.id!:
                                   updatedStudent.diemQuaTrinh ?? 0.0,
                             },
-                            diemThi: {
+                            diemThiLan1: {
                               student.sinhVien.id!:
-                                  updatedStudent.diemThi ?? 0.0,
+                                  updatedStudent.diemThiLan1 ?? 0.0,
                             },
-                            diemLyThuyet: {
+                            diemThiLan2: {
                               student.sinhVien.id!:
-                                  updatedStudent.diemLyThuyet ?? 0.0,
+                                  updatedStudent.diemThiLan2 ?? 0.0,
                             },
                           );
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 
 class ClassInfoCard extends StatelessWidget {
   final String className;
   final int studentCount;
   final String secretaryName;
   final String teacherName;
-  final List<SinhVien> studentList;
+  final List<StudentWithRole> studentList;
   final void Function(int) onSelectSecretary;
 
   const ClassInfoCard({
@@ -101,15 +101,14 @@ class ClassInfoCard extends StatelessWidget {
   }
 
   void _showSecretarySelectionDialog(BuildContext context) {
-
     final selectableStudents = studentList
-        .where((sv) => sv.trangThai == 0)
+        .where((sv) => sv.sinhVien.trangThai == 0)
         .toList();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white, // Nền trắng
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Center(
           child: Text(
@@ -119,7 +118,7 @@ class ClassInfoCard extends StatelessWidget {
               fontSize: 18,
               color: Color(0xFF1976D2),
             ),
-            textAlign: TextAlign.center, // Căn giữa dòng nếu xuống hàng
+            textAlign: TextAlign.center,
           ),
         ),
         content: SizedBox(
@@ -134,15 +133,15 @@ class ClassInfoCard extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundColor: const Color(0xFF1976D2),
                   child: Text(
-                    sv.hoSo.hoTen.substring(0, 1).toUpperCase(),
+                    sv.sinhVien.hoSo.hoTen.substring(0, 1).toUpperCase(),
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
                 title: Text(
-                  sv.hoSo.hoTen,
+                  sv.sinhVien.hoSo.hoTen,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
-                subtitle: Text("MSSV: ${sv.maSv}"),
+                subtitle: Text("MSSV: ${sv.sinhVien.maSv}"),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

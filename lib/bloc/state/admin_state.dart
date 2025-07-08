@@ -1,9 +1,14 @@
-
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 
 abstract class AdminState {}
+
+class StudentListLoaded extends AdminState {
+  final List<StudentWithRole> students;
+  StudentListLoaded(this.students);
+}
 
 class AdminInitial extends AdminState {}
 
@@ -24,11 +29,11 @@ class ClassListLoaded extends AdminState {
   ClassListLoaded(this.lops);
 }
 
-class StudentListLoaded extends AdminState {
-  final List<SinhVien> sinhViens;
+// class StudentListLoaded extends AdminState {
+//   final List<SinhVien> sinhViens;
 
-  StudentListLoaded(this.sinhViens);
-}
+//   StudentListLoaded(this.sinhViens);
+// }
 
 class AdminLoginSuccess extends AdminState {
   final User user;

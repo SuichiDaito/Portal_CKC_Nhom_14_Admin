@@ -69,7 +69,6 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
       backgroundColor: const Color(0xFFF4F6F9),
       body: Column(
         children: [
-          // ... Thông tin lớp như cũ
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
@@ -120,12 +119,15 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
           Expanded(
             child: BlocBuilder<BienBangShcnBloc, BienBanState>(
               builder: (context, state) {
+                print('STATE HIỆN TẠI: $state');
                 if (state is BienBanLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is BienBanLoaded) {
                   List<BienBanSHCN> bienBans = state.bienBanList;
-
-                  // 👉 Nếu có ngày được chọn thì lọc theo ngày đó
+                  print(
+                    ' ==================Tổng biên bản: ${state.bienBanList.length}',
+                  );
+                  //LỌC THEO NGÀY
                   if (selectedDate != null) {
                     bienBans = bienBans.where((bienBan) {
                       return bienBan.thoiGianBatDau.year ==
@@ -160,6 +162,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(16),
+
                           title: Text(
                             '${bienBan.lop.tenLop} - ${bienBan.tieuDe}',
                             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -187,15 +190,9 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                           ),
                           trailing: ElevatedButton(
                             onPressed: () async {
-                              final bloc = context.read<BienBangShcnBloc>();
                               final result = await context.push(
                                 '/admin/report_detail_admin',
-                                extra: {
-                                  'bienBanId': bienBan.id,
-                                  'lopId': bienBan
-                                      .lop
-                                      .id, // hoặc lopId mà bạn đang có
-                                },
+                                extra: {'bienBan': bienBan},
                               );
 
                               if (result == 'refresh' && mounted) {
@@ -219,13 +216,32 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                     },
                   );
                 } else if (state is BienBanError) {
+                  print(
+                    'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                  );
                   return Center(child: Text(state.message));
                 }
+
                 return const SizedBox.shrink();
               },
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final result = await context.push(
+            '/admin/create_meeting_minutes_admin',
+            extra: widget.lop,
+          );
+
+          if (result == 'refresh' && mounted) {
+            _loadBienBan();
+          }
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Tạo biên bản'),
+        backgroundColor: const Color(0xFF1976D2),
       ),
     );
   }

@@ -90,7 +90,6 @@ class ReportDetailEditableSection extends StatelessWidget {
             ),
           ],
         ),
-        // Phòng và giờ sẽ được thêm tiếp nếu bạn gửi thêm phần code sau
       ],
     );
   }

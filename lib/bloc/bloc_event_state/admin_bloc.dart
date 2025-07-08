@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
 import 'package:portal_ckc/api/model/admin_thong_tin.dart';
@@ -45,8 +46,52 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
               await prefs.setInt('user_id', user.id);
+              if (user.roles.isNotEmpty) {
+                await prefs.setInt('user_role', user.roles.first.id);
+                await prefs.setString('user_name_role', user.roles.first.name);
+                final roles = userJson['roles'] as List<dynamic>? ?? [];
+                final Set<String> permNamesSet = {};
+
+                for (final role in roles) {
+                  final perms = role['permissions'] as List<dynamic>? ?? [];
+                  for (final p in perms) {
+                    final name = p['name']?.toString();
+                    if (name != null && name.isNotEmpty) {
+                      permNamesSet.add(name);
+                    }
+                  }
+                }
+
+                final permNamesList = permNamesSet.toList();
+                await prefs.setStringList('user_permissions', permNamesList);
+
+                final Set<String> permIdsSet = {};
+                for (final role in roles) {
+                  final perms = role['permissions'] as List<dynamic>? ?? [];
+                  for (final p in perms) {
+                    final id = p['id']?.toString();
+                    if (id != null && id.isNotEmpty) {
+                      permIdsSet.add(id);
+                    }
+                  }
+                }
+                await prefs.setStringList(
+                  'user_permission_ids',
+                  permIdsSet.toList(),
+                );
+              } else {
+                await prefs.setInt('user_role', -1);
+                await prefs.setString('user_name_role', 'Chưa có vai trò');
+              }
+
+              await prefs.setString(
+                'user_name_fullname',
+                user.hoSo?.hoTen ?? "Lỗi khi tải ",
+              );
               print('✅ Token đã được lưu: $token');
               print('✅ User ID đã được lưu: ${user.id}');
+
+              print('✅ User Name đã được lưu: ${user.hoSo?.hoTen}');
             }
             emit(AdminLoaded(user));
           } else {
@@ -85,7 +130,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           final rolesJson = data['roles'];
 
           final user = User.fromJson({...userJson, 'roles': rolesJson});
-          emit(AdminSuccess(user)); // ✅ Chỉ emit, không add lại event
+          emit(AdminSuccess(user));
         } else {
           emit(AdminError('Phản hồi không đúng định dạng'));
         }
@@ -131,9 +176,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         final body = response.body;
         if (body is Map<String, dynamic> && body.containsKey('sinh_viens')) {
           final dataList = body['sinh_viens'] as List<dynamic>;
-          final sinhViens = dataList.map((e) => SinhVien.fromJson(e)).toList();
-          print("✅ Tổng số sinh viên: ${sinhViens.length}");
-          emit(StudentListLoaded(sinhViens));
+          final studentsWithRole = dataList
+              .map((e) => StudentWithRole.fromJson(e))
+              .toList();
+          print("✅ Tổng số sinh viên: ${studentsWithRole.length}");
+          emit(StudentListLoaded(studentsWithRole));
         } else {
           emit(AdminError('Phản hồi không đúng định dạng (thiếu sinh_viens)'));
         }
@@ -154,6 +201,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       final response = await service.changePassword({
         'current_password': event.currentPassword,
         'new_password': event.newPassword,
+        'new_password_confirmation': event.confirmPassword,
       });
 
       if (response.isSuccessful && response.body != null) {

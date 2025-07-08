@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
-import 'package:portal_ckc/api/model/studen_model.dart' hide StudentStatus;
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
-import 'package:portal_ckc/api/model/studen_model.dart' hide StudentStatus;
-import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
 
@@ -39,8 +35,8 @@ extension StudentStatusExtension on StudentStatus {
 }
 
 class StudentDetailBottomSheet extends StatefulWidget {
-  final SinhVien student;
-  final ValueChanged<SinhVien> onUpdateStatus;
+  final StudentWithRole student;
+  final ValueChanged<StudentWithRole> onUpdateStatus;
 
   const StudentDetailBottomSheet({
     Key? key,
@@ -60,7 +56,7 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _selectedStatus = StudentStatus.values[widget.student.trangThai];
+    _selectedStatus = StudentStatus.values[widget.student.sinhVien.trangThai];
   }
 
   List<DropdownItem> _getStatusOptions() {
@@ -73,33 +69,40 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
     }).toList();
   }
 
-  void _saveStatus() {
-    final updatedStudent = SinhVien(
-      id: widget.student.id,
-      maSv: widget.student.maSv,
-      idLop: widget.student.idLop,
-      idHoSo: widget.student.idHoSo,
-      chucVu: widget.student.chucVu,
-      trangThai: _selectedStatus.index,
-      hoSo: widget.student.hoSo,
-      lop: widget.student.lop,
-      diemRenLuyens: [],
-    );
+  // void _saveStatus() {
+  //   final updatedStudent = StudentWithRole(
+  //     id: widget.student.id,
+  //     idLop: widget.student.idLop,
+  //     idSinhVien: widget.student.idSinhVien,
+  //     chucVu: widget.student.chucVu,
+  //     sinhVien: SinhVien(
+  //       id: widget.student.sinhVien.id,
+  //       maSv: widget.student.sinhVien.maSv,
+  //       idLop: widget.student.sinhVien.idLop,
+  //       idHoSo: widget.student.sinhVien.idHoSo,
+  //       chucVu: widget.student.sinhVien.chucVu,
+  //       trangThai: _selectedStatus.index,
+  //       hoSo: widget.student.sinhVien.hoSo,
+  //       lop: widget.student.sinhVien.lop,
+  //       diemRenLuyens: [],
+  //     ),
+  //   );
 
-    widget.onUpdateStatus(updatedStudent);
+  //   widget.onUpdateStatus(updatedStudent);
 
-    setState(() {
-      _isEditingStatus = false;
-    });
+  //   setState(() {
+  //     _isEditingStatus = false;
+  //   });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Đã cập nhật trạng thái sinh viên.')),
-    );
-  }
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Đã cập nhật trạng thái sinh viên.')),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final currentStatus = StudentStatus.values[widget.student.trangThai];
+    final currentStatus =
+        StudentStatus.values[widget.student.sinhVien.trangThai];
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: SingleChildScrollView(
@@ -128,31 +131,31 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
 
             const SizedBox(height: 10),
 
-            _buildInfoTile(Icons.badge, 'MSSV', widget.student.maSv),
+            _buildInfoTile(Icons.badge, 'MSSV', widget.student.sinhVien.maSv),
             _buildInfoTile(
               Icons.person,
               'Tên sinh viên',
-              widget.student.hoSo.hoTen,
+              widget.student.sinhVien.hoSo.hoTen,
             ),
             _buildInfoTile(
               Icons.email,
               'Email',
-              widget.student.hoSo.email.isEmpty
+              widget.student.sinhVien.hoSo.email.isEmpty
                   ? 'Chưa cập nhật'
-                  : widget.student.hoSo.email,
+                  : widget.student.sinhVien.hoSo.email,
             ),
             _buildInfoTile(
               Icons.phone,
               'SĐT',
-              widget.student.hoSo.soDienThoai.isEmpty
+              widget.student.sinhVien.hoSo.soDienThoai.isEmpty
                   ? 'Chưa cập nhật'
-                  : widget.student.hoSo.soDienThoai,
+                  : widget.student.sinhVien.hoSo.soDienThoai,
             ),
             _buildInfoTile(
               Icons.cake,
               'Ngày sinh',
               DateFormat('dd/MM/yyyy').format(
-                DateTime.tryParse(widget.student.hoSo.ngaySinh) ??
+                DateTime.tryParse(widget.student.sinhVien.hoSo.ngaySinh) ??
                     DateTime(2000),
               ),
             ),
@@ -252,8 +255,6 @@ class _StudentDetailBottomSheetState extends State<StudentDetailBottomSheet> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blueAccent, size: 20),
-          const SizedBox(width: 12),
           Icon(icon, color: Colors.blueAccent, size: 20),
           const SizedBox(width: 12),
           Expanded(

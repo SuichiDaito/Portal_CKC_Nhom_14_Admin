@@ -43,7 +43,7 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
   }
 
   void _confirmSelectedRequests(BuildContext context) {
-    final userId = 1; // TODO: Replace with actual user ID from login/session
+    final userId = 1;
     final selectedIds = _selectedRequestIds.map(int.parse).toList();
 
     if (selectedIds.isNotEmpty) {
@@ -143,14 +143,12 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
                           onSelected: (isSelected) =>
                               _toggleSelection(request.id, isSelected ?? false),
                           onConfirm: () {
-                            final userId =
-                                1; // TODO: Replace with actual user ID
+                            final userId = 1;
                             context.read<DangKyGiayBloc>().add(
                               ConfirmMultipleGiayXacNhanEvent(
                                 ids: [int.parse(request.id)],
                                 userId: userId,
-                                trangThai:
-                                    1, // bạn cần thêm field này trong event nếu chưa có
+                                trangThai: 1,
                               ),
                             );
                           },
@@ -158,7 +156,9 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
                       },
                     );
                   } else if (state is DangKyGiayError) {
-                    return Center(child: Text('Lỗi: ${state.message}'));
+                    return Center(
+                      child: Text('Bạn không có quyền truy cập chức năng này'),
+                    );
                   } else {
                     return const Center(child: Text('Không có dữ liệu.'));
                   }

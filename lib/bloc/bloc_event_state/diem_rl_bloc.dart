@@ -51,7 +51,7 @@ class DiemRlBloc extends Bloc<DiemRLEvent, DiemRLState> {
         selectedStudents: jsonEncode(event.selectedStudentIds),
       );
 
-      if (res.isSuccessful && res.body?['success'] == true) {
+      if (res.isSuccessful && res.body?['status'] == true) {
         emit(
           DiemRLUpdateSuccess(res.body?['message'] ?? 'Cập nhật thành công'),
         );

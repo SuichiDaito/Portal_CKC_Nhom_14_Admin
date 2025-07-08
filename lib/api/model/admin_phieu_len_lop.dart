@@ -73,4 +73,5 @@ class Tuan {
   factory Tuan.fromJson(Map<String, dynamic> json) {
     return Tuan(id: json['id'], tuan: json['tuan']);
   }
+  static Tuan empty() => Tuan(id: 0, tuan: 0);
 }
