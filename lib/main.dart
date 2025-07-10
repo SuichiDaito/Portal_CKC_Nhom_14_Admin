@@ -21,8 +21,6 @@ import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/user_bloc.dart';
-import 'package:portal_ckc/bloc/event/bloc_event.dart';
-import 'package:portal_ckc/bloc/bloc_event_state/bloc_example.dart';
 import 'package:portal_ckc/l10n/app_localizations.dart';
 import 'package:portal_ckc/routes/app_route.dart';
 
@@ -38,7 +36,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => BlocImplement()..add(FetchData())),
         BlocProvider(create: (_) => AuthBloc()),
         BlocProvider(create: (_) => AdminBloc()),
         BlocProvider(create: (_) => PhongBloc()),

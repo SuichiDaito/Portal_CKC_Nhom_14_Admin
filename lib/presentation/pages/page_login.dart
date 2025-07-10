@@ -57,10 +57,8 @@ class _LoginScreenState extends State<LoginScreen>
         child: SafeArea(
           child: Column(
             children: [
-              // Header với logo và thông tin trường
               _buildHeader(),
 
-              // Phần form đăng nhập
               Expanded(
                 child: Container(
                   margin: EdgeInsets.only(top: 20),
@@ -80,10 +78,8 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   child: Column(
                     children: [
-                      // Tab bar
                       _buildTabBar(),
 
-                      // Tab content
                       Expanded(
                         child: TabBarView(
                           controller: _tabController,
@@ -114,7 +110,6 @@ class _LoginScreenState extends State<LoginScreen>
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -136,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
 
-          SizedBox(height: 20),
+          SizedBox(height: 15),
           // Tên trường
           Text(
             'TRƯỜNG CAO ĐẲNG KỸ THUẬT CAO THẮNG',
@@ -166,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   Widget _buildTabBar() {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: BorderRadius.circular(25),

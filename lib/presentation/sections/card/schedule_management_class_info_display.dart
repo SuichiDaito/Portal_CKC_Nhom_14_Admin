@@ -13,7 +13,7 @@ class ClassInfoDisplay extends StatelessWidget {
     final tenHocPhan = classSchedule.tenHocPhan;
     final siSo = classSchedule.soLuongDangKy;
     final loai = classSchedule.loaiLopHocPhan == 1 ? 'Thực hành' : 'Lý thuyết';
-
+    final gv = classSchedule.gv?.hoSo?.hoTen ?? "";
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: BoxDecoration(
@@ -33,6 +33,12 @@ class ClassInfoDisplay extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
+          Text(
+            'Giảng viên: $gv',
+            style: const TextStyle(fontSize: 15, color: Colors.black87),
+          ),
+          const SizedBox(height: 6),
+
           Text(
             'Loại: $loai',
             style: const TextStyle(fontSize: 15, color: Colors.black87),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/api/model/admin_phieu_len_lop.dart';
+import 'package:portal_ckc/api/model/admin_tuan.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
@@ -35,9 +37,8 @@ class PageTeachingScheduleAdmin extends StatefulWidget {
 class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
   int selectedWeek = 1;
   String? selectedDay;
-  List<DropdownItem> _schoolYears = [];
-  DropdownItem? _selectedSchoolYear;
-  bool _isSchoolYearLoaded = false;
+
+  List<TuanModel> _tuanList = [];
 
   List<DropdownItem> _weeks = [];
   DropdownItem? _selectedWeek;
@@ -85,7 +86,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
       }
     }
 
-    // ✅ Chỉ giữ lại các thứ có lịch dạy
     result.removeWhere((thu, buoiMap) {
       final totalSubjects = buoiMap.values.fold<int>(
         0,
@@ -118,7 +118,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
     }
   }
 
-  //Xử lý chức năng in tkb
   void _printSchedule(int fromWeek, int toWeek) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('In TKB từ tuần $fromWeek đến tuần $toWeek')),
@@ -126,11 +125,14 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
   }
 
   void _showPrintDialog() {
+    final selectedWeekId = int.tryParse(_selectedWeek?.value ?? '') ?? 1;
+
     showDialog(
       context: context,
       builder: (_) => PrintScheduleDialog(
-        fromWeek: selectedWeek,
-        toWeek: selectedWeek,
+        fromWeek: selectedWeekId,
+        toWeek: selectedWeekId,
+        tuanList: _tuanList,
         onPrint: _printSchedule,
       ),
     );
@@ -139,7 +141,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
   @override
   void initState() {
     super.initState();
-    // Fetch tuần theo năm 2025 ngay khi load widget
     context.read<TuanBloc>().add(FetchTuanEvent(2025));
   }
 
@@ -214,6 +215,8 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                           );
                         }
                         if (tuanState is TuanLoaded) {
+                          _tuanList = tuanState.danhSachTuan;
+
                           _weeks = tuanState.danhSachTuan.map((tuan) {
                             return DropdownItem(
                               value: tuan.id.toString(),

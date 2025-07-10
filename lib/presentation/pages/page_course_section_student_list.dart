@@ -88,7 +88,6 @@ class _PageCourseSectionStudentListState
                         ),
                       ),
 
-                    /// ✅ Nút nộp bảng điểm hoặc card hoàn tất
                     Align(
                       alignment: Alignment.centerRight,
                       child: Padding(
@@ -152,7 +151,6 @@ class _PageCourseSectionStudentListState
                       ),
                     ),
 
-                    /// ✅ Danh sách sinh viên
                     ...students.map(
                       (student) => StudentItemSection(
                         trangThaiLop: trangThaiLop ?? 0,

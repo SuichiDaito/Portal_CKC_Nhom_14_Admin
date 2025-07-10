@@ -141,4 +141,22 @@ class ScheduleTime {
     required this.tietKetThuc,
     required this.phong,
   });
+
+  ScheduleTime copyWith({
+    int? id,
+    String? ngay,
+    String? thu,
+    int? tietBatDau,
+    int? tietKetThuc,
+    String? phong,
+  }) {
+    return ScheduleTime(
+      id: id ?? this.id,
+      ngay: ngay ?? this.ngay,
+      thu: thu ?? this.thu,
+      tietBatDau: tietBatDau ?? this.tietBatDau,
+      tietKetThuc: tietKetThuc ?? this.tietKetThuc,
+      phong: phong ?? this.phong,
+    );
+  }
 }
