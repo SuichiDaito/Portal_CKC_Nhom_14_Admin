@@ -49,7 +49,7 @@ class ThoiKhoaBieuBloc extends Bloc<ThoiKhoaBieuEvent, ThoiKhoaBieuState> {
         final tkb = ThoiKhoaBieu.fromJson(response.body?['data']);
         emit(ThoiKhoaBieuSuccess('Tạo thời khóa biểu thành công', tkb));
       } else {
-        emit(ThoiKhoaBieuError(response.body?['message'] ?? 'Tạo thất bại'));
+        emit(ThoiKhoaBieuError('Tạo thất bại'));
       }
     } catch (e) {
       emit(ThoiKhoaBieuError('Lỗi tạo thời khóa biểu: $e'));

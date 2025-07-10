@@ -84,7 +84,7 @@ class _ClassListSectionState extends State<ClassListSection> {
     final key = classInfo.id.toString();
     final isEditing = _editingStates[key] ?? false;
     final instructorItems = widget.instructors;
-    final bool isLocked = classInfo.trangThaiNopBangDiem == 1;
+    final bool isLocked = classInfo.trangThaiNopBangDiem != 0;
 
     return Container(
       padding: const EdgeInsets.all(16),

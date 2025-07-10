@@ -144,9 +144,7 @@ class NguoiBinhLuan {
   factory NguoiBinhLuan.fromJson(Map<String, dynamic> json) => NguoiBinhLuan(
     id: json['id'],
     hoSo: HoSo.fromJson(json['ho_so']),
-    type:
-        json['type'] ??
-        '', // hoặc tự gán bên ngoài từ key `nguoi_binh_luan_type`
+    type: json['type'] ?? '',
   );
 }
 

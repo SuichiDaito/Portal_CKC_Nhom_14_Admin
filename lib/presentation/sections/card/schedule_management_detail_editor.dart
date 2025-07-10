@@ -138,10 +138,16 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
       orElse: () =>
           Room(id: 0, ten: 'Không xác định', soLuong: 0, loaiPhong: 0),
     );
+    final updatedSchedules = _editedSchedules
+        .where((e) => e.thu.isNotEmpty)
+        .map((e) {
+          return e.copyWith(phong: selectedRoom.ten);
+        })
+        .toList();
 
     final newDetail = ScheduleDetail(
       room: selectedRoom.ten,
-      schedules: _editedSchedules.where((e) => e.thu.isNotEmpty).toList(),
+      schedules: updatedSchedules,
     );
 
     widget.onSave(newDetail);
@@ -184,10 +190,6 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
     setState(() {
       _isEditing = false;
     });
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Đã lưu thay đổi lịch học!')));
   }
 
   @override
@@ -212,31 +214,6 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
               ),
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<int>(
-              value: selectedRoomId,
-              decoration: const InputDecoration(
-                labelText: 'Phòng học',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-              ),
-              isExpanded: true,
-              items: widget.rooms.map((room) {
-                return DropdownMenuItem<int>(
-                  value: room.id,
-                  child: Text(room.ten),
-                );
-              }).toList(),
-              onChanged: _isEditing
-                  ? (value) {
-                      setState(() {
-                        selectedRoomId = value;
-                      });
-                    }
-                  : null,
-            ),
 
             const SizedBox(height: 12),
             DayTimePicker(
@@ -247,18 +224,17 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
                   setState(() {
                     _editedSchedules = schedules;
                   });
-
-                  debugPrint('📅 Lịch học đã chọn (${schedules.length} mục):');
-                  for (var s in schedules) {
-                    debugPrint(
-                      'Thứ: ${s.thu}, Tiết: ${s.tietBatDau} - ${s.tietKetThuc}',
-                    );
-                  }
                 }
+              },
+              rooms: widget.rooms,
+              selectedRoomId: selectedRoomId,
+              onRoomChanged: (value) {
+                setState(() {
+                  selectedRoomId = value;
+                });
               },
             ),
 
-            const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: CustomButton(

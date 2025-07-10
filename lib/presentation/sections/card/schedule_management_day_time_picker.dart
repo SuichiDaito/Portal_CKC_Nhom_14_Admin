@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/api/model/admin_phong.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
 import 'package:portal_ckc/bloc/event/thoi_khoa_bieu_event.dart';
 
@@ -8,12 +9,17 @@ class DayTimePicker extends StatefulWidget {
   final bool enabled;
   final List<ScheduleTime> schedules;
   final ValueChanged<List<ScheduleTime>> onScheduleChanged;
-
+  final List<Room> rooms;
+  final int? selectedRoomId;
+  final ValueChanged<int?> onRoomChanged;
   const DayTimePicker({
     Key? key,
     required this.enabled,
     required this.schedules,
     required this.onScheduleChanged,
+    required this.rooms,
+    required this.selectedRoomId,
+    required this.onRoomChanged,
   }) : super(key: key);
 
   @override
@@ -49,12 +55,18 @@ class _DayTimePickerState extends State<DayTimePicker> {
       'Chủ nhật',
     ][index];
 
+    final selectedRoom = widget.rooms.firstWhere(
+      (room) => room.id == widget.selectedRoomId,
+      orElse: () =>
+          Room(id: 0, ten: 'Không xác định', soLuong: 0, loaiPhong: 0),
+    );
+
     final newSchedule = ScheduleTime(
       id: 0,
       ngay: _daysOfWeek[index],
       tietBatDau: _startLesson,
       tietKetThuc: _endLesson,
-      phong: '',
+      phong: selectedRoom.ten,
       thu: thuText,
     );
 
@@ -172,6 +184,26 @@ class _DayTimePickerState extends State<DayTimePicker> {
         }),
         if (widget.enabled) ...[
           const SizedBox(height: 16),
+
+          DropdownButtonFormField<int>(
+            value: widget.selectedRoomId,
+            decoration: const InputDecoration(
+              labelText: 'Phòng học',
+              border: OutlineInputBorder(),
+            ),
+            isExpanded: true,
+            items: widget.rooms.map((room) {
+              return DropdownMenuItem<int>(
+                value: room.id,
+                child: Text(room.ten),
+              );
+            }).toList(),
+            onChanged: (value) {
+              widget.onRoomChanged(value);
+            },
+          ),
+          const SizedBox(height: 16),
+
           const Text(
             'Chọn thứ:',
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -267,9 +299,23 @@ class _DayTimePickerState extends State<DayTimePicker> {
             ],
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: _addSchedule,
-            child: const Text('Thêm lịch dạy'),
+            icon: const Icon(Icons.add, size: 20),
+            label: const Text(
+              'Thêm lịch dạy',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              backgroundColor: Colors.blueAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 4,
+              shadowColor: Colors.blueAccent.withOpacity(0.5),
+            ),
           ),
         ],
       ],

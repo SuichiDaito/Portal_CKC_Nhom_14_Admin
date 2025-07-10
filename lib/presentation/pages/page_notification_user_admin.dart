@@ -50,10 +50,8 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
       body: BlocListener<ThongBaoBloc, ThongBaoState>(
         listener: (context, state) {
           if (state is TBSuccess) {
-            // Gọi lại API để reload danh sách
             context.read<ThongBaoBloc>().add(FetchThongBaoList());
 
-            // Optional: Hiển thị thông báo nhỏ
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -66,7 +64,11 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
             }
 
             if (state is TBFailure) {
-              return Center(child: Text('Lỗi: ${state.error}'));
+              return Center(
+                child: Text(
+                  'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                ),
+              );
             }
 
             if (state is TBListLoaded && userId != null) {
@@ -165,8 +167,7 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                         onPressed: () async {
                                           final result = await context.push(
                                             '/notifications/create',
-                                            extra:
-                                                tb, // truyền object thông báo qua để sửa
+                                            extra: tb,
                                           );
 
                                           if (result == true) {
