@@ -21,7 +21,7 @@ class SinhVienLopHocPhan {
     this.diemThiLan2,
 
     this.diemTongKet,
-    this.isSelected = false,
+    this.isSelected = true,
   });
 
   factory SinhVienLopHocPhan.fromJson(Map<String, dynamic> json) {

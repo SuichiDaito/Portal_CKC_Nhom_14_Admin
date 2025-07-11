@@ -15,7 +15,6 @@ class CapNhatDiemBloc extends Bloc<CapNhatDiemEvent, CapNhatDiemState> {
     on<UpdateTrangThaiNopDiemEvent>(_onUpdateTrangThai);
   }
 
-  /// ✅ Gửi điểm
   Future<void> _onSubmit(
     SubmitCapNhatDiem event,
     Emitter<CapNhatDiemState> emit,

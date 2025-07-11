@@ -86,7 +86,11 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                 ),
               );
             } else if (state is TBFailure) {
-              return Center(child: Text('❌ ${state.error}'));
+              return Center(
+                child: Text(
+                  'Không thể truy cập, chức năng này vui lòng thử lại sau',
+                ),
+              );
             } else {
               return const Center(
                 child: Text(

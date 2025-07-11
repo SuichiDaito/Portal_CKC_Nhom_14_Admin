@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
@@ -157,7 +156,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                                     studentList: studentList,
                                     bienBan: bienBan,
                                     isEditing: isEditing,
-                                    canEdit: (bienBan.trangThai ?? 0) == 0,
+                                    canEdit: bienBan.trangThai == 1,
                                     absentStudentIds: absentStudentIds,
                                     absenceReasons: absenceReasons,
                                     isExcusedMap: isExcusedMap,
@@ -221,17 +220,43 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                                   ),
                                 ),
 
-                                if (isEditing && bienBan.trangThai == 0)
+                                if (isEditing && bienBan.trangThai == 1)
                                   Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        foregroundColor: Colors.white,
+                                        minimumSize: const Size.fromHeight(50),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                       onPressed: () {
+                                        if (content.trim().isEmpty) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Nội dung biên bản không được để trống!',
+                                              ),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                          return;
+                                        }
                                         final data = {
                                           'id_sv': bienBan.thuky.id,
                                           'id_tuan':
                                               int.tryParse(selectedWeek) ??
                                               bienBan.tuan.id,
-
                                           'tieu_de':
                                               'Biên bản sinh hoạt chủ nhiệm',
                                           'noi_dung': content,
@@ -275,9 +300,7 @@ class _PageReportDetailAdminState extends State<PageReportDetailAdmin> {
                       );
                     }
                     if (bienBanState is BienBanError) {
-                      return Center(
-                        child: Text('Lỗi: ${bienBanState.message}'),
-                      );
+                      return Center(child: Text(''));
                     }
                     return const SizedBox.shrink();
                   },

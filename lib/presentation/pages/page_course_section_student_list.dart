@@ -150,12 +150,92 @@ class _PageCourseSectionStudentListState
                               ),
                       ),
                     ),
+                    Align(
+                      alignment: Alignment
+                          .centerRight, // Căn lề phải (hoặc Center nếu muốn giữa)
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            if ((trangThaiLop ?? 0) == 3) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Lớp học phần đã hoàn tất, không thể nộp điểm nữa!",
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
+                            final selectedStudents = students
+                                .where((s) => s.isSelected)
+                                .toList();
+                            if (selectedStudents.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Vui lòng chọn ít nhất 1 sinh viên để nộp điểm!",
+                                  ),
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
+                              return;
+                            }
+
+                            final request = CapNhatDiemRequest(
+                              idLopHocPhan: widget.idLopHocPhan,
+                              students: selectedStudents
+                                  .map((s) => s.sinhVien.id!)
+                                  .toList(),
+                              diemChuyenCan: {
+                                for (var s in selectedStudents)
+                                  s.sinhVien.id!: s.diemChuyenCan ?? 0.0,
+                              },
+                              diemQuaTrinh: {
+                                for (var s in selectedStudents)
+                                  s.sinhVien.id!: s.diemQuaTrinh ?? 0.0,
+                              },
+                              diemThiLan1: {
+                                for (var s in selectedStudents)
+                                  s.sinhVien.id!: s.diemThiLan1 ?? 0.0,
+                              },
+                              diemThiLan2: {
+                                for (var s in selectedStudents)
+                                  s.sinhVien.id!: s.diemThiLan2 ?? 0.0,
+                              },
+                            );
+
+                            context.read<CapNhatDiemBloc>().add(
+                              SubmitCapNhatDiem(request),
+                            );
+                          },
+                          icon: const Icon(Icons.done_all),
+                          label: const Text("Cập nhật điểm"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade700,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 14,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
 
                     ...students.map(
                       (student) => StudentItemSection(
                         trangThaiLop: trangThaiLop ?? 0,
                         student: student,
-                        showCheckbox: false,
+                        showCheckbox: true,
                         onCheckboxChanged: (s, selected) {
                           setState(() {
                             s.isSelected = selected;

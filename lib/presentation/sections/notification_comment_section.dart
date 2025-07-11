@@ -35,7 +35,7 @@ class CommentSection extends State<NotificationCommentSection> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       currentUserChucVu = prefs.getInt('user_role');
-      currentUserId = prefs.getInt('user_id');
+      currentUserId = prefs.getInt('user_info');
     });
   }
 
@@ -80,7 +80,7 @@ class CommentSection extends State<NotificationCommentSection> {
             idThongBao: widget.idThongBao,
             comments: widget.comments,
             currentUserId: currentUserId!,
-            currentUserChucVu: currentUserChucVu ?? 0,
+            currentUserChucVu: currentUserChucVu,
           ),
           const SizedBox(height: 30),
         ],

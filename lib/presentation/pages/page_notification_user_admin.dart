@@ -20,7 +20,6 @@ class PageNotificationUserAdmin extends StatefulWidget {
 class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
   String selectedTab = 'Chưa duyệt';
   int? userId;
-
   @override
   void initState() {
     super.initState();
@@ -92,6 +91,7 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                       itemCount: notiList.length,
                       itemBuilder: (_, index) {
                         final tb = notiList[index];
+
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
                           shape: RoundedRectangleBorder(
@@ -197,7 +197,9 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                                 context: context,
                                                 isScrollControlled: true,
                                                 builder: (_) =>
-                                                    const DanhSachLopSheet(),
+                                                    DanhSachLopSheet(
+                                                      capTren: tb.tuAi,
+                                                    ),
                                               );
 
                                           if (selectedLopIds != null &&
