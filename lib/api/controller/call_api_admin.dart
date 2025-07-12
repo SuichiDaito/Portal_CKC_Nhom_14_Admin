@@ -10,7 +10,7 @@ class CallApiAdmin {
     baseUrl: Uri.parse(ApiString.urlApi),
     converter: ModelConverter(),
     interceptors: [HttpLoggingInterceptor(), AuthHeaderInterceptor()],
-    services: [], // DÙNG services rỗng để tránh lỗi
+    services: [],
   );
 
   static final AdminService adminService = AdminService.create(_chopper);

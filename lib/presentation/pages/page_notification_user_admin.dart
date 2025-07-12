@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/lop_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/event/lop_event.dart';
@@ -165,14 +168,61 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                                           color: Colors.green,
                                         ),
                                         onPressed: () async {
-                                          final result = await context.push(
-                                            '/notifications/create',
-                                            extra: tb,
-                                          );
+                                          // Gọi API hoặc dùng Bloc để fetch detail trước khi push
+                                          final bloc = context
+                                              .read<ThongBaoBloc>();
 
-                                          if (result == true) {
-                                            context.read<ThongBaoBloc>().add(
-                                              FetchThongBaoList(),
+                                          // Tạo một Completer để đợi dữ liệu chi tiết
+                                          final completer =
+                                              Completer<ThongBao>();
+                                          late final StreamSubscription sub;
+
+                                          // Lắng nghe kết quả của TBDetailLoaded
+                                          sub = bloc.stream.listen((state) {
+                                            if (state is TBDetailLoaded &&
+                                                state.detail.id == tb.id) {
+                                              completer.complete(state.detail);
+                                              sub.cancel();
+                                            } else if (state is TBFailure) {
+                                              completer.completeError(
+                                                state.error,
+                                              );
+                                              sub.cancel();
+                                            }
+                                          });
+
+                                          // Gửi sự kiện fetch
+                                          bloc.add(FetchThongBaoDetail(tb.id));
+
+                                          try {
+                                            final thongBaoDetail =
+                                                await completer.future;
+
+                                            // Chuyển đến trang sửa nếu có dữ liệu
+                                            final result = await context.push(
+                                              '/notifications/create',
+                                              extra: thongBaoDetail,
+                                            );
+
+                                            if (result == true) {
+                                              bloc.add(
+                                                FetchThongBaoList(),
+                                              ); // làm mới danh sách
+                                            }
+                                          } catch (e) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) => AlertDialog(
+                                                title: const Text("Lỗi"),
+                                                content: Text(e.toString()),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    child: const Text("Đóng"),
+                                                  ),
+                                                ],
+                                              ),
                                             );
                                           }
                                         },
@@ -268,7 +318,7 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
               );
             }
 
-            return const Center(child: Text('Không có dữ liệu'));
+            return const Center(child: Text(''));
           },
         ),
       ),

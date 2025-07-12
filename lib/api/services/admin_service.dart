@@ -170,13 +170,14 @@ abstract class AdminService extends ChopperService {
   );
   // ================== 🔔 THÔNG BÁO ==================
 
-  // Lấy danh sách tất cả thông báo
   @Get(path: '/thongbao')
   Future<Response<Map<String, dynamic>>> getThongBaoList();
 
-  // Lấy chi tiết 1 thông báo
   @Get(path: '/thongbao/{id}')
   Future<Response<Map<String, dynamic>>> getThongBaoDetail(@Path('id') int id);
+
+  @Delete(path: '/thongbao/file/{id}')
+  Future<Response> deleteFileInThongBao(@Path('id') int id);
 
   @Post(path: '/thongbao')
   @multipart
@@ -185,13 +186,19 @@ abstract class AdminService extends ChopperService {
     @Part('noi_dung') String noiDung,
     @Part('tu_ai') String tuAi,
     @Part('ngay_gui') String ngayGui,
-    // @Part('files') List<MultipartFile> files,
+    @Part('files[]') List<MultipartFile> files,
   );
-  // Cập nhật thông báo
-  @Put(path: '/thongbao/{id}')
-  Future<Response<Map<String, dynamic>>> updateThongBao(
+  @Post(path: '/thongbao/{id}?_method=PUT')
+  @multipart
+  Future<Response<Map<String, dynamic>>> updateThongBaoWithFiles(
     @Path('id') int id,
-    @Body() Map<String, dynamic> body,
+    @Part('tieu_de') String title,
+    @Part('noi_dung') String content,
+    @Part('ngay_gui') String ngayGui,
+    @Part('tu_ai') String tuAi,
+    @Part('trang_thai') int trangThai,
+    @Part('files') List<MultipartFile> files,
+    @Part('old_files') String oldFilesJson,
   );
 
   // Xoá thông báo
@@ -204,10 +211,6 @@ abstract class AdminService extends ChopperService {
     @Path('id') int id,
     @Body() Map<String, dynamic> body,
   );
-
-  // Xoá file đính kèm trong thông báo
-  @Delete(path: '/thongbao/file/{id}')
-  Future<Response> deleteFileInThongBao(@Path('id') int id);
 
   // Lấy danh sách giá trị enum cấp trên
   @Get(path: '/thongbao/get-data-cap-tren')

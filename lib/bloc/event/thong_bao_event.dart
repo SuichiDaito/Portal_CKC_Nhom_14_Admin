@@ -1,4 +1,6 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' show MultipartFile;
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 
 abstract class ThongBaoEvent {}
 
@@ -14,14 +16,13 @@ class CreateThongBao extends ThongBaoEvent {
   final String content;
   final String capTren;
   final String ngayGui;
-  final List<String>? files;
-
+  final List<MultipartFile> files;
   CreateThongBao({
     required this.title,
     required this.content,
     required this.capTren,
     required this.ngayGui,
-    this.files,
+    required this.files,
   });
 }
 
@@ -32,6 +33,9 @@ class UpdateThongBao extends ThongBaoEvent {
   final int? trangThai;
   final String tuAi;
   final String ngayGui;
+  final List<MultipartFile> files;
+  final List<int> oldFiles;
+
   UpdateThongBao({
     required this.id,
     required this.title,
@@ -39,6 +43,8 @@ class UpdateThongBao extends ThongBaoEvent {
     this.trangThai,
     required this.tuAi,
     required this.ngayGui,
+    required this.files,
+    required this.oldFiles,
   });
 }
 
@@ -71,4 +77,9 @@ class DeleteCommentEvent extends ThongBaoEvent {
   final int commentId;
 
   DeleteCommentEvent(this.commentId);
+}
+
+class DeleteAttachedFile extends ThongBaoEvent {
+  final int fileId;
+  DeleteAttachedFile(this.fileId);
 }

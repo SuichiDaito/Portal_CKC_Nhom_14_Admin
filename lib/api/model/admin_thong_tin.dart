@@ -46,6 +46,17 @@ class User {
           .toList(),
     );
   }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'id_ho_so': idHoSo,
+    'id_bo_mon': idBoMon,
+    'tai_khoan': taiKhoan,
+    'trang_thai': trangThai,
+    'ho_so': hoSo?.toJson(),
+    'bo_mon': boMon?.toJson(),
+    'roles': roles.map((e) => e.toJson()).toList(),
+  };
+
   User copyWith({
     int? id,
     int? idHoSo,

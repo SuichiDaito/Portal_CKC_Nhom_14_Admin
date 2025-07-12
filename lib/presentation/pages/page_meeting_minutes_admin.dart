@@ -153,6 +153,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                   print(
                     ' ==================Tổng biên bản: ${state.bienBanList.length}',
                   );
+                  //LỌC THEO NGÀY
                   if (selectedDate != null) {
                     bienBans = bienBans.where((bienBan) {
                       return bienBan.thoiGianBatDau.year ==

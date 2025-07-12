@@ -4,6 +4,7 @@ import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
 import 'package:http/http.dart' show MultipartFile;
+import 'dart:convert';
 
 class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
   final _service = CallApiAdmin.adminService;
@@ -18,6 +19,7 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
     on<FetchCapTrenOptions>(_onFetchCapTren);
     on<CreateCommentEvent>(_onCreateComment);
     on<DeleteCommentEvent>(_onDeleteComment);
+    on<DeleteAttachedFile>(_onDeleteFile);
   }
 
   Future<void> _onFetchList(
@@ -68,7 +70,7 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
         event.content,
         event.capTren,
         DateTime.now().toIso8601String(),
-        // event.files ?? [],
+        event.files,
       );
 
       if (response.isSuccessful) {
@@ -87,13 +89,20 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
   ) async {
     emit(TBLoading());
     try {
-      final response = await _service.updateThongBao(event.id, {
-        'tieu_de': event.title,
-        'ngay_gui': event.ngayGui,
-        'noi_dung': event.content,
-        'trang_thai': event.trangThai,
-        'tu_ai': event.tuAi, // Thêm biến mới nếu cần
-      });
+      final response = await CallApiAdmin.adminService.updateThongBaoWithFiles(
+        event.id,
+        event.title,
+        event.content,
+        event.ngayGui,
+        event.tuAi,
+        event.trangThai ?? 1,
+        event.files,
+        jsonEncode(event.oldFiles),
+      );
+      print('🧾 Số lượng files gửi: ${event.files.length}');
+      for (final f in event.files) {
+        print('📎 File: ${f.filename}');
+      }
 
       if (response.isSuccessful) {
         emit(TBSuccess('Cập nhật thông báo thành công'));
@@ -119,6 +128,23 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
       }
     } catch (e) {
       emit(TBFailure('Exception: $e'));
+    }
+  }
+
+  Future<void> _onDeleteFile(
+    DeleteAttachedFile event,
+    Emitter<ThongBaoState> emit,
+  ) async {
+    try {
+      final response = await _service.deleteFileInThongBao(event.fileId);
+
+      if (response.isSuccessful) {
+        emit(TBSuccess('Xoá file thành công'));
+      } else {
+        emit(TBFailure('Xoá file thất bại: ${response.error}'));
+      }
+    } catch (e) {
+      emit(TBFailure('Exception khi xoá file: $e'));
     }
   }
 
@@ -193,8 +219,6 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
       final response = await _service.deleteComment(event.commentId);
 
       if (response.isSuccessful) {
-        // Không biết comment của TB nào nên không reload. Tùy giao diện:
-        // Nếu bạn có sẵn ID TB, có thể gọi: add(FetchThongBaoDetail(tbId));
       } else {
         emit(TBFailure('Xoá bình luận thất bại: ${response.error}'));
       }

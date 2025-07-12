@@ -321,11 +321,19 @@ final class _$AdminService extends AdminService {
   }
 
   @override
+  Future<Response<dynamic>> deleteFileInThongBao(int id) {
+    final Uri $url = Uri.parse('/admin/thongbao/file/${id}');
+    final Request $request = Request('DELETE', $url, client.baseUrl);
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
   Future<Response<Map<String, dynamic>>> createThongBaoWithFiles(
     String tieuDe,
     String noiDung,
     String tuAi,
     String ngayGui,
+    List<MultipartFile> files,
   ) {
     final Uri $url = Uri.parse('/admin/thongbao');
     final List<PartValue> $parts = <PartValue>[
@@ -333,6 +341,7 @@ final class _$AdminService extends AdminService {
       PartValue<String>('noi_dung', noiDung),
       PartValue<String>('tu_ai', tuAi),
       PartValue<String>('ngay_gui', ngayGui),
+      PartValue<List<MultipartFile>>('files[]', files),
     ];
     final Request $request = Request(
       'POST',
@@ -345,13 +354,33 @@ final class _$AdminService extends AdminService {
   }
 
   @override
-  Future<Response<Map<String, dynamic>>> updateThongBao(
+  Future<Response<Map<String, dynamic>>> updateThongBaoWithFiles(
     int id,
-    Map<String, dynamic> body,
+    String title,
+    String content,
+    String ngayGui,
+    String tuAi,
+    int trangThai,
+    List<MultipartFile> files,
+    String oldFilesJson,
   ) {
-    final Uri $url = Uri.parse('/admin/thongbao/${id}');
-    final $body = body;
-    final Request $request = Request('PUT', $url, client.baseUrl, body: $body);
+    final Uri $url = Uri.parse('/admin/thongbao/${id}?_method=PUT');
+    final List<PartValue> $parts = <PartValue>[
+      PartValue<String>('tieu_de', title),
+      PartValue<String>('noi_dung', content),
+      PartValue<String>('ngay_gui', ngayGui),
+      PartValue<String>('tu_ai', tuAi),
+      PartValue<int>('trang_thai', trangThai),
+      PartValue<List<MultipartFile>>('files', files),
+      PartValue<String>('old_files', oldFilesJson),
+    ];
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      parts: $parts,
+      multipart: true,
+    );
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
   }
 
@@ -371,13 +400,6 @@ final class _$AdminService extends AdminService {
     final $body = body;
     final Request $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<Map<String, dynamic>, Map<String, dynamic>>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> deleteFileInThongBao(int id) {
-    final Uri $url = Uri.parse('/admin/thongbao/file/${id}');
-    final Request $request = Request('DELETE', $url, client.baseUrl);
-    return client.send<dynamic, dynamic>($request);
   }
 
   @override

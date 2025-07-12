@@ -34,6 +34,15 @@ class Lop {
           : User(id: 0, taiKhoan: "", trangThai: 0, roles: []),
     );
   }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'ten_lop': tenLop,
+    'id_nien_khoa': idNienKhoa,
+    'id_gvcn': idGvcn,
+    'si_so': siSo,
+    'nien_khoa': nienKhoa.toJson(),
+    'giang_vien': giangVien.toJson(),
+  };
 
   factory Lop.empty() {
     return Lop(

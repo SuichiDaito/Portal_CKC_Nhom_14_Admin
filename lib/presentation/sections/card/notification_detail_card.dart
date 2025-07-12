@@ -1,16 +1,20 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:portal_ckc/presentation/sections/notification_content_detail.dart';
 import 'package:portal_ckc/presentation/sections/notification_footer_detail.dart';
 import 'package:portal_ckc/presentation/sections/notification_sender_information_detail.dart';
 
-class NotificationDetailCard extends StatelessWidget {
+class NotificationDetailCard extends StatefulWidget {
   final String typeNotificationSender;
   final String date;
   final String headerNotification;
   final String contentNotification;
   final String lengthComment;
-  final List<Map<String, String>>
-  files; // [{ten_file: 'abc.pdf', url: 'storage/thong_bao/abc.pdf'}, ...]
+  final List<Map<String, String>> files;
 
   const NotificationDetailCard({
     Key? key,
@@ -23,7 +27,73 @@ class NotificationDetailCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<NotificationDetailCard> createState() => _NotificationDetailCardState();
+}
+
+class _NotificationDetailCardState extends State<NotificationDetailCard> {
+  double _downloadProgress = 0.0;
+
+  void _downloadFileFromMap(Map<String, dynamic> file) async {
+    final url = 'http://172.16.1.84:8000/storage/${file['url']}';
+    final tenFile = file['ten_file'] ?? 'unknown_file';
+
+    print("⬇️ Bắt đầu tải file: $url");
+
+    if (Platform.isAndroid) {
+      var status = await Permission.manageExternalStorage.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không có quyền truy cập bộ nhớ')),
+        );
+        return;
+      }
+    }
+
+    try {
+      final dir = Directory('/storage/emulated/0/Download');
+      final savePath = "${dir.path}/$tenFile";
+
+      final dio = Dio();
+      await dio.download(
+        url,
+        savePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            setState(() {
+              _downloadProgress = received / total;
+            });
+          }
+        },
+      );
+
+      setState(() {
+        _downloadProgress = 0.0;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Đã lưu file: $tenFile'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      await OpenFilex.open(savePath);
+    } catch (e) {
+      print("❌ Lỗi tải file: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Không thể mở file! vui lòng vào thư mục của máy để xem',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final files = widget.files;
+
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -41,14 +111,26 @@ class NotificationDetailCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           NotificationSenderInformationDetail(
-            typeNotificationSender: typeNotificationSender,
-            date: date,
+            typeNotificationSender: widget.typeNotificationSender,
+            date: widget.date,
           ),
           NotificationContentDetail(
-            headerNotification: headerNotification,
+            headerNotification: widget.headerNotification,
             linkImage: '',
-            contentNotification: contentNotification,
+            contentNotification: widget.contentNotification,
           ),
+          if (_downloadProgress > 0 && _downloadProgress < 1)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Đang tải file..."),
+                  LinearProgressIndicator(value: _downloadProgress),
+                  Text("${(_downloadProgress * 100).toStringAsFixed(0)}%"),
+                ],
+              ),
+            ),
           if (files.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -63,14 +145,32 @@ class NotificationDetailCard extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+
                   ...files.map(
-                    (file) => GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        file['ten_file'] ?? '',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
+                    (file) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: GestureDetector(
+                        onTap: () => _downloadFileFromMap(file),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.attach_file,
+                              size: 20,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                file['ten_file'] ?? '',
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 15,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -78,8 +178,7 @@ class NotificationDetailCard extends StatelessWidget {
                 ],
               ),
             ),
-
-          NotificationFooterDetail(lengthComment: lengthComment),
+          NotificationFooterDetail(lengthComment: widget.lengthComment),
         ],
       ),
     );
