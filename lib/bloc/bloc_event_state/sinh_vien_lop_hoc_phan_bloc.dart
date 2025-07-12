@@ -24,14 +24,12 @@ class SinhVienLhpBloc extends Bloc<SinhVienLhpEvent, SinhVienLhpState> {
       if (response.isSuccessful) {
         final data = response.body;
 
-        // Parse lop_hoc_phan
         final lopHocPhanJson = data?['lop_hoc_phan'];
         final lopHocPhan = LopHocPhan.fromJson(lopHocPhanJson);
 
-        // Parse sinh_viens
         final sinhViensJson = data?['sinh_viens'] as List;
         final danhSach = sinhViensJson
-            .map((e) => SinhVienLopHocPhan.fromJson(e))
+            .map((e) => SinhVienLopHocPhan.fromJson(e, event.lopHocPhanId))
             .toList();
 
         emit(SinhVienLhpLoaded(lopHocPhan: lopHocPhan, danhSach: danhSach));

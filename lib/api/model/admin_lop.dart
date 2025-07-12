@@ -23,9 +23,9 @@ class Lop {
     return Lop(
       id: json['id'],
       tenLop: json['ten_lop'] ?? '',
-      idNienKhoa: json['id_nien_khoa'] ?? 0,
-      idGvcn: json['id_gvcn'] ?? 0,
-      siSo: json['si_so'] ?? 0,
+      idNienKhoa: int.tryParse(json['id_nien_khoa'].toString()) ?? 0,
+      idGvcn: int.tryParse(json['id_gvcn'].toString()) ?? 0,
+      siSo: int.tryParse(json['si_so'].toString()) ?? 0,
       nienKhoa: json['nien_khoa'] != null
           ? NienKhoa.fromJson(json['nien_khoa'])
           : NienKhoa.empty(),
@@ -34,6 +34,7 @@ class Lop {
           : User(id: 0, taiKhoan: "", trangThai: 0, roles: []),
     );
   }
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'ten_lop': tenLop,

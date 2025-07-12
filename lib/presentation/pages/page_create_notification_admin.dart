@@ -44,7 +44,7 @@ class _PageCreateNotificationAdminState
   double _downloadProgress = 0.0;
 
   void _downloadFile(FileModel file) async {
-    final url = 'http://172.16.1.84:8000/storage/${file.url}';
+    final url = 'https://ckc-portal.click/storage/${file.url}';
     print("⬇️ Bắt đầu tải file: $url");
 
     if (Platform.isAndroid) {
@@ -158,8 +158,8 @@ class _PageCreateNotificationAdminState
 
     return WillPopScope(
       onWillPop: () async {
-        context.pop(true); // xử lý tùy bạn
-        return false; // chặn mặc định quay lại
+        context.pop(true);
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(

@@ -151,8 +151,7 @@ class _PageCourseSectionStudentListState
                       ),
                     ),
                     Align(
-                      alignment: Alignment
-                          .centerRight, // Căn lề phải (hoặc Center nếu muốn giữa)
+                      alignment: Alignment.centerRight,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,

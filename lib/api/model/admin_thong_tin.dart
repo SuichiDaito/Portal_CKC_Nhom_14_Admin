@@ -11,6 +11,13 @@ enum TeacherPosition {
   truongKhoa,
 }
 
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
 class User {
   final int id;
   final int? idHoSo;
@@ -34,11 +41,11 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      idHoSo: json['id_ho_so'] is int ? json['id_ho_so'] : null,
-      idBoMon: json['id_bo_mon'],
+      id: _parseInt(json['id']) ?? 0,
+      idHoSo: _parseInt(json['id_ho_so']),
+      idBoMon: _parseInt(json['id_bo_mon']),
       taiKhoan: json['tai_khoan'] ?? '',
-      trangThai: json['trang_thai'] ?? 0,
+      trangThai: _parseInt(json['trang_thai']) ?? 0,
       hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : null,
       boMon: json['bo_mon'] != null ? BoMon.fromJson(json['bo_mon']) : null,
       roles: (json['roles'] as List<dynamic>? ?? [])
@@ -46,6 +53,7 @@ class User {
           .toList(),
     );
   }
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'id_ho_so': idHoSo,

@@ -24,9 +24,14 @@ class SinhVienLopHocPhan {
     this.isSelected = true,
   });
 
-  factory SinhVienLopHocPhan.fromJson(Map<String, dynamic> json) {
-    final diem = (json['danh_sach_hoc_phans'] as List).firstWhere(
-      (e) => e['lop_hoc_phan'] != null,
+  factory SinhVienLopHocPhan.fromJson(
+    Map<String, dynamic> json,
+    int idLopHocPhan,
+  ) {
+    final danhSach = json['danh_sach_hoc_phans'] as List<dynamic>? ?? [];
+
+    final diem = danhSach.firstWhere(
+      (e) => e['id_lop_hoc_phan'] == idLopHocPhan,
       orElse: () => {},
     );
 
@@ -38,10 +43,10 @@ class SinhVienLopHocPhan {
       diemQuaTrinh: diem['diem_qua_trinh']?.toDouble(),
       diemThiLan1: diem['diem_thi_lan_1']?.toDouble(),
       diemThiLan2: diem['diem_thi_lan_2']?.toDouble(),
-
       diemTongKet: diem['diem_tong_ket']?.toDouble(),
     );
   }
+
   void setGrade(SinhVienLopHocPhan other) {
     diemChuyenCan = other.diemChuyenCan;
     diemQuaTrinh = other.diemQuaTrinh;
