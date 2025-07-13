@@ -90,15 +90,6 @@ class _PageTeacherManagementAdminState
     return teachers;
   }
 
-  void _updateTeacherPosition(User updatedTeacher) {
-    setState(() {
-      final index = _allTeachers.indexWhere((t) => t.id == updatedTeacher.id);
-      if (index != -1) {
-        _allTeachers[index] = updatedTeacher;
-      }
-    });
-  }
-
   void _resetTeacherPassword(User teacher) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -119,6 +110,7 @@ class _PageTeacherManagementAdminState
       builder: (bottomSheetContext) => TeacherDetailBottomSheet(
         teacher: teacher,
         onUpdatePosition: (User value) {},
+        allTeachers: _allTeachers,
       ),
     );
 

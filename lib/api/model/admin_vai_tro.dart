@@ -7,6 +7,8 @@ class Permission {
   factory Permission.fromJson(Map<String, dynamic> json) {
     return Permission(id: json['id'], name: json['name'] ?? '');
   }
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
 }
 
 class Role {
@@ -30,4 +32,10 @@ class Role {
       permissions: permissionsList,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'permissions': permissions.map((e) => e.toJson()).toList(),
+  };
 }

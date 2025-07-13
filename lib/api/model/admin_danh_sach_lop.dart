@@ -45,9 +45,9 @@ class StudentWithRole {
       sinhVien = SinhVien.empty();
   factory StudentWithRole.fromJson(Map<String, dynamic> json) {
     return StudentWithRole(
-      id: json['id'],
-      idLop: json['id_lop'],
-      idSinhVien: json['id_sinh_vien'],
+      id: json['id'] ?? 0,
+      idLop: int.parse(json['id_lop'].toString() ?? '') ?? 0,
+      idSinhVien: int.parse(json['id_sinh_vien'].toString() ?? '') ?? 0,
       chucVu: json['chuc_vu'],
       sinhVien: SinhVien.fromJson(json['sinh_vien']),
     );

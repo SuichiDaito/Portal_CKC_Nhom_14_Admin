@@ -46,21 +46,18 @@ class _ExamScheduleGroupCardState extends State<ExamScheduleGroupCard> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.blue.shade50, // Nền xanh nhạt
+              color: Colors.blue.shade50,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
             ),
             child: ListTile(
-              leading: const Icon(
-                Icons.event_note, // Icon lịch thi
-                color: Colors.blue, // Icon xanh
-              ),
+              leading: const Icon(Icons.event_note, color: Colors.blue),
               title: Text(
                 '${widget.className} - ${widget.subjectName}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue, // Chữ xanh
+                  color: Colors.blue,
                 ),
               ),
               trailing: IconButton(

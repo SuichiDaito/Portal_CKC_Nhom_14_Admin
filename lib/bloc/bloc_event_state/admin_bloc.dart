@@ -46,8 +46,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
               await prefs.setInt('user_id', user.id);
+              await prefs.setInt('user_info', user.hoSo!.id);
+
               if (user.roles.isNotEmpty) {
                 await prefs.setInt('user_role', user.roles.first.id);
+
                 await prefs.setString('user_name_role', user.roles.first.name);
                 final roles = userJson['roles'] as List<dynamic>? ?? [];
                 final Set<String> permNamesSet = {};

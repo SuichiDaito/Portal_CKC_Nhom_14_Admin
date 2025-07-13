@@ -5,7 +5,8 @@ import 'package:portal_ckc/bloc/state/lop_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DanhSachLopSheet extends StatefulWidget {
-  const DanhSachLopSheet({super.key});
+  final String capTren;
+  const DanhSachLopSheet({super.key, required this.capTren});
 
   @override
   State<DanhSachLopSheet> createState() => _DanhSachLopSheetState();
@@ -34,10 +35,10 @@ class _DanhSachLopSheetState extends State<DanhSachLopSheet> {
               future: prefs,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return const SizedBox.shrink();
-                final userChucVu = snapshot.data?.getString('user_chuc_vu');
                 final userId = snapshot.data?.getInt('user_id');
-
-                final list = userChucVu == 'khoa'
+                print('============${widget.capTren}');
+                final list =
+                    (widget.capTren == 'khoa' || widget.capTren == 'phong_ctct')
                     ? state.danhSachLop
                     : state.danhSachLop
                           .where((lop) => lop.giangVien.id == userId)
@@ -45,7 +46,6 @@ class _DanhSachLopSheetState extends State<DanhSachLopSheet> {
 
                 return Column(
                   children: [
-                    // Tiêu đề
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -67,8 +67,44 @@ class _DanhSachLopSheetState extends State<DanhSachLopSheet> {
                     ),
 
                     const SizedBox(height: 12),
+                    // Thêm nút chọn tất cả
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          minimumSize: const Size.fromHeight(50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (selectedLopIds.length == list.length) {
+                              // Đã chọn hết, bấm để bỏ chọn hết
+                              selectedLopIds.clear();
+                            } else {
+                              // Chưa chọn hết, bấm để chọn tất cả
+                              selectedLopIds
+                                ..clear()
+                                ..addAll(list.map((lop) => lop.id));
+                            }
+                          });
+                        },
+                        child: Text(
+                          selectedLopIds.length == list.length
+                              ? 'Bỏ chọn tất cả'
+                              : 'Chọn tất cả các lớp',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
 
-                    // Danh sách lớp trong card
+                    const SizedBox(height: 8),
+
                     Expanded(
                       child: Card(
                         margin: const EdgeInsets.symmetric(horizontal: 16),

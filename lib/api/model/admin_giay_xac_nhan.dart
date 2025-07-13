@@ -31,7 +31,7 @@ class DangKyGiayModel {
       idLoaiGiay: json['id_loai_giay'],
       ngayDangKy: json['ngay_dang_ky'],
       ngayNhan: json['ngay_nhan'],
-      trangThai: json['trang_thai'],
+      trangThai: int.parse(json['trang_thai'].toString() ?? "") ?? 0,
       loaiGiay: LoaiGiayModel.fromJson(json['loai_giay']),
       sinhVien: SinhVien.fromJson(json['sinh_vien']),
     );
@@ -53,7 +53,7 @@ class LoaiGiayModel {
     return LoaiGiayModel(
       id: json['id'],
       tenGiay: json['ten_giay'],
-      trangThai: json['trang_thai'],
+      trangThai: int.parse(json['trang_thai'].toString() ?? "") ?? 0,
     );
   }
 }

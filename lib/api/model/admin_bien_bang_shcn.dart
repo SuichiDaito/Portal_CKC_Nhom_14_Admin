@@ -48,8 +48,14 @@ class BienBanSHCN {
       thoiGianKetThuc: json['thoi_gian_ket_thuc'] != null
           ? DateTime.parse(json['thoi_gian_ket_thuc'])
           : DateTime.now(),
-      soLuongSinhVien: json['so_luong_sinh_vien'] ?? 0,
-      vangMat: json['vang_mat'] ?? 0,
+      soLuongSinhVien: json['so_luong_sinh_vien'] is int
+          ? json['so_luong_sinh_vien']
+          : int.tryParse(json['so_luong_sinh_vien'].toString()) ?? 0,
+
+      vangMat: json['vang_mat'] is int
+          ? json['vang_mat']
+          : int.tryParse(json['vang_mat'].toString()) ?? 0,
+
       trangThai: json['trang_thai'] ?? 0,
       lop: json['lop'] != null ? Lop.fromJson(json['lop']) : Lop.empty(),
       tuan: json['tuan'] != null ? Tuan.fromJson(json['tuan']) : Tuan.empty(),
@@ -92,7 +98,9 @@ class ChiTietBienBan {
       id: json['id'],
       idBienBanShcn: json['id_bien_ban_shcn'],
       lyDo: json['ly_do'] ?? '',
-      loai: json['loai'] ?? 0,
+      loai: json['loai'] is int
+          ? json['loai']
+          : int.tryParse(json['loai'].toString()) ?? 0,
       sinhVien: SinhVien.fromJson(json['sinh_vien']),
     );
   }

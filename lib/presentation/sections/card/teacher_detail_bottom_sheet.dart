@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart' hide TeacherPosition;
 import 'package:portal_ckc/api/model/admin_vai_tro.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/user_bloc.dart';
 import 'package:portal_ckc/bloc/event/user_event.dart';
 import 'package:portal_ckc/bloc/state/user_state.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
+import 'package:portal_ckc/presentation/sections/card/build_infor_cart.dart';
+import 'package:portal_ckc/presentation/sections/card/info_row.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_item.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_dropdown_selector.dart';
+import 'package:portal_ckc/presentation/sections/textfield/teacher_position_utils.dart';
 
 class TeacherDetailBottomSheet extends StatefulWidget {
   final User teacher;
   final ValueChanged<User> onUpdatePosition;
+  final List<User> allTeachers;
 
   const TeacherDetailBottomSheet({
     Key? key,
     required this.teacher,
     required this.onUpdatePosition,
+    required this.allTeachers,
   }) : super(key: key);
 
   @override
@@ -27,80 +32,78 @@ class TeacherDetailBottomSheet extends StatefulWidget {
 class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
   late TeacherPosition _selectedPosition;
   bool _isEditingPosition = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedPosition = _getTeacherPositionFromUser(widget.teacher);
+    _selectedPosition = getTeacherPositionFromUser(widget.teacher);
   }
 
-  TeacherPosition _getTeacherPositionFromUser(User user) {
-    final roleIds = user.roles.map((r) => r.id).toSet();
-
-    if (roleIds.contains(1)) return TeacherPosition.admin;
-    if (roleIds.contains(2)) return TeacherPosition.truongPhongDaoTao;
-    if (roleIds.contains(3)) return TeacherPosition.truongPhongCongTacCT;
-    if (roleIds.contains(4)) return TeacherPosition.giangVienBoMon;
-    if (roleIds.contains(5)) return TeacherPosition.giangVienChuNhiem;
-    if (roleIds.contains(6)) return TeacherPosition.truongKhoa;
-
-    return TeacherPosition.giangVienBoMon;
-  }
-
-  int _getRoleIdFromTeacherPosition(TeacherPosition position) {
-    switch (position) {
-      case TeacherPosition.admin:
-        return 1;
-      case TeacherPosition.truongPhongDaoTao:
-        return 2;
-      case TeacherPosition.truongPhongCongTacCT:
-        return 3;
-      case TeacherPosition.giangVienBoMon:
-        return 4;
-      case TeacherPosition.giangVienChuNhiem:
-        return 5;
-      case TeacherPosition.truongKhoa:
-        return 6;
-    }
-  }
-
-  String _getPositionText(TeacherPosition position) {
-    switch (position) {
-      case TeacherPosition.admin:
-        return 'Admin';
-      case TeacherPosition.truongPhongDaoTao:
-        return 'Trưởng phòng đào tạo';
-      case TeacherPosition.truongPhongCongTacCT:
-        return 'Trưởng phòng công tác chính trị';
-      case TeacherPosition.giangVienBoMon:
-        return 'Giảng viên bộ môn';
-      case TeacherPosition.giangVienChuNhiem:
-        return 'Giảng viên chủ nhiệm';
-      case TeacherPosition.truongKhoa:
-        return 'Trưởng khoa';
-    }
-  }
-
-  List<DropdownItem> _getPositionOptions() {
-    return TeacherPosition.values.map((position) {
-      return DropdownItem(
-        value: position.name,
-        label: _getPositionText(position),
-        icon: Icons.badge,
+  bool _isRoleAlreadyAssigned(TeacherPosition position) {
+    final roleId = getRoleIdFromTeacherPosition(position);
+    if (roleId == 1 || roleId == 2 || roleId == 3) {
+      return widget.allTeachers.any(
+        (teacher) =>
+            teacher.id != widget.teacher.id &&
+            teacher.roles.any((role) => role.id == roleId),
       );
-    }).toList();
+    }
+    return false;
   }
 
-  void _savePosition() {
-    final newRoleId = _getRoleIdFromTeacherPosition(_selectedPosition);
-    final userId = widget.teacher.id;
-
-    context.read<UserBloc>().add(
-      UpdateUserRoleEvent(userId: userId, roleId: newRoleId),
+  Future<void> _showConfirmDialog(Function onConfirm) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Xác nhận'),
+        content: const Text('Bạn có chắc chắn muốn đổi chức vụ này không?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Đồng ý'),
+          ),
+        ],
+      ),
     );
+    if (confirm == true) onConfirm();
+  }
 
-    setState(() {
-      _isEditingPosition = false;
+  Future<void> _savePosition() async {
+    if (_isRoleAlreadyAssigned(_selectedPosition)) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Cảnh báo'),
+          content: Text(
+            'Đã có người giữ chức vụ ${getPositionText(_selectedPosition)}, vui lòng chọn lại!',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Đóng'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    await _showConfirmDialog(() {
+      final newRoleId = getRoleIdFromTeacherPosition(_selectedPosition);
+      final userId = widget.teacher.id;
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      context.read<UserBloc>().add(
+        UpdateUserRoleEvent(userId: userId, roleId: newRoleId),
+      );
     });
   }
 
@@ -111,31 +114,41 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserRoleUpdated) {
+          setState(() {
+            _isLoading = false;
+          });
+
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
 
-          // Cập nhật lại widget.teacher (nếu backend trả về bản mới)
-          final updatedUser = widget.teacher.copyWith(
-            roles: [
-              Role(
-                id: _getRoleIdFromTeacherPosition(_selectedPosition),
-                name: _getPositionText(_selectedPosition),
-                permissions: [],
-              ),
-            ],
-          );
+          Future.delayed(const Duration(milliseconds: 300), () {
+            final updatedUser = widget.teacher.copyWith(
+              roles: [
+                Role(
+                  id: getRoleIdFromTeacherPosition(_selectedPosition),
+                  name: getPositionText(_selectedPosition),
+                  permissions: [],
+                ),
+              ],
+            );
 
-          widget.onUpdatePosition(updatedUser);
-
-          Navigator.of(context, rootNavigator: true).pop(updatedUser);
+            widget.onUpdatePosition(updatedUser);
+            Navigator.of(context, rootNavigator: true).pop(updatedUser);
+          });
         }
+
         if (state is UserRoleUpdateError) {
+          setState(() {
+            _isLoading = false;
+          });
+
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
+
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -170,25 +183,36 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
               //   'Khoa:',
               //   user.boMon!.nganhHoc!.khoa!.tenKhoa,
               // ),
-              _buildInfoRow(
-                Icons.account_tree,
-                'Bộ môn:',
-                user.boMon!.tenBoMon,
+              InfoRow(
+                icon: Icons.account_tree,
+                label: 'Bộ môn:',
+                value: user.boMon!.tenBoMon,
               ),
-              _buildInfoRow(Icons.badge, 'Mã GV:', "GV00${user.id}"),
-              _buildInfoRow(Icons.person, 'Tên GV:', user.hoSo!.hoTen),
-              _buildInfoRow(
-                Icons.email,
-                'Email:',
-                user.hoSo!.email.isEmpty ? 'Chưa cập nhật' : user.hoSo!.email,
+              InfoRow(
+                icon: Icons.badge,
+                label: 'Mã GV:',
+                value: "GV00${user.id}",
               ),
-              _buildInfoRow(
-                Icons.phone,
-                'SĐT:',
-                user.hoSo!.soDienThoai.isEmpty
+              InfoRow(
+                icon: Icons.person,
+                label: 'Tên GV:',
+                value: user.hoSo!.hoTen,
+              ),
+              InfoRow(
+                icon: Icons.email,
+                label: 'Email:',
+                value: user.hoSo!.email.isEmpty
+                    ? 'Chưa cập nhật'
+                    : user.hoSo!.email,
+              ),
+              InfoRow(
+                icon: Icons.phone,
+                label: 'SĐT:',
+                value: user.hoSo!.soDienThoai.isEmpty
                     ? 'Chưa cập nhật'
                     : user.hoSo!.soDienThoai,
               ),
+
               const SizedBox(height: 12),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -228,11 +252,11 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
                     Expanded(
                       child: DropdownSelector(
                         label: '',
-                        selectedItem: _getPositionOptions().firstWhere(
+                        selectedItem: getPositionOptions().firstWhere(
                           (item) => item.value == _selectedPosition.name,
-                          orElse: () => _getPositionOptions().first,
+                          orElse: () => getPositionOptions().first,
                         ),
-                        items: _getPositionOptions(),
+                        items: getPositionOptions(),
                         onChanged: (item) {
                           if (item != null) {
                             setState(() {
@@ -250,16 +274,20 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
               Align(
                 alignment: Alignment.centerRight,
                 child: CustomButton(
-                  text: _isEditingPosition ? 'Lưu chức vụ' : 'Sửa chức vụ',
-                  onPressed: () {
-                    setState(() {
-                      if (_isEditingPosition) {
-                        _savePosition();
-                      } else {
+                  text: _isLoading
+                      ? 'Đang lưu...'
+                      : (_isEditingPosition ? 'Lưu chức vụ' : 'Sửa chức vụ'),
+                  onPressed: () async {
+                    if (_isLoading) return;
+                    if (_isEditingPosition) {
+                      await _savePosition();
+                    } else {
+                      setState(() {
                         _isEditingPosition = true;
-                      }
-                    });
+                      });
+                    }
                   },
+
                   backgroundColor: _isEditingPosition
                       ? Colors.green
                       : Colors.blueAccent,
@@ -269,36 +297,6 @@ class _TeacherDetailBottomSheetState extends State<TeacherDetailBottomSheet> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: Colors.blueAccent),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
-            ),
-          ),
-        ],
       ),
     );
   }

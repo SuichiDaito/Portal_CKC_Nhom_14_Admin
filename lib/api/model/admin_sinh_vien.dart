@@ -48,6 +48,17 @@ class SinhVien {
           [],
     );
   }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'ma_sv': maSv,
+    'id_lop': idLop,
+    'id_ho_so': idHoSo,
+    'chuc_vu': chucVu,
+    'trang_thai': trangThai,
+    'ho_so': hoSo.toJson(),
+    'lop': lop.toJson(),
+    'diem_ren_luyens': diemRenLuyens.map((e) => e.toJson()).toList(),
+  };
   factory SinhVien.empty() {
     return SinhVien(
       id: 0,

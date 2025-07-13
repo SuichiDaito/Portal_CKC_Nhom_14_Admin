@@ -16,7 +16,14 @@ class DiemRenLuyen {
     required this.xepLoai,
     required this.thoiGian,
   });
-
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'id_gvcn': idGvcn,
+    'id_sinh_vien': idSinhVien,
+    'id_nam': idNam,
+    'xep_loai': xepLoai,
+    'thoi_gian': thoiGian,
+  };
   factory DiemRenLuyen.fromJson(Map<String, dynamic> json) {
     return DiemRenLuyen(
       id: json['id'],
@@ -24,7 +31,7 @@ class DiemRenLuyen {
       idSinhVien: json['id_sinh_vien'],
       idNam: json['id_nam'],
       xepLoai: json['xep_loai'],
-      thoiGian: json['thoi_gian'],
+      thoiGian: int.parse(json['thoi_gian'].toString() ?? '') ?? 0,
     );
   }
 
