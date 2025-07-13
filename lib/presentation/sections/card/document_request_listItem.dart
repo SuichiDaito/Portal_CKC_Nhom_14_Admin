@@ -5,7 +5,7 @@ import 'package:portal_ckc/api/model/admin_giay_xac_nhan.dart';
 class DocumentRequestListItem extends StatelessWidget {
   final DocumentRequest request;
   final ValueChanged<bool?> onSelected;
-  final VoidCallback onConfirm; // Callback cho nút xác nhận riêng lẻ
+  final VoidCallback onConfirm;
 
   const DocumentRequestListItem({
     Key? key,

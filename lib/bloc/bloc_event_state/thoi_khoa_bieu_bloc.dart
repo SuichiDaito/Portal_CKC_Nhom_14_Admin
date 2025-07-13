@@ -47,7 +47,7 @@ class ThoiKhoaBieuBloc extends Bloc<ThoiKhoaBieuEvent, ThoiKhoaBieuState> {
       );
       if (response.isSuccessful && response.body?['data'] != null) {
         final tkb = ThoiKhoaBieu.fromJson(response.body?['data']);
-        emit(ThoiKhoaBieuSuccess('Tạo thời khóa biểu thành công', tkb));
+        emit(ThoiKhoaBieuSuccess('Cập nhật khóa biểu thành công', tkb));
       } else {
         emit(
           ThoiKhoaBieuError(
@@ -56,7 +56,7 @@ class ThoiKhoaBieuBloc extends Bloc<ThoiKhoaBieuEvent, ThoiKhoaBieuState> {
         );
       }
     } catch (e) {
-      emit(ThoiKhoaBieuError('Lỗi tạo thời khóa biểu: $e'));
+      emit(ThoiKhoaBieuError('Lỗi cập nhật thời khóa biểu: $e'));
     }
   }
 
@@ -93,7 +93,7 @@ class ThoiKhoaBieuBloc extends Bloc<ThoiKhoaBieuEvent, ThoiKhoaBieuState> {
       if (response.isSuccessful) {
         emit(ThoiKhoaBieuDeleted('Xoá thời khóa biểu thành công'));
       } else {
-        emit(ThoiKhoaBieuError('Xoá thất bại'));
+        emit(ThoiKhoaBieuError('Xóa thời khóa biểu thành công'));
       }
     } catch (e) {
       emit(ThoiKhoaBieuError('Lỗi xoá thời khóa biểu: $e'));
