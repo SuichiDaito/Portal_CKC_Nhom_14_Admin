@@ -54,4 +54,16 @@ class HoSo {
       anh: '',
     );
   }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'ho_ten': hoTen,
+    'email': email,
+    'password': password,
+    'so_dien_thoai': soDienThoai,
+    'ngay_sinh': ngaySinh,
+    'gioi_tinh': gioiTinh,
+    'cccd': cccd,
+    'dia_chi': diaChi,
+    'anh': anh,
+  };
 }

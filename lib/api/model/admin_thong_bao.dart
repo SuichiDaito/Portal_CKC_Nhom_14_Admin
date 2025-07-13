@@ -66,6 +66,21 @@ class ThongBao {
         (json['file'] as List?)?.map((e) => FileModel.fromJson(e)).toList() ??
         [],
   );
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'id_gv': idGv,
+    'tu_ai': tuAi,
+    'ngay_gui': ngayGui.toIso8601String(),
+    'tieu_de': tieuDe,
+    'noi_dung': noiDung,
+    'trang_thai': trangThai,
+    'created_at': createdAt?.toIso8601String(),
+    'ds_lops': dsLops?.map((lop) => lop.toJson()).toList(),
+    'giang_vien': giangVien?.toJson(),
+    'chi_tiet_thong_bao': chiTiet.map((e) => e.toJson()).toList(),
+    'binh_luans': binhLuans.map((e) => e.toJson()).toList(),
+    'file': files.map((f) => f.toJson()).toList(),
+  };
 }
 
 class ChiTietThongBao {
@@ -88,6 +103,15 @@ class ChiTietThongBao {
         trangThai: json['trang_thai'],
         sinhVien: SinhVien.fromJson(json['sinh_vien']),
       );
+}
+
+extension ChiTietThongBaoExt on ChiTietThongBao {
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'id_thong_bao': idThongBao,
+    'sinh_vien': sinhVien.toJson(),
+    'trang_thai': trangThai,
+  };
 }
 
 class CapTrenOption {
@@ -134,6 +158,26 @@ class BinhLuan {
   );
 }
 
+extension BinhLuanExt on BinhLuan {
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'noi_dung': noiDung,
+    'id_binh_luan_cha': idBinhLuanCha,
+    'trang_thai': trangThai,
+    'created_at': createdAt.toIso8601String(),
+    'nguoi_binh_luan': nguoiBinhLuan.toJson(),
+    'binh_luan_con': binhLuanCon.map((e) => e.toJson()).toList(),
+  };
+}
+
+extension NguoiBinhLuanExt on NguoiBinhLuan {
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'type': type,
+    'ho_so': hoSo.toJson(),
+  };
+}
+
 class NguoiBinhLuan {
   final int id;
   final HoSo hoSo;
@@ -157,4 +201,6 @@ class FileModel {
 
   factory FileModel.fromJson(Map<String, dynamic> json) =>
       FileModel(id: json['id'], tenFile: json['ten_file'], url: json['url']);
+
+  Map<String, dynamic> toJson() => {'id': id, 'ten_file': tenFile, 'url': url};
 }

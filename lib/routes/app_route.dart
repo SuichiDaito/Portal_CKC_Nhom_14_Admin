@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/diem_rl_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/main.dart';
@@ -195,8 +196,12 @@ class RouteName {
       //Tạo thông báo
       GoRoute(
         path: '/notifications/create',
-        builder: (context, state) => PageCreateNotificationAdmin(),
+        builder: (context, state) {
+          final thongBao = state.extra as ThongBao?;
+          return PageCreateNotificationAdmin(thongBao: thongBao);
+        },
       ),
+
       //Kho lưu trữ thông báo
       GoRoute(
         path: '/notifications/user',

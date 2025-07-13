@@ -14,6 +14,7 @@ class LopHocPhan {
   int soLuongDangKy;
   int loaiMon;
   int trangThai;
+  int? soLuongSinhVien;
   int? trangThaiNopBangDiem;
   Lop lop;
   User? gv;
@@ -25,6 +26,7 @@ class LopHocPhan {
     required this.idGiangVien,
     required this.idChuongTrinhDaoTao,
     required this.idLop,
+    required this.soLuongSinhVien,
     required this.loaiLopHocPhan,
     required this.soLuongDangKy,
     required this.loaiMon,
@@ -42,10 +44,10 @@ class LopHocPhan {
     idGiangVien: json['id_giang_vien'] ?? 0,
     idChuongTrinhDaoTao: json['id_chuong_trinh_dao_tao'] ?? 0,
     idLop: json['id_lop'] ?? 0,
-    loaiLopHocPhan: json['loai_lop_hoc_phan'] ?? 0,
+    loaiLopHocPhan: int.parse(json['loai_lop_hoc_phan'].toString() ?? '') ?? 0,
     soLuongDangKy: json['so_luong_dang_ky'] ?? 0,
     loaiMon: json['loai_mon'] ?? 0,
-    trangThai: json['trang_thai'] ?? 0,
+    trangThai: int.parse(json['trang_thai'].toString() ?? '') ?? 0,
     trangThaiNopBangDiem: json['trang_thai_nop_bang_diem'] ?? 0,
     lop: json['lop'] != null ? Lop.fromJson(json['lop']) : Lop.empty(),
     gv: json['giang_vien'] != null ? User.fromJson(json['giang_vien']) : null,
@@ -57,6 +59,8 @@ class LopHocPhan {
             ?.map((e) => ThoiKhoaBieu.fromJson(e))
             .toList() ??
         [],
+    soLuongSinhVien:
+        int.parse(json['so_luong_sinh_vien'].toString() ?? '') ?? 0,
   );
   static LopHocPhan empty() => LopHocPhan(
     id: 0,
@@ -73,6 +77,7 @@ class LopHocPhan {
     chuongTrinhDaoTao: ChuongTrinhDaoTao.empty(),
     gv: null,
     thoiKhoaBieu: [],
+    soLuongSinhVien: 0,
   );
 }
 

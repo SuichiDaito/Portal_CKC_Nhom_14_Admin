@@ -38,6 +38,32 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
     }
   }
 
+  String _getTrangThaiLabel(int trangThai) {
+    switch (trangThai) {
+      case 0:
+        return 'Thư ký tạo';
+      case 1:
+        return 'Đang chờ duyệt GVCN';
+      case 2:
+        return 'Đã gửi CTCT';
+      default:
+        return 'Không xác định';
+    }
+  }
+
+  Color _getTrangThaiColor(int trangThai) {
+    switch (trangThai) {
+      case 0:
+        return Colors.grey;
+      case 1:
+        return Colors.orange;
+      case 2:
+        return Colors.green;
+      default:
+        return Colors.black;
+    }
+  }
+
   void _loadBienBan() {
     context.read<BienBangShcnBloc>().add(FetchBienBan(widget.lop.id));
   }
@@ -127,7 +153,6 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                   print(
                     ' ==================Tổng biên bản: ${state.bienBanList.length}',
                   );
-                  //LỌC THEO NGÀY
                   if (selectedDate != null) {
                     bienBans = bienBans.where((bienBan) {
                       return bienBan.thoiGianBatDau.year ==
@@ -178,11 +203,9 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                                 'Ngày: ${bienBan.thoiGianBatDau.day}/${bienBan.thoiGianBatDau.month}/${bienBan.thoiGianBatDau.year}',
                               ),
                               Text(
-                                'Trạng thái: ${bienBan.trangThai == 0 ? 'Chưa duyệt' : 'Đã duyệt'}',
+                                'Trạng thái: ${_getTrangThaiLabel(bienBan.trangThai)}',
                                 style: TextStyle(
-                                  color: bienBan.trangThai == 'Đã duyệt'
-                                      ? Colors.orange
-                                      : Colors.green,
+                                  color: _getTrangThaiColor(bienBan.trangThai),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

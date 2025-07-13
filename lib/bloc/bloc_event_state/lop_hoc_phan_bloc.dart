@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
@@ -22,7 +24,9 @@ class LopHocPhanBloc extends Bloc<LopHocPhanEvent, LopHocPhanState> {
     try {
       final lopHocPhans = await fetchAllLopHocPhanFromApi();
       emit(LopHocPhanLoaded(lopHocPhans));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('🛑 Lỗi khi fetch ALL lớp học phần: $e');
+      print('📍 Stack trace:\n$stackTrace');
       emit(LopHocPhanError(e.toString()));
     }
   }
@@ -46,7 +50,18 @@ class LopHocPhanBloc extends Bloc<LopHocPhanEvent, LopHocPhanState> {
       final body = response.body;
       if (body != null && body['data'] is List) {
         final data = body['data'] as List<dynamic>;
-        return data.map((item) => LopHocPhan.fromJson(item)).toList();
+        final result = <LopHocPhan>[];
+
+        for (final item in data) {
+          try {
+            result.add(LopHocPhan.fromJson(item));
+          } catch (e) {
+            print('❌ Lỗi parse item: ${jsonEncode(item)}');
+            print('🔍 Chi tiết lỗi: $e');
+          }
+        }
+
+        return result;
       } else {
         throw Exception('Dữ liệu lớp học phần không đúng định dạng.');
       }

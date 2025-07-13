@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
+import 'package:portal_ckc/api/model/admin_phieu_len_lop.dart';
+import 'package:portal_ckc/api/model/admin_tuan.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
 import 'package:portal_ckc/bloc/event/tuan_event.dart';
 import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
@@ -19,9 +21,17 @@ class PageAcademicYearManagement extends StatefulWidget {
       _PageAcademicYearManagementState();
 }
 
-class _PageAcademicYearManagementState
-    extends State<PageAcademicYearManagement> {
-  List<NienKhoa> _allYears = [];
+class _PageAcademicYearManagementState extends State<PageAcademicYearManagement>
+    with TickerProviderStateMixin {
+  List<NienKhoa> allYears = [];
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
+  }
 
   void _initializeAcademicYear(DateTime selectedDate) {
     final dateStr = DateFormat('yyyy-MM-dd').format(selectedDate);
@@ -32,26 +42,234 @@ class _PageAcademicYearManagementState
   }
 
   void _showCreateDialog() async {
-    final nk = await showNienKhoaDialog(context, _allYears);
-    if (nk == null) return;
+    final currentYear = DateTime.now().year;
 
-    final parts = nk.tenNienKhoa.split('-');
-    final start = int.parse(parts[0]), end = int.parse(parts[1]);
-    final nam = await showNamHocDialog(context, start, end);
-    if (nam == null) return;
+    final selectedYear = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chọn năm học'),
+        content: DropdownButton<int>(
+          value: currentYear,
+          items: List.generate(10, (index) => currentYear + index)
+              .map(
+                (year) => DropdownMenuItem<int>(
+                  value: year,
+                  child: Text(year.toString()),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            Navigator.of(context).pop(value);
+          },
+        ),
+      ),
+    );
 
-    final date = await showDateTrongNamPicker(context, nam);
-    if (date != null) {
-      _initializeAcademicYear(date);
-    }
+    if (selectedYear == null) return;
+
+    DateTime? selectedDate;
+    do {
+      selectedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime(selectedYear),
+        firstDate: DateTime(selectedYear),
+        lastDate: DateTime(selectedYear, 12, 31),
+      );
+
+      if (selectedDate == null) return;
+
+      if (selectedDate.weekday != DateTime.monday) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Lỗi'),
+            content: const Text('Bạn chỉ được chọn ngày bắt đầu là Thứ 2!'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        selectedDate = null;
+      }
+    } while (selectedDate == null);
+
+    _initializeAcademicYear(selectedDate);
   }
 
-  // Gọi Tuan dialog:
+  Widget _buildNienKhoaTab() {
+    return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
+      builder: (context, state) {
+        if (state is NienKhoaHocKyLoaded) {
+          allYears = state.nienKhoas;
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: allYears.length,
+            itemBuilder: (context, index) {
+              final nk = allYears[index];
+              return Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                color: Colors.white,
+                child: Theme(
+                  data: Theme.of(
+                    context,
+                  ).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    title: Text(
+                      nk.tenNienKhoa,
+                      style: const TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Colors.blueAccent,
+                      size: 28,
+                    ),
+                    children: nk.hocKys.map((hk) {
+                      return ListTile(
+                        leading: const Icon(Icons.book, color: Colors.blue),
+                        title: Text(
+                          hk.tenHocKy,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 15,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
+  Widget _buildNamHocTab() {
+    int currentYear = DateTime.now().year;
+    int selectedYear = currentYear;
+    List<TuanModel> weekList = [];
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        Future<void> fetchWeeks(int year) async {
+          context.read<TuanBloc>().add(FetchTuanEvent(year));
+        }
+
+        return BlocListener<TuanBloc, TuanState>(
+          listener: (context, state) {
+            if (state is TuanLoaded) {
+              setState(() {
+                weekList = state.danhSachTuan.map((t) => t).toList();
+              });
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Chọn năm học:', style: TextStyle(fontSize: 16)),
+                    DropdownButton<int>(
+                      value: selectedYear,
+                      items:
+                          List.generate(10, (index) => currentYear - 5 + index)
+                              .map(
+                                (year) => DropdownMenuItem<int>(
+                                  value: year,
+                                  child: Text(year.toString()),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedYear = value;
+                            weekList = [];
+                          });
+                          fetchWeeks(value);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                label: const Text('Khởi tạo tuần'),
+                onPressed: () async {
+                  final selectedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime(selectedYear),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+                  if (selectedDate != null) {
+                    context.read<TuanBloc>().add(
+                      KhoiTaoTuanEvent(
+                        DateFormat('yyyy-MM-dd').format(selectedDate),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              if (weekList.isNotEmpty)
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: weekList.length,
+                    separatorBuilder: (_, __) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final tuan = weekList[index];
+
+                      // Định dạng ngày trước khi truyền vào ListTile
+                      final inputFormat = DateFormat('yyyy-MM-dd');
+                      final outputFormat = DateFormat('dd/MM/yyyy');
+                      final startDate = outputFormat.format(tuan.ngayBatDau);
+                      final endDate = outputFormat.format(tuan.ngayKetThuc);
+
+                      return ListTile(
+                        leading: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.blue,
+                        ),
+                        title: Text('Tuần ${tuan.tuan}'),
+                        subtitle: Text(
+                          'Từ $startDate đến $endDate',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              else
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Không có dữ liệu tuần, vui lòng chọn năm.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -73,165 +291,33 @@ class _PageAcademicYearManagementState
         }
       },
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 250, 248, 248),
         appBar: AppBar(
           title: const CustomAppBarTitle(title: 'Khởi tạo năm học'),
           backgroundColor: Colors.blueAccent,
-          centerTitle: true,
           iconTheme: const IconThemeData(color: Colors.white),
+          centerTitle: true,
+          bottom: TabBar(
+            controller: _tabController,
+            indicatorColor: Colors.white,
+            indicatorWeight: 3,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white30,
+            tabs: const [
+              Tab(
+                icon: Icon(Icons.school, color: Colors.white),
+                text: 'Niên khóa',
+              ),
+              Tab(
+                icon: Icon(Icons.calendar_month, color: Colors.white),
+                text: 'Năm học',
+              ),
+            ],
+          ),
         ),
-        body: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                "Danh Sách Niên Khóa",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
-            Divider(),
-            const SizedBox(height: 8),
-            Expanded(
-              child: BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
-                builder: (context, state) {
-                  if (state is NienKhoaHocKyLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is NienKhoaHocKyLoaded) {
-                    _allYears = state.nienKhoas
-                        .where((nk) => nk.namBatDau.isNotEmpty)
-                        .toList();
 
-                    if (_allYears.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'Không có niên khóa phù hợp.',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      itemCount: _allYears.length,
-                      itemBuilder: (context, index) {
-                        final nk = _allYears[index];
-
-                        return Card(
-                          elevation: 3,
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: ExpansionTile(
-                              tilePadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              title: Text(
-                                nk.tenNienKhoa,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              subtitle: Text(
-                                'Năm bắt đầu: ${nk.namBatDau}',
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                              trailing: TextButton.icon(
-                                icon: const Icon(
-                                  Icons.calendar_month,
-                                  size: 20,
-                                ),
-                                label: const Text('Xem tuần'),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 4,
-                                  ),
-                                  foregroundColor: Colors.blueAccent,
-                                ),
-                                onPressed: () {
-                                  final namBatDau = int.tryParse(nk.namBatDau);
-                                  if (namBatDau != null) {
-                                    context.read<TuanBloc>().add(
-                                      FetchTuanEvent(namBatDau),
-                                    );
-                                    showTuanListDialog(context, namBatDau);
-                                  }
-                                },
-                              ),
-                              children: nk.hocKys.map<Widget>((hk) {
-                                final hasStartDate =
-                                    hk.ngayBatDau != null &&
-                                    hk.ngayBatDau!.isNotEmpty;
-                                return ListTile(
-                                  title: Text(hk.tenHocKy),
-                                  subtitle: Text(
-                                    hasStartDate
-                                        ? 'Ngày bắt đầu: ${hk.ngayBatDau}'
-                                        : 'Chưa khởi tạo ngày bắt đầu',
-                                    style: TextStyle(
-                                      color: hasStartDate
-                                          ? Colors.black87
-                                          : Colors.redAccent,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  trailing: hasStartDate
-                                      ? null
-                                      : IconButton(
-                                          icon: const Icon(Icons.add),
-                                          tooltip: 'Khởi tạo ngày bắt đầu',
-                                          onPressed: () async {
-                                            final selectedDate =
-                                                await showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(2000),
-                                                  lastDate: DateTime(2100),
-                                                );
-                                            if (selectedDate != null) {
-                                              _initializeAcademicYear(
-                                                selectedDate,
-                                              );
-                                            }
-                                          },
-                                        ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else if (state is NienKhoaHocKyError) {
-                    return Center(
-                      child: Text(
-                        "Không thể truy cập chức năng này, vui lòng thử lại sau.",
-                      ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
-            ),
-          ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [_buildNienKhoaTab(), _buildNamHocTab()],
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _showCreateDialog,

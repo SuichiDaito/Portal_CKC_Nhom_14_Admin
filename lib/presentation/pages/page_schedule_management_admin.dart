@@ -253,7 +253,7 @@ class _PageScheduleManagementAdminState
                                       );
                                     }
                                     if (tuanState is TuanError) {
-                                      return const Text('=====');
+                                      return const Text('');
                                     }
                                     return const SizedBox();
                                   },
@@ -379,49 +379,91 @@ class _PageScheduleManagementAdminState
                     ),
                   ),
                   const SizedBox(height: 12),
-                  BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
-                    builder: (context, state) {
-                      if (state is LopHocPhanLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (state is LopHocPhanLoaded) {
-                        final selectedYear = _selectedSchoolYear?.value;
-                        final filteredLopHocPhans = state.lopHocPhans.where((
-                          lhp,
-                        ) {
-                          final matchGV = _selectedLecturer == null
-                              ? true
-                              : lhp.gv?.id.toString() ==
-                                    _selectedLecturer?.value;
+                  BlocListener<ThoiKhoaBieuBloc, ThoiKhoaBieuState>(
+                    listener: (context, state) {
+                      if (state is CopyNhieuThoiKhoaBieuSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              '✅ Sao chép thời khóa biểu thành công!',
+                            ),
+                          ),
+                        );
+                      } else if (state is SaoChepLichError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              '❌ Sao chép thời khóa biểu thất bại!',
+                            ),
+                          ),
+                        );
+                      } else if (state is ThoiKhoaBieuSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('✅ Tạo thời khóa biểu thành công!'),
+                          ),
+                        );
+                        context.read<LopHocPhanBloc>().add(
+                          FetchALLLopHocPhan(),
+                        );
+                      } else if (state is ThoiKhoaBieuError) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(state.message)));
 
-                          final matchSchoolYear = selectedYear == null
-                              ? true
-                              : lhp.lop.nienKhoa.namBatDau == selectedYear;
-
-                          return matchGV && matchSchoolYear;
-                        }).toList();
-
-                        return Column(
-                          children: filteredLopHocPhans.map((lophp) {
-                            return LopHocPhanCard(
-                              trangThaiNhapDiem: lophp.trangThaiNopBangDiem,
-                              lophp: lophp,
-                              selectedWeek: _selectedWeek,
-                              weeks: _weeks,
-                            );
-                          }).toList(),
+                        context.read<LopHocPhanBloc>().add(
+                          FetchALLLopHocPhan(),
                         );
                       }
-                      if (state is LopHocPhanError) {
-                        return Text(
-                          'Không thể truy cập chức năng này, vui lòng thử lại sau.',
-                        );
-                      }
-                      return const SizedBox();
                     },
-                  ),
+                    child: BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
+                      builder: (context, state) {
+                        if (state is LopHocPhanLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (state is LopHocPhanLoaded) {
+                          print(
+                            "🔄 BlocBuilder rebuild với ${state.lopHocPhans.length} lớp học phần",
+                          );
 
-                  const SizedBox(height: 24),
+                          final selectedYear = _selectedSchoolYear?.value;
+                          final filteredLopHocPhans = state.lopHocPhans.where((
+                            lhp,
+                          ) {
+                            final matchGV = _selectedLecturer == null
+                                ? true
+                                : lhp.gv?.id.toString() ==
+                                      _selectedLecturer?.value;
+
+                            final matchSchoolYear = selectedYear == null
+                                ? true
+                                : lhp.lop.nienKhoa.namBatDau == selectedYear;
+
+                            return matchGV && matchSchoolYear;
+                          }).toList();
+
+                          return Column(
+                            children: filteredLopHocPhans.map((lophp) {
+                              return LopHocPhanCard(
+                                trangThaiNhapDiem: lophp.trangThaiNopBangDiem,
+                                lophp: lophp,
+                                selectedWeek: _selectedWeek,
+                                weeks: _weeks,
+                              );
+                            }).toList(),
+                          );
+                        }
+                        if (state is LopHocPhanError) {
+                          return Text(
+                            'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

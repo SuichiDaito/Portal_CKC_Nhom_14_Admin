@@ -9,7 +9,7 @@ class MonHoc {
     return MonHoc(
       id: json['id'] ?? 0,
       tenMon: json['ten_mon'] ?? '',
-      loaiMonHoc: json['loai_mon_hoc'] ?? 0,
+      loaiMonHoc: int.parse(json['loai_mon_hoc'].toString() ?? '') ?? 0,
     );
   }
 }
