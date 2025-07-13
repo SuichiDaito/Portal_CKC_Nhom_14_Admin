@@ -140,19 +140,11 @@ class ApplicationsAdminPage extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        if (hasPermission) {
-          GoRouter.of(context).push('/admin/${feature.value}');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Bạn không có quyền truy cập tính năng này.'),
-            ),
-          );
-        }
+        GoRouter.of(context).push('/admin/${feature.value}');
       },
       child: Container(
         decoration: BoxDecoration(
-          color: hasPermission ? Colors.white : Colors.grey.shade100,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -172,11 +164,7 @@ class ApplicationsAdminPage extends StatelessWidget {
                 color: feature.color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                feature.icon,
-                color: hasPermission ? feature.color : Colors.grey,
-                size: 24,
-              ),
+              child: Icon(feature.icon, color: feature.color, size: 24),
             ),
             const SizedBox(height: 10),
             Padding(
@@ -184,10 +172,10 @@ class ApplicationsAdminPage extends StatelessWidget {
               child: Text(
                 feature.title,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: hasPermission ? Colors.black87 : Colors.black38,
+                  color: Colors.black87,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

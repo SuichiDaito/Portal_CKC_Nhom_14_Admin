@@ -37,13 +37,17 @@ class SinhVienLopHocPhan {
 
     return SinhVienLopHocPhan(
       sinhVien: SinhVien.fromJson(json),
-      diemThucHanh: diem['diem_md_thuc_hanh']?.toDouble(),
-      diemLyThuyet: diem['diem_md_ly_thuyet']?.toDouble(),
-      diemChuyenCan: diem['diem_chuyen_can']?.toDouble(),
-      diemQuaTrinh: diem['diem_qua_trinh']?.toDouble(),
-      diemThiLan1: diem['diem_thi_lan_1']?.toDouble(),
-      diemThiLan2: diem['diem_thi_lan_2']?.toDouble(),
-      diemTongKet: diem['diem_tong_ket']?.toDouble(),
+      diemThucHanh: double.tryParse(
+        diem['diem_md_thuc_hanh']?.toString() ?? "",
+      ),
+      diemLyThuyet: double.tryParse(
+        diem['diem_md_ly_thuyet']?.toString() ?? "",
+      ),
+      diemChuyenCan: double.tryParse(diem['diem_chuyen_can']?.toString() ?? ""),
+      diemQuaTrinh: double.tryParse(diem['diem_qua_trinh']?.toString() ?? ""),
+      diemThiLan1: double.tryParse(diem['diem_thi_lan_1']?.toString() ?? ""),
+      diemThiLan2: double.tryParse(diem['diem_thi_lan_2']?.toString() ?? ""),
+      diemTongKet: double.tryParse(diem['diem_tong_ket']?.toString() ?? ""),
     );
   }
 

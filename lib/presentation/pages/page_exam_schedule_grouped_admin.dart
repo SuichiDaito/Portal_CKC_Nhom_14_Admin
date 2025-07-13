@@ -103,20 +103,37 @@ class _PageExamScheduleGroupedAdminState
 
     final idHocKy = _selectedHocKy!.id;
 
+    final filtered = _allCTCTDT
+        .where((ct) => ct.idHocKy == idHocKy && ct.monHoc != null)
+        .map((ct) => ct.monHoc!)
+        .toSet()
+        .toList();
+
+    print('[DEBUG] Đã lọc ${filtered.length} môn học cho học kỳ $idHocKy');
+    for (final mon in filtered) {
+      print(' - ${mon.tenMon} (ID: ${mon.id})');
+    }
+
     setState(() {
-      _filteredMonHocs = _allCTCTDT
-          .where((ct) => ct.idHocKy == idHocKy && ct.monHoc != null)
-          .map((ct) => ct.monHoc!)
-          .toSet()
-          .toList();
+      _filteredMonHocs = filtered;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Tổng CTCTDT: ${_allCTCTDT.length}');
+    for (var ct in _allCTCTDT) {
+      print('[CTCTDT] idHocKy: ${ct.idHocKy}, mon: ${ct.monHoc?.tenMon}');
+    }
     return Scaffold(
       body: BlocBuilder<NganhKhoaBloc, NganhKhoaState>(
         builder: (context, nganhKhoaState) {
+          print(
+            '[DEBUG] Số lượng CTCTDT từ state: ${nganhKhoaState.toString()}',
+          );
+          if (nganhKhoaState is NganhKhoaError) {
+            print('[DEBUG] CTCTDT LỖI: ${nganhKhoaState.message}');
+          }
           if (nganhKhoaState is CTCTDTLoaded && !_isCTCTDTInitialized) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               setState(() {
@@ -146,6 +163,7 @@ class _PageExamScheduleGroupedAdminState
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (lopState is LopHocPhanError) {
+                    print("=LỖI: ${lopState.message}");
                     return Center(
                       child: Text('Bạn không có quyền truy cập chức năng này'),
                     );

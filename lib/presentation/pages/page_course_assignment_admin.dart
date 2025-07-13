@@ -121,6 +121,7 @@ class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (lopState is LopHocPhanError) {
+                  print("LỖI: ${lopState.message}");
                   return Center(
                     child: Text(
                       'Không thể truy cập chức năng này, vui lòng thử lại sau.',

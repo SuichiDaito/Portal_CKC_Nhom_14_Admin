@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/api/model/admin_tuan.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
@@ -33,12 +34,12 @@ class _PageCreateMeetingMinutesAdminState
   TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
   String selectedRoom = 'P101';
   String content = '';
-  List<String> weekLabels = [];
+  List<TuanModel> danhSachTuan = [];
   List<StudentWithRole> studentList = [];
   List<int> absentStudentIds = [];
   Map<int, String> absenceReasons = {};
   Map<int, bool> isExcusedMap = {};
-
+  List<String> weekLabels = [];
   final TextEditingController contentController = TextEditingController();
 
   @override
@@ -84,11 +85,14 @@ class _PageCreateMeetingMinutesAdminState
       'sinh_vien_vang': {
         for (var id in absentStudentIds)
           '$id': {
-            'ly_do': absenceReasons[id] ?? '',
-            'co_phep': isExcusedMap[id] ?? false,
+            'ly_do': absenceReasons[id] ?? 'Không',
+            'loai': isExcusedMap[id] == true ? 1 : 0,
           },
       },
     };
+    print('🟨 absentStudentIds: $absentStudentIds');
+    print('🟩 absenceReasons: $absenceReasons');
+    print('🟦 isExcusedMap: $isExcusedMap');
 
     context.read<BienBangShcnBloc>().add(
       CreateBienBanEvent(lopId: widget.lop.id, data: data),
@@ -125,9 +129,24 @@ class _PageCreateMeetingMinutesAdminState
         body: BlocBuilder<TuanBloc, TuanState>(
           builder: (context, tuanState) {
             if (tuanState is TuanLoaded) {
-              weekLabels = tuanState.danhSachTuan
-                  .map((t) => 'Tuần ${t.tuan}')
-                  .toList();
+              danhSachTuan = tuanState.danhSachTuan;
+
+              // Chỉ set tuần mặc định 1 lần
+              if (selectedWeek == '1') {
+                final currentWeek = danhSachTuan.firstWhere(
+                  (tuan) =>
+                      selectedDate.isAfter(
+                        tuan.ngayBatDau.subtract(const Duration(days: 1)),
+                      ) &&
+                      selectedDate.isBefore(
+                        tuan.ngayKetThuc.add(const Duration(days: 1)),
+                      ),
+                  orElse: () => danhSachTuan.first,
+                );
+                selectedWeek = currentWeek.tuan.toString();
+              }
+
+              weekLabels = danhSachTuan.map((t) => 'Tuần ${t.tuan}').toList();
 
               return BlocBuilder<AdminBloc, AdminState>(
                 builder: (context, adminState) {
@@ -231,13 +250,7 @@ class _PageCreateMeetingMinutesAdminState
               label: "Tuần",
               value: 'Tuần $selectedWeek',
               items: weekLabels,
-              onChanged: (val) {
-                if (val != null) {
-                  setState(
-                    () => selectedWeek = val.replaceAll(RegExp(r'\D'), ''),
-                  );
-                }
-              },
+              onChanged: null,
             ),
             const SizedBox(height: 12),
             CustomDatePickerRow(

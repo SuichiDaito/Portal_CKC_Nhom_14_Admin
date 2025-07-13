@@ -42,8 +42,8 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: _parseInt(json['id']) ?? 0,
-      idHoSo: _parseInt(json['id_ho_so']),
-      idBoMon: _parseInt(json['id_bo_mon']),
+      idHoSo: _parseInt(json['id_ho_so']) ?? 0,
+      idBoMon: _parseInt(json['id_bo_mon']) ?? 0,
       taiKhoan: json['tai_khoan'] ?? '',
       trangThai: _parseInt(json['trang_thai']) ?? 0,
       hoSo: json['ho_so'] != null ? HoSo.fromJson(json['ho_so']) : null,

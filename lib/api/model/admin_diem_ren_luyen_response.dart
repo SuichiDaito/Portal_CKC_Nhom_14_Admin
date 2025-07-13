@@ -31,7 +31,7 @@ class DiemRenLuyen {
       idSinhVien: json['id_sinh_vien'],
       idNam: json['id_nam'],
       xepLoai: json['xep_loai'],
-      thoiGian: json['thoi_gian'],
+      thoiGian: int.parse(json['thoi_gian'].toString() ?? '') ?? 0,
     );
   }
 

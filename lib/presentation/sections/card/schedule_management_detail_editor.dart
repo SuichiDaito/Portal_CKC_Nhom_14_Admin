@@ -133,58 +133,93 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
   }
 
   void _saveChanges() {
-    final selectedRoom = widget.rooms.firstWhere(
-      (room) => room.id == selectedRoomId,
-      orElse: () =>
-          Room(id: 0, ten: 'Không xác định', soLuong: 0, loaiPhong: 0),
-    );
-    final updatedSchedules = _editedSchedules
-        .where((e) => e.thu.isNotEmpty)
-        .map((e) {
-          return e.copyWith(phong: selectedRoom.ten);
-        })
-        .toList();
-
-    final newDetail = ScheduleDetail(
-      room: selectedRoom.ten,
-      schedules: updatedSchedules,
-    );
-
-    widget.onSave(newDetail);
+    bool isInSameBlock(int start, int end) {
+      List<List<int>> validRanges = [
+        [1, 6],
+        [7, 12],
+        [13, 15],
+      ];
+      return validRanges.any((range) => start >= range[0] && end <= range[1]);
+    }
 
     for (final s in _editedSchedules) {
       if (s.thu.isEmpty) {
-        debugPrint(
-          '❌ Bỏ qua lịch học thiếu thứ: Tiết ${s.tietBatDau} - ${s.tietKetThuc}',
+        debugPrint('❌ Bỏ qua lịch học thiếu thứ...');
+        continue;
+      }
+      if (!isInSameBlock(s.tietBatDau, s.tietKetThuc)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '⚠️ Tiết ${s.tietBatDau} – ${s.tietKetThuc} không nằm trong cùng 1 ca học. Vui lòng kiểm tra lại (${s.thu}).',
+            ),
+          ),
         );
-        continue;
+        return;
       }
-
-      final ngayDay = getDateFromWeekAndDay(s.thu, widget.ngayBatDauTuan);
-
-      if (ngayDay == null) {
-        debugPrint('❌ Không xác định được ngày cho tiết học ${s.thu}');
-        continue;
+      if (s.tietBatDau >= s.tietKetThuc) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '⚠️ Tiết bắt đầu phải nhỏ hơn tiết kết thúc (${s.thu} - Tiết ${s.tietBatDau} → ${s.tietKetThuc})',
+            ),
+          ),
+        );
+        return;
       }
+      final selectedRoom = widget.rooms.firstWhere(
+        (room) => room.id == selectedRoomId,
+        orElse: () =>
+            Room(id: 0, ten: 'Không xác định', soLuong: 0, loaiPhong: 0),
+      );
+      final updatedSchedules = _editedSchedules
+          .where((e) => e.thu.isNotEmpty)
+          .map((e) {
+            return e.copyWith(phong: selectedRoom.ten);
+          })
+          .toList();
 
-      final newTKB = ThoiKhoaBieu(
-        id: 0,
-        idLopHocPhan: widget.classSchedule.id,
-        idPhong: selectedRoom.id,
-        tietBatDau: s.tietBatDau,
-        tietKetThuc: s.tietKetThuc,
-        ngay: ngayDay.toIso8601String().substring(0, 10),
-        idTuan: widget.selectedWeekId,
-        phong: Room.empty(),
-        lopHocPhan: LopHocPhan.empty(),
-        tuan: Tuan.empty(),
+      final newDetail = ScheduleDetail(
+        room: selectedRoom.ten,
+        schedules: updatedSchedules,
       );
 
-      debugPrint(
-        '✅ Gửi lịch: ${s.thu} | Tiết ${s.tietBatDau} - ${s.tietKetThuc} | Ngày $ngayDay',
-      );
+      widget.onSave(newDetail);
 
-      context.read<ThoiKhoaBieuBloc>().add(CreateThoiKhoaBieuEvent(newTKB));
+      for (final s in _editedSchedules) {
+        if (s.thu.isEmpty) {
+          debugPrint(
+            '❌ Bỏ qua lịch học thiếu thứ: Tiết ${s.tietBatDau} - ${s.tietKetThuc}',
+          );
+          continue;
+        }
+
+        final ngayDay = getDateFromWeekAndDay(s.thu, widget.ngayBatDauTuan);
+
+        if (ngayDay == null) {
+          debugPrint('❌ Không xác định được ngày cho tiết học ${s.thu}');
+          continue;
+        }
+
+        final newTKB = ThoiKhoaBieu(
+          id: 0,
+          idLopHocPhan: widget.classSchedule.id,
+          idPhong: selectedRoom.id,
+          tietBatDau: s.tietBatDau,
+          tietKetThuc: s.tietKetThuc,
+          ngay: ngayDay.toIso8601String().substring(0, 10),
+          idTuan: widget.selectedWeekId,
+          phong: Room.empty(),
+          lopHocPhan: LopHocPhan.empty(),
+          tuan: Tuan.empty(),
+        );
+
+        debugPrint(
+          '✅ Gửi lịch: ${s.thu} | Tiết ${s.tietBatDau} - ${s.tietKetThuc} | Ngày $ngayDay',
+        );
+
+        context.read<ThoiKhoaBieuBloc>().add(CreateThoiKhoaBieuEvent(newTKB));
+      }
     }
 
     setState(() {

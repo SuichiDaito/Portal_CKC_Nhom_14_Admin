@@ -24,9 +24,9 @@ class ChuongTrinhDaoTao {
       id: json['id'] ?? 0,
       idChuyenNganh: json['id_chuyen_nganh'] ?? 0,
       tenChuongTrinhDaoTao: json['ten_chuong_trinh_dao_tao'] ?? '',
-      tongTinChi: json['tong_tin_chi'] ?? 0,
-      trangThai: json['trang_thai'] ?? 0,
-      thoiGian: json['thoi_gian'] ?? 0,
+      tongTinChi: int.tryParse(json['tong_tin_chi']?.toString() ?? '') ?? 0,
+      trangThai: int.tryParse(json['trang_thai']?.toString() ?? '') ?? 0,
+      thoiGian: int.tryParse(json['thoi_gian']?.toString() ?? '') ?? 0,
       chiTiet:
           (json['chi_tiet_chuong_trinh_dao_tao'] as List?)
               ?.map((e) => ChiTietChuongTrinhDaoTao.fromJson(e))
@@ -34,6 +34,7 @@ class ChuongTrinhDaoTao {
           [],
     );
   }
+
   List<ChuongTrinhDaoTao> parseChuongTrinhDaoTao(Map<String, dynamic> json) {
     final ctdtList = json['ctdt'] as List;
     final ctChiTietMap = json['ct_ctdt'] as Map<String, dynamic>;
@@ -96,10 +97,10 @@ class ChiTietChuongTrinhDaoTao {
       id: json['id'] ?? 0,
       idChuongTrinhDaoTao: json['id_chuong_trinh_dao_tao'] ?? 0,
       idMonHoc: json['id_mon_hoc'] ?? 0,
-      idBoMon: json['id_bo_mon'],
+      idBoMon: json['id_bo_mon'] ?? 0,
       idHocKy: json['id_hoc_ky'] ?? 0,
-      soTiet: json['so_tiet'] ?? 0,
-      soTinChi: json['so_tin_chi'] ?? 0,
+      soTiet: int.tryParse(json['so_tiet'].toString() ?? '') ?? 0,
+      soTinChi: int.tryParse(json['so_tin_chi'].toString() ?? "") ?? 0,
       monHoc: json['mon_hoc'] != null ? MonHoc.fromJson(json['mon_hoc']) : null,
       hocKy: json['hoc_ky'] != null ? HocKy.fromJson(json['hoc_ky']) : null,
     );

@@ -100,214 +100,233 @@ class _PageNotificationUserAdminState extends State<PageNotificationUserAdmin> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  tb.tieuDe,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                          child: InkWell(
+                            onTap: () async {
+                              if (tb.trangThai == 1) {
+                                final result = await context.push(
+                                  '/notifications/detail/${tb.id}',
+                                );
+                                ;
+                                if (result == true) {
+                                  context.read<ThongBaoBloc>().add(
+                                    FetchThongBaoList(),
+                                  );
+                                }
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    tb.tieuDe,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
 
-                                const SizedBox(height: 6),
+                                  const SizedBox(height: 6),
 
-                                Text(
-                                  tb.noiDung,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                  Text(
+                                    tb.noiDung,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
 
-                                const SizedBox(height: 12),
+                                  const SizedBox(height: 12),
 
-                                Row(
-                                  children: [
-                                    const Spacer(),
-                                    Icon(
-                                      Icons.person,
-                                      size: 16,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      tb.giangVien?.hoSo?.hoTen ?? 'Người gửi',
-                                      style: const TextStyle(
-                                        fontSize: 12,
+                                  Row(
+                                    children: [
+                                      const Spacer(),
+                                      Icon(
+                                        Icons.person,
+                                        size: 16,
                                         color: Colors.grey,
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.apartment,
-                                      size: 16,
-                                      color: Colors.grey,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      tb.tuAi,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 12),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (tb.trangThai == 0) ...[
-                                      IconButton(
-                                        tooltip: 'Sửa',
-                                        icon: const Icon(
-                                          Icons.edit,
-                                          color: Colors.green,
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        tb.giangVien?.hoSo?.hoTen ??
+                                            'Người gửi',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
                                         ),
-                                        onPressed: () async {
-                                          // Gọi API hoặc dùng Bloc để fetch detail trước khi push
-                                          final bloc = context
-                                              .read<ThongBaoBloc>();
-
-                                          // Tạo một Completer để đợi dữ liệu chi tiết
-                                          final completer =
-                                              Completer<ThongBao>();
-                                          late final StreamSubscription sub;
-
-                                          // Lắng nghe kết quả của TBDetailLoaded
-                                          sub = bloc.stream.listen((state) {
-                                            if (state is TBDetailLoaded &&
-                                                state.detail.id == tb.id) {
-                                              completer.complete(state.detail);
-                                              sub.cancel();
-                                            } else if (state is TBFailure) {
-                                              completer.completeError(
-                                                state.error,
-                                              );
-                                              sub.cancel();
-                                            }
-                                          });
-
-                                          // Gửi sự kiện fetch
-                                          bloc.add(FetchThongBaoDetail(tb.id));
-
-                                          try {
-                                            final thongBaoDetail =
-                                                await completer.future;
-
-                                            // Chuyển đến trang sửa nếu có dữ liệu
-                                            final result = await context.push(
-                                              '/notifications/create',
-                                              extra: thongBaoDetail,
-                                            );
-
-                                            if (result == true) {
-                                              bloc.add(
-                                                FetchThongBaoList(),
-                                              ); // làm mới danh sách
-                                            }
-                                          } catch (e) {
-                                            showDialog(
-                                              context: context,
-                                              builder: (_) => AlertDialog(
-                                                title: const Text("Lỗi"),
-                                                content: Text(e.toString()),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                    child: const Text("Đóng"),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }
-                                        },
                                       ),
+                                      const SizedBox(width: 8),
+                                      Icon(
+                                        Icons.apartment,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        tb.tuAi,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
 
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (tb.trangThai == 0) ...[
+                                        IconButton(
+                                          tooltip: 'Sửa',
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            color: Colors.green,
+                                          ),
+                                          onPressed: () async {
+                                            final bloc = context
+                                                .read<ThongBaoBloc>();
+
+                                            final completer =
+                                                Completer<ThongBao>();
+                                            late final StreamSubscription sub;
+
+                                            sub = bloc.stream.listen((state) {
+                                              if (state is TBDetailLoaded &&
+                                                  state.detail.id == tb.id) {
+                                                completer.complete(
+                                                  state.detail,
+                                                );
+                                                sub.cancel();
+                                              } else if (state is TBFailure) {
+                                                completer.completeError(
+                                                  state.error,
+                                                );
+                                                sub.cancel();
+                                              }
+                                            });
+
+                                            bloc.add(
+                                              FetchThongBaoDetail(tb.id),
+                                            );
+
+                                            try {
+                                              final thongBaoDetail =
+                                                  await completer.future;
+
+                                              final result = await context.push(
+                                                '/notifications/create',
+                                                extra: thongBaoDetail,
+                                              );
+
+                                              if (result == true) {
+                                                bloc.add(
+                                                  FetchThongBaoList(),
+                                                ); // làm mới danh sách
+                                              }
+                                            } catch (e) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) => AlertDialog(
+                                                  title: const Text("Lỗi"),
+                                                  content: Text(e.toString()),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                            context,
+                                                          ),
+                                                      child: const Text("Đóng"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+
+                                        const SizedBox(width: 4),
+                                        IconButton(
+                                          tooltip: 'Chọn lớp',
+                                          icon: const Icon(
+                                            Icons.send,
+                                            color: Colors.orange,
+                                          ),
+                                          onPressed: () async {
+                                            context.read<LopBloc>().add(
+                                              FetchAllLopEvent(),
+                                            );
+
+                                            final selectedLopIds =
+                                                await showModalBottomSheet<
+                                                  List<int>
+                                                >(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (_) =>
+                                                      DanhSachLopSheet(
+                                                        capTren: tb.tuAi,
+                                                      ),
+                                                );
+
+                                            if (selectedLopIds != null &&
+                                                selectedLopIds.isNotEmpty) {
+                                              context.read<ThongBaoBloc>().add(
+                                                SendToStudents(
+                                                  tb.id,
+                                                  selectedLopIds,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
                                       const SizedBox(width: 4),
                                       IconButton(
-                                        tooltip: 'Chọn lớp',
+                                        tooltip: 'Xoá',
                                         icon: const Icon(
-                                          Icons.send,
-                                          color: Colors.orange,
+                                          Icons.delete,
+                                          color: Colors.red,
                                         ),
                                         onPressed: () async {
-                                          context.read<LopBloc>().add(
-                                            FetchAllLopEvent(),
+                                          final confirm = await showDialog<bool>(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: const Text('Xác nhận xoá'),
+                                              content: const Text(
+                                                'Bạn có chắc muốn xoá thông báo này?',
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Huỷ'),
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                        context,
+                                                        false,
+                                                      ),
+                                                ),
+                                                TextButton(
+                                                  child: const Text('Xoá'),
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                        context,
+                                                        true,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
                                           );
 
-                                          final selectedLopIds =
-                                              await showModalBottomSheet<
-                                                List<int>
-                                              >(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                builder: (_) =>
-                                                    DanhSachLopSheet(
-                                                      capTren: tb.tuAi,
-                                                    ),
-                                              );
-
-                                          if (selectedLopIds != null &&
-                                              selectedLopIds.isNotEmpty) {
+                                          if (confirm == true) {
                                             context.read<ThongBaoBloc>().add(
-                                              SendToStudents(
-                                                tb.id,
-                                                selectedLopIds,
-                                              ),
+                                              DeleteThongBao(tb.id),
                                             );
                                           }
                                         },
                                       ),
                                     ],
-                                    const SizedBox(width: 4),
-                                    IconButton(
-                                      tooltip: 'Xoá',
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () async {
-                                        final confirm = await showDialog<bool>(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: const Text('Xác nhận xoá'),
-                                            content: const Text(
-                                              'Bạn có chắc muốn xoá thông báo này?',
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                child: const Text('Huỷ'),
-                                                onPressed: () => Navigator.pop(
-                                                  context,
-                                                  false,
-                                                ),
-                                              ),
-                                              TextButton(
-                                                child: const Text('Xoá'),
-                                                onPressed: () => Navigator.pop(
-                                                  context,
-                                                  true,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-
-                                        if (confirm == true) {
-                                          context.read<ThongBaoBloc>().add(
-                                            DeleteThongBao(tb.id),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );

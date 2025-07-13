@@ -18,6 +18,7 @@ import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:portal_ckc/constant/string.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PageCreateNotificationAdmin extends StatefulWidget {
@@ -58,13 +59,32 @@ class _PageCreateNotificationAdminState
     }
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception(
+          "⚠️ Token không tồn tại. Có thể người dùng chưa đăng nhập.",
+        );
+      }
+
       final dir = Directory('/storage/emulated/0/Download');
       final savePath = "${dir.path}/${file.tenFile}";
 
       final dio = Dio();
+
       await dio.download(
         url,
         savePath,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/pdf',
+            'User-Agent': 'FlutterApp/1.0', // tuỳ chọn tránh bị chặn bot
+          },
+          // Tránh throw nếu gặp lỗi như 403/404
+          validateStatus: (status) => status != null && status < 500,
+        ),
         onReceiveProgress: (received, total) {
           if (total != -1) {
             setState(() {
@@ -90,9 +110,7 @@ class _PageCreateNotificationAdminState
       print("❌ Lỗi tải file: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Không thể mở file! vui lòng vào thư mục của máy để xem',
-          ),
+          content: Text('Không thể mở file! Vui lòng vào thư mục để xem.'),
         ),
       );
     }

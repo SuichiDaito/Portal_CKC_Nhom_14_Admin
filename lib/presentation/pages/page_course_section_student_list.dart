@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien_lhp.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/cap_nhat_diem_bloc.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/sinh_vien_lop_hoc_phan_bloc.dart';
@@ -22,6 +23,8 @@ class PageCourseSectionStudentList extends StatefulWidget {
 
 class _PageCourseSectionStudentListState
     extends State<PageCourseSectionStudentList> {
+  String _searchQuery = '';
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -68,14 +71,13 @@ class _PageCourseSectionStudentListState
               if (state is SinhVienLhpLoading) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is SinhVienLhpError) {
+                print(state.message);
                 return Center(child: Text(state.message));
               } else if (state is SinhVienLhpLoaded) {
                 final classInfo = state.lopHocPhan;
                 final students = state.danhSach;
                 final trangThaiLop = classInfo?.trangThaiNopBangDiem;
-
-                return ListView(
-                  padding: const EdgeInsets.only(bottom: 16),
+                return Column(
                   children: [
                     if (classInfo != null)
                       ClassListStudenInforClassSection(
@@ -88,184 +90,299 @@ class _PageCourseSectionStudentListState
                         ),
                       ),
 
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: trangThaiLop == 3
-                            ? Card(
-                                color: Colors.green.shade50,
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Tìm sinh viên...',
+                                prefixIcon: const Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green.shade600,
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value.toLowerCase();
+                                });
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.file_download,
+                              color: Colors.green,
+                            ),
+                            tooltip: "Xuất Excel",
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "🔄 Đang phát triển tính năng xuất Excel",
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.send,
+                              color: Colors.deepOrange,
+                            ),
+                            tooltip: "Gửi điểm đến SV",
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "🔄 Đang phát triển tính năng gửi điểm",
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: trangThaiLop == 3
+                                  ? Card(
+                                      color: Colors.green.shade50,
+                                      elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Lớp học phần đã hoàn tất',
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle,
+                                              color: Colors.green.shade600,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              'Lớp học phần đã hoàn tất',
+                                              style: TextStyle(
+                                                color: Colors.green.shade800,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : ElevatedButton.icon(
+                                      onPressed: () {
+                                        context.read<CapNhatDiemBloc>().add(
+                                          UpdateTrangThaiNopDiemEvent(
+                                            widget.idLopHocPhan,
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.upload),
+                                      label: const Text(
+                                        'Nộp bảng điểm',
                                         style: TextStyle(
-                                          color: Colors.green.shade800,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.orange,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 14,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: ElevatedButton.icon(
                                 onPressed: () {
-                                  context.read<CapNhatDiemBloc>().add(
-                                    UpdateTrangThaiNopDiemEvent(
-                                      widget.idLopHocPhan,
+                                  if ((trangThaiLop ?? 0) == 3) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Lớp học phần đã hoàn tất, không thể nộp điểm nữa!",
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  final selectedStudents = students
+                                      .where((s) => s.isSelected)
+                                      .toList();
+                                  if (selectedStudents.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Vui lòng chọn ít nhất 1 sinh viên để nộp điểm!",
+                                        ),
+                                        backgroundColor: Colors.orange,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text(
+                                        "Xác nhận cập nhật điểm",
+                                      ),
+                                      content: Text(
+                                        "Sĩ số lớp hiện đang có:${classInfo!.soLuongSinhVien} \nBạn đang cập nhật điểm cho ${selectedStudents.length} sinh viên.\nBạn có chắc chắn muốn tiếp tục?",
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text("Huỷ"),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(
+                                              context,
+                                            ); // Đóng dialog
+
+                                            final request = CapNhatDiemRequest(
+                                              idLopHocPhan: widget.idLopHocPhan,
+                                              students: selectedStudents
+                                                  .map((s) => s.sinhVien.id!)
+                                                  .toList(),
+                                              diemChuyenCan: {
+                                                for (var s in selectedStudents)
+                                                  s.sinhVien.id!:
+                                                      s.diemChuyenCan ?? 0.0,
+                                              },
+                                              diemQuaTrinh: {
+                                                for (var s in selectedStudents)
+                                                  s.sinhVien.id!:
+                                                      s.diemQuaTrinh ?? 0.0,
+                                              },
+                                              diemThiLan1: {
+                                                for (var s in selectedStudents)
+                                                  s.sinhVien.id!:
+                                                      s.diemThiLan1 ?? 0.0,
+                                              },
+                                              diemThiLan2: {
+                                                for (var s in selectedStudents)
+                                                  s.sinhVien.id!:
+                                                      s.diemThiLan2 ?? 0.0,
+                                              },
+                                            );
+
+                                            context.read<CapNhatDiemBloc>().add(
+                                              SubmitCapNhatDiem(request),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                Colors.blue.shade700,
+                                          ),
+                                          child: const Text("Xác nhận"),
+                                        ),
+                                      ],
                                     ),
                                   );
                                 },
-                                icon: const Icon(Icons.upload),
-                                label: const Text(
-                                  'Nộp bảng điểm',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
+                                icon: const Icon(Icons.done_all),
+                                label: const Text("Cập nhật điểm"),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange,
+                                  backgroundColor: Colors.blue.shade700,
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
                                     vertical: 14,
                                   ),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
                               ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            if ((trangThaiLop ?? 0) == 3) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Lớp học phần đã hoàn tất, không thể nộp điểm nữa!",
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-
-                            final selectedStudents = students
-                                .where((s) => s.isSelected)
-                                .toList();
-                            if (selectedStudents.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Vui lòng chọn ít nhất 1 sinh viên để nộp điểm!",
-                                  ),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                              return;
-                            }
-
-                            final request = CapNhatDiemRequest(
-                              idLopHocPhan: widget.idLopHocPhan,
-                              students: selectedStudents
-                                  .map((s) => s.sinhVien.id!)
-                                  .toList(),
-                              diemChuyenCan: {
-                                for (var s in selectedStudents)
-                                  s.sinhVien.id!: s.diemChuyenCan ?? 0.0,
-                              },
-                              diemQuaTrinh: {
-                                for (var s in selectedStudents)
-                                  s.sinhVien.id!: s.diemQuaTrinh ?? 0.0,
-                              },
-                              diemThiLan1: {
-                                for (var s in selectedStudents)
-                                  s.sinhVien.id!: s.diemThiLan1 ?? 0.0,
-                              },
-                              diemThiLan2: {
-                                for (var s in selectedStudents)
-                                  s.sinhVien.id!: s.diemThiLan2 ?? 0.0,
-                              },
-                            );
-
-                            context.read<CapNhatDiemBloc>().add(
-                              SubmitCapNhatDiem(request),
-                            );
-                          },
-                          icon: const Icon(Icons.done_all),
-                          label: const Text("Cập nhật điểm"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade700,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 14,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
 
-                    ...students.map(
-                      (student) => StudentItemSection(
-                        trangThaiLop: trangThaiLop ?? 0,
-                        student: student,
-                        showCheckbox: true,
-                        onCheckboxChanged: (s, selected) {
-                          setState(() {
-                            s.isSelected = selected;
-                          });
-                        },
-                        onGradeSubmit: (updatedStudent) {
-                          final request = CapNhatDiemRequest(
-                            idLopHocPhan: widget.idLopHocPhan,
-                            students: [student.sinhVien.id!],
-                            diemChuyenCan: {
-                              student.sinhVien.id!:
-                                  updatedStudent.diemChuyenCan ?? 0.0,
-                            },
-                            diemQuaTrinh: {
-                              student.sinhVien.id!:
-                                  updatedStudent.diemQuaTrinh ?? 0.0,
-                            },
-                            diemThiLan1: {
-                              student.sinhVien.id!:
-                                  updatedStudent.diemThiLan1 ?? 0.0,
-                            },
-                            diemThiLan2: {
-                              student.sinhVien.id!:
-                                  updatedStudent.diemThiLan2 ?? 0.0,
-                            },
-                          );
+                          ...students
+                              .where(
+                                (student) => student.sinhVien.hoSo.hoTen
+                                    .toLowerCase()
+                                    .contains(_searchQuery),
+                              )
+                              .map(
+                                (student) => StudentItemSection(
+                                  trangThaiLop: trangThaiLop ?? 0,
+                                  student: student,
+                                  showCheckbox: true,
+                                  onCheckboxChanged: (s, selected) {
+                                    setState(() {
+                                      s.isSelected = selected;
+                                    });
+                                  },
+                                  onGradeSubmit: (updatedStudent) {
+                                    final request = CapNhatDiemRequest(
+                                      idLopHocPhan: widget.idLopHocPhan,
+                                      students: [student.sinhVien.id!],
+                                      diemChuyenCan: {
+                                        student.sinhVien.id!:
+                                            updatedStudent.diemChuyenCan ?? 0.0,
+                                      },
+                                      diemQuaTrinh: {
+                                        student.sinhVien.id!:
+                                            updatedStudent.diemQuaTrinh ?? 0.0,
+                                      },
+                                      diemThiLan1: {
+                                        student.sinhVien.id!:
+                                            updatedStudent.diemThiLan1 ?? 0.0,
+                                      },
+                                      diemThiLan2: {
+                                        student.sinhVien.id!:
+                                            updatedStudent.diemThiLan2 ?? 0.0,
+                                      },
+                                    );
 
-                          context.read<CapNhatDiemBloc>().add(
-                            SubmitCapNhatDiem(request),
-                          );
-                        },
+                                    context.read<CapNhatDiemBloc>().add(
+                                      SubmitCapNhatDiem(request),
+                                    );
+                                  },
+                                ),
+                              ),
+                        ],
                       ),
                     ),
                   ],

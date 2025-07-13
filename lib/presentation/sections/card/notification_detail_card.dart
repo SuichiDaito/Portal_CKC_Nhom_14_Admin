@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:portal_ckc/presentation/sections/notification_content_detail.dart';
 import 'package:portal_ckc/presentation/sections/notification_footer_detail.dart';
 import 'package:portal_ckc/presentation/sections/notification_sender_information_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationDetailCard extends StatefulWidget {
   final String typeNotificationSender;
@@ -34,7 +35,7 @@ class _NotificationDetailCardState extends State<NotificationDetailCard> {
   double _downloadProgress = 0.0;
 
   void _downloadFileFromMap(Map<String, dynamic> file) async {
-    final url = 'http://172.16.1.84:8000/storage/${file['url']}';
+    final url = 'https://ckc-portal.click/storage/${file['url']}';
     final tenFile = file['ten_file'] ?? 'unknown_file';
 
     print("⬇️ Bắt đầu tải file: $url");
@@ -50,13 +51,29 @@ class _NotificationDetailCardState extends State<NotificationDetailCard> {
     }
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token không tồn tại');
+      }
+
       final dir = Directory('/storage/emulated/0/Download');
       final savePath = "${dir.path}/$tenFile";
 
       final dio = Dio();
+
       await dio.download(
         url,
         savePath,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/pdf',
+            'User-Agent': 'FlutterApp/1.0',
+          },
+          validateStatus: (status) => status! < 500,
+        ),
         onReceiveProgress: (received, total) {
           if (total != -1) {
             setState(() {
@@ -82,9 +99,7 @@ class _NotificationDetailCardState extends State<NotificationDetailCard> {
       print("❌ Lỗi tải file: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Không thể mở file! vui lòng vào thư mục của máy để xem',
-          ),
+          content: Text('Không thể mở file! Vui lòng kiểm tra lại.'),
         ),
       );
     }

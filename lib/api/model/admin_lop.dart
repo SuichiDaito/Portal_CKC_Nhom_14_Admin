@@ -21,11 +21,19 @@ class Lop {
   });
   factory Lop.fromJson(Map<String, dynamic> json) {
     return Lop(
-      id: json['id'],
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id'].toString()) ?? 0,
       tenLop: json['ten_lop'] ?? '',
-      idNienKhoa: int.tryParse(json['id_nien_khoa'].toString()) ?? 0,
-      idGvcn: int.tryParse(json['id_gvcn'].toString()) ?? 0,
-      siSo: int.tryParse(json['si_so'].toString()) ?? 0,
+      idNienKhoa: json['id_nien_khoa'] is int
+          ? json['id_nien_khoa']
+          : int.tryParse(json['id_nien_khoa'].toString()) ?? 0,
+      idGvcn: json['id_gvcn'] is int
+          ? json['id_gvcn']
+          : int.tryParse(json['id_gvcn'].toString()) ?? 0,
+      siSo: json['si_so'] is int
+          ? json['si_so']
+          : int.tryParse(json['si_so'].toString()) ?? 0,
       nienKhoa: json['nien_khoa'] != null
           ? NienKhoa.fromJson(json['nien_khoa'])
           : NienKhoa.empty(),
