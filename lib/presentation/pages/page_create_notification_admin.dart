@@ -43,6 +43,7 @@ class _PageCreateNotificationAdminState
   List<FileModel> _apiFiles = [];
   ThongBao? _thongBao;
   double _downloadProgress = 0.0;
+  final allowedValues = ['khoa', 'phong_ctct', 'gvcn', 'gvbm'];
 
   void _downloadFile(FileModel file) async {
     final url = 'https://ckc-portal.click/storage/${file.url}';
@@ -171,7 +172,9 @@ class _PageCreateNotificationAdminState
       _contentController.text = thongBao.noiDung;
       _selectedCapTren = thongBao.tuAi;
     }
-
+    if (!allowedValues.contains(_selectedCapTren)) {
+      _selectedCapTren = 'khoa'; // hoặc set về mặc định
+    }
     final isEditing = thongBao != null;
 
     return WillPopScope(
