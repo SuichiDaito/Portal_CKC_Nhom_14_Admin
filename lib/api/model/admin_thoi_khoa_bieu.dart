@@ -34,8 +34,8 @@ class ThoiKhoaBieu {
       idTuan: json['id_tuan'] ?? 0,
       idLopHocPhan: json['id_lop_hoc_phan'] ?? 0,
       idPhong: json['id_phong'] ?? 0,
-      tietBatDau: json['tiet_bat_dau'] ?? 0,
-      tietKetThuc: json['tiet_ket_thuc'] ?? 0,
+      tietBatDau: int.parse(json['tiet_bat_dau'].toString() ?? "0") ?? 0,
+      tietKetThuc: int.parse(json['tiet_ket_thuc'].toString() ?? "0") ?? 0,
       ngay: json['ngay'] ?? '',
       phong: json['phong'] != null
           ? Room.fromJson(json['phong'])

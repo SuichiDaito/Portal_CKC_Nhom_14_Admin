@@ -71,7 +71,10 @@ class Tuan {
   Tuan({required this.id, required this.tuan});
 
   factory Tuan.fromJson(Map<String, dynamic> json) {
-    return Tuan(id: json['id'], tuan: json['tuan']);
+    return Tuan(
+      id: json['id'],
+      tuan: int.parse(json['tuan'].toString() ?? "") ?? 0,
+    );
   }
   static Tuan empty() => Tuan(id: 0, tuan: 0);
 }

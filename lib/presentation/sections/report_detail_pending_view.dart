@@ -85,7 +85,7 @@ class ReportDetailPendingView extends StatelessWidget {
             onApprove: onApprove,
           ),
           const SizedBox(height: 12),
-          if (isEditing && bienBan.trangThai == 0)
+          if (isEditing && bienBan.trangThai == 1)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

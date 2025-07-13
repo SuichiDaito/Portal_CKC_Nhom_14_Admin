@@ -48,12 +48,28 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
   ];
   List<DropdownItem> _getAllowedExamAttempts() {
     final attempts = <DropdownItem>[];
-    if (widget.trangThaiNopDiem == 0 && !widget.existingAttempts.contains(1)) {
+
+    if (widget.trangThaiNopDiem == 0 || widget.trangThaiNopDiem == 1) {
       attempts.add(_examAttempts.firstWhere((e) => e.value == '1'));
     }
-    if (widget.trangThaiNopDiem == 1 && !widget.existingAttempts.contains(2)) {
+
+    if (widget.trangThaiNopDiem == 2) {
       attempts.add(_examAttempts.firstWhere((e) => e.value == '2'));
     }
+
+    final currentAttempt = _examAttempts.firstWhere(
+      (e) => e.value == _currentSchedule.lanThi.toString(),
+      orElse: () => DropdownItem(
+        value: _currentSchedule.lanThi.toString(),
+        label: 'Lần ${_currentSchedule.lanThi}',
+        icon: Icons.numbers,
+      ),
+    );
+
+    if (!attempts.any((e) => e.value == currentAttempt.value)) {
+      attempts.add(currentAttempt);
+    }
+
     return attempts;
   }
 
@@ -63,7 +79,14 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
     _rooms = widget.rooms;
 
     _lecturers.addAll(widget.lecturers);
-    _currentSchedule = widget.schedule;
+    DateTime defaultDate = DateTime.now().add(const Duration(days: 1));
+    String defaultNgayThi = DateFormat('yyyy-MM-dd').format(defaultDate);
+
+    _currentSchedule = widget.schedule.copyWith(
+      ngayThi: (widget.schedule.ngayThi.isEmpty || widget.isNew)
+          ? defaultNgayThi
+          : widget.schedule.ngayThi,
+    );
     _selectedProctor1 = DropdownItem(
       value: _currentSchedule.idGiamThi1.toString(),
       label: _currentSchedule.giamThi1?.hoSo?.hoTen ?? 'Chưa có',
@@ -178,6 +201,33 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final ngayThiDate = DateTime.parse(_currentSchedule.ngayThi);
+
+    final isNgayThiLocked = !now.isBefore(
+      DateTime(ngayThiDate.year, ngayThiDate.month, ngayThiDate.day),
+    );
+
+    bool isLocked = false;
+    int lanThi = _currentSchedule.lanThi;
+    int? trangThai = widget.trangThaiNopDiem;
+
+    if (isNgayThiLocked || trangThai == 3) {
+      isLocked = true;
+    } else {
+      if (lanThi == 1) {
+        if (!(trangThai == 0 || trangThai == 1)) {
+          isLocked = true;
+        }
+      } else if (lanThi == 2) {
+        if (trangThai != 2) {
+          isLocked = true;
+        }
+      } else {
+        isLocked = true;
+      }
+    }
+
     return Card(
       color: Colors.white,
       child: Padding(
@@ -190,14 +240,27 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-
-            if (widget.trangThaiNopDiem != 0)
+            if (widget.trangThaiNopDiem == 3)
               const Padding(
                 padding: EdgeInsets.only(bottom: 12),
                 child: Text(
-                  'Không thể chỉnh sửa do điểm đã nộp.',
+                  'Không thể chỉnh sửa do lớp học phần đã hoàn tất.',
                   style: TextStyle(
                     color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            else if ((_currentSchedule.lanThi == 1 &&
+                    !(widget.trangThaiNopDiem == 0 ||
+                        widget.trangThaiNopDiem == 1)) ||
+                (_currentSchedule.lanThi == 2 && widget.trangThaiNopDiem != 2))
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'Không thể chỉnh sửa lịch thi với trạng thái hiện tại.',
+                  style: TextStyle(
+                    color: Colors.orange,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -280,16 +343,33 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
                     final ngayThiDate = DateTime.parse(
                       _currentSchedule.ngayThi,
                     );
-                    final isNgayThiLocked = !now.isBefore(
-                      DateTime(
-                        ngayThiDate.year,
-                        ngayThiDate.month,
-                        ngayThiDate.day,
-                      ),
+                    final today = DateTime(now.year, now.month, now.day);
+
+                    final ngayThi = DateTime(
+                      ngayThiDate.year,
+                      ngayThiDate.month,
+                      ngayThiDate.day,
                     );
-                    final isLocked =
-                        !widget.isNew &&
-                        (widget.trangThaiNopDiem != 0 || isNgayThiLocked);
+
+                    final isNgayThiLocked = !ngayThi.isAfter(today);
+
+                    bool isLocked = false;
+                    int? trangThai = widget.trangThaiNopDiem;
+                    int lanThi = _currentSchedule.lanThi;
+
+                    if (isNgayThiLocked || trangThai == 3) {
+                      isLocked = true;
+                    } else {
+                      if (lanThi == 1) {
+                        if (!(trangThai == 0 || trangThai == 1))
+                          isLocked = true;
+                      } else if (lanThi == 2) {
+                        if (trangThai != 2) isLocked = true;
+                      } else {
+                        isLocked = true;
+                      }
+                    }
+
                     if (_isEditing) {
                       _saveChanges();
                     } else {
@@ -297,12 +377,26 @@ class _ExamScheduleCardState extends State<ExamScheduleCard> {
                         _toggleEditMode();
                       } else {
                         String reason = '';
-                        if (widget.trangThaiNopDiem != 0) {
-                          reason = 'Không thể chỉnh sửa. Điểm đã nộp!';
+                        if (trangThai == 3) {
+                          reason =
+                              'Lớp học phần đã hoàn tất, không thể chỉnh sửa!';
                         } else if (isNgayThiLocked) {
                           reason =
-                              'Không thể chỉnh sửa do ngày thi đã đến hoặc đã qua!';
+                              'Không thể chỉnh sửa vì ngày thi đã đến hoặc đã qua!';
+                        } else if (lanThi == 1 &&
+                            !(trangThai == 0 || trangThai == 1)) {
+                          reason =
+                              'Chỉ được chỉnh sửa lịch thi lần 1 khi trạng thái là 0 hoặc 1.';
+                        } else if (lanThi == 2 &&
+                            !(trangThai == 0 ||
+                                trangThai == 1 ||
+                                trangThai == 2)) {
+                          reason =
+                              'Chỉ được chỉnh sửa lịch thi lần 2 khi trạng thái là 0, 1 hoặc 2.';
+                        } else {
+                          reason = 'Không thể chỉnh sửa lịch thi!';
                         }
+
                         ScaffoldMessenger.of(
                           context,
                         ).showSnackBar(SnackBar(content: Text(reason)));

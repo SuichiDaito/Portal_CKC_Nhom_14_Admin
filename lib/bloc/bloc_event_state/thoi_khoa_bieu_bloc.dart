@@ -49,7 +49,11 @@ class ThoiKhoaBieuBloc extends Bloc<ThoiKhoaBieuEvent, ThoiKhoaBieuState> {
         final tkb = ThoiKhoaBieu.fromJson(response.body?['data']);
         emit(ThoiKhoaBieuSuccess('Tạo thời khóa biểu thành công', tkb));
       } else {
-        emit(ThoiKhoaBieuError('Tạo thất bại'));
+        emit(
+          ThoiKhoaBieuError(
+            response.body?['message'] ?? 'Thời khóa biểu bị trùng với lớp khác',
+          ),
+        );
       }
     } catch (e) {
       emit(ThoiKhoaBieuError('Lỗi tạo thời khóa biểu: $e'));
@@ -136,11 +140,11 @@ class ThoiKhoaBieuBloc extends Bloc<ThoiKhoaBieuEvent, ThoiKhoaBieuState> {
         emit(CopyNhieuThoiKhoaBieuSuccess(copiedTKBs));
       } else {
         emit(
-          ThoiKhoaBieuError(response.body?['message'] ?? 'Sao chép thất bại'),
+          SaoChepLichError(response.body?['message'] ?? 'Sao chép thất bại'),
         );
       }
     } catch (e) {
-      emit(ThoiKhoaBieuError('Lỗi sao chép nhiều TKB: $e'));
+      emit(SaoChepLichError('Lỗi sao chép nhiều TKB: $e'));
     }
   }
 }

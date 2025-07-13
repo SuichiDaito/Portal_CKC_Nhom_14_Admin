@@ -7,6 +7,8 @@ class Khoa {
   factory Khoa.fromJson(Map<String, dynamic> json) {
     return Khoa(id: json['id'], tenKhoa: json['ten_khoa'] ?? '');
   }
+
+  Map<String, dynamic> toJson() => {'id': id, 'ten_khoa': tenKhoa};
 }
 
 class ChuyenNganh {
@@ -23,6 +25,12 @@ class ChuyenNganh {
       khoa: json['khoa'] != null ? Khoa.fromJson(json['khoa']) : null,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'ten_chuyen_nganh': tenChuyenNganh,
+    'khoa': khoa?.toJson(),
+  };
 }
 
 class BoMon {
@@ -41,4 +49,10 @@ class BoMon {
           : null,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'ten_bo_mon': tenBoMon,
+    'chuyen_nganh': chuyenNganh?.toJson(),
+  };
 }

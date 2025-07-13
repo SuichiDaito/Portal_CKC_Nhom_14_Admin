@@ -4,7 +4,6 @@ class Room {
   final int soLuong;
   final int loaiPhong;
 
-  // Thêm status giả (không có từ API)
   RoomStatus status;
 
   Room({
@@ -19,7 +18,7 @@ class Room {
     return Room(
       id: json['id'],
       ten: json['ten'],
-      soLuong: json['so_luong'],
+      soLuong: int.parse(json['so_luong'].toString() ?? '') ?? 0,
       loaiPhong: json['loai_phong'],
     );
   }

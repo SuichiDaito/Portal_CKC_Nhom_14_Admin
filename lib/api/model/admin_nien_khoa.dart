@@ -24,7 +24,7 @@ class NienKhoa {
       tenNienKhoa: json['ten_nien_khoa'] ?? '',
       namBatDau: json['nam_bat_dau'] ?? '',
       namKetThuc: json['nam_ket_thuc'] ?? '',
-      trangThai: json['trang_thai'] ?? 0,
+      trangThai: int.tryParse(json['trang_thai'].toString() ?? '') ?? 0,
       hocKys:
           (json['hoc_kys'] as List?)?.map((e) => HocKy.fromJson(e)).toList() ??
           [],

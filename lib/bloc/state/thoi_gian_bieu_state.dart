@@ -27,6 +27,11 @@ class ThoiKhoaBieuError extends ThoiKhoaBieuState {
   ThoiKhoaBieuError(this.message);
 }
 
+class SaoChepLichError extends ThoiKhoaBieuState {
+  final String message;
+  SaoChepLichError(this.message);
+}
+
 class CopyThoiKhoaBieuSuccess extends ThoiKhoaBieuState {
   final ThoiKhoaBieu tkb;
 

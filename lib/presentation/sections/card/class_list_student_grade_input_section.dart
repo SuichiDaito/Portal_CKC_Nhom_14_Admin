@@ -297,6 +297,20 @@ class _GradeInputSectionState extends State<GradeInputSection>
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d{0,2}(\.\d{0,1})?')),
           ],
+          onChanged: (value) {
+            if (value.isEmpty) return;
+            double? val = double.tryParse(value);
+            if (val != null) {
+              if (val < 0) {
+                controller.text = '0.0';
+              } else if (val > 10) {
+                controller.text = '0.0';
+              }
+              controller.selection = TextSelection.fromPosition(
+                TextPosition(offset: controller.text.length),
+              );
+            }
+          },
           decoration: InputDecoration(
             hintText: hint,
             filled: true,

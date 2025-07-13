@@ -58,7 +58,6 @@ class _MainLayoutHomeAdminPageState extends State<MainLayoutHomeAdminPage> {
             HeaderHomeAdminSection(nameLogin: _nameUser),
             const SizedBox(height: 20),
 
-            // Admin Info
             BlocListener<AdminBloc, AdminState>(
               listener: (context, state) {
                 if (state is AdminError) {

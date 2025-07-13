@@ -4,7 +4,7 @@ class CustomDropdownRow extends StatelessWidget {
   final String label;
   final String value;
   final List<String> items;
-  final void Function(String?) onChanged;
+  final void Function(String?)? onChanged;
 
   const CustomDropdownRow({
     super.key,

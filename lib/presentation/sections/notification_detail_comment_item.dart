@@ -56,10 +56,9 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
     final time = _formatDate(comment.createdAt);
 
     final isOwner =
-        widget.currentUserId != null &&
-        widget.currentUserType != null &&
-        comment.nguoiBinhLuan.id == widget.currentUserId &&
-        comment.nguoiBinhLuan.type.contains(widget.currentUserType!);
+        // widget.currentUserId != null &&
+        // widget.currentUserType != null &&
+        comment.nguoiBinhLuan.hoSo.id == widget.currentUserId;
 
     final isQuanLy = widget.currentUserChucVu == 1;
 
@@ -142,6 +141,12 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
+                                    print(
+                                      '🔑 Bình luận ID: ${comment.id}, Người bình luận ID: ${comment.nguoiBinhLuan.hoSo.id}, CurrentUserID: ${widget.currentUserId}',
+                                    );
+                                    print(
+                                      'So sánh: ${comment.nguoiBinhLuan.id == widget.currentUserId}',
+                                    );
                                     showDialog(
                                       context: context,
                                       builder: (ctx) => AlertDialog(
@@ -149,18 +154,16 @@ class _NotificationCommentItemState extends State<NotificationCommentItem> {
                                         content: const Text(
                                           'Bạn có chắc chắn muốn xóa bình luận này?',
                                         ),
+
                                         actions: [
                                           TextButton(
-                                            onPressed: () => Navigator.of(
-                                              ctx,
-                                            ).pop(), // Đóng dialog
+                                            onPressed: () =>
+                                                Navigator.of(ctx).pop(),
                                             child: const Text('Hủy'),
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.of(
-                                                ctx,
-                                              ).pop(); // Đóng dialog
+                                              Navigator.of(ctx).pop();
                                               context.read<ThongBaoBloc>().add(
                                                 DeleteCommentEvent(comment.id),
                                               );
