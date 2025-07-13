@@ -1,17 +1,9 @@
-<<<<<<< HEAD
+
 import 'package:flutter/material.dart';
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
 
 class ClassItemCard extends StatelessWidget {
   final LopHocPhan classModel;
-=======
-// widgets/class_item_card.dart
-import 'package:flutter/material.dart';
-import 'package:portal_ckc/presentation/sections/card/class_roster_teacher_info_card.dart';
-
-class ClassItemCard extends StatelessWidget {
-  final ClassModel classModel;
->>>>>>> main
   final VoidCallback onTap;
 
   const ClassItemCard({Key? key, required this.classModel, required this.onTap})
@@ -19,13 +11,10 @@ class ClassItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final String className = classModel.lop.tenLop ?? 'Chưa rõ';
     final String subject = classModel.tenHocPhan;
     final String status = _getTrangThaiText(classModel.trangThaiNopBangDiem);
 
-=======
->>>>>>> main
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
@@ -50,15 +39,8 @@ class ClassItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-<<<<<<< HEAD
                 Row(
                   children: [
-=======
-                // Header Row
-                Row(
-                  children: [
-                    // Class Icon
->>>>>>> main
                     Container(
                       width: 40,
                       height: 40,
@@ -73,21 +55,12 @@ class ClassItemCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-<<<<<<< HEAD
-=======
-
-                    // Class Name & Subject
->>>>>>> main
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-<<<<<<< HEAD
                             className,
-=======
-                            classModel.className,
->>>>>>> main
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -96,11 +69,7 @@ class ClassItemCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-<<<<<<< HEAD
                             subject,
-=======
-                            classModel.subject,
->>>>>>> main
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -110,75 +79,30 @@ class ClassItemCard extends StatelessWidget {
                         ],
                       ),
                     ),
-<<<<<<< HEAD
                     _buildStatusBadge(status),
                   ],
                 ),
                 const SizedBox(height: 12),
-=======
-
-                    // Status Badge
-                    _buildStatusBadge(classModel.status),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                // Class Details
->>>>>>> main
                 Row(
                   children: [
                     _buildDetailItem(
                       Icons.people_outline,
-<<<<<<< HEAD
                       '${classModel.soLuongDangKy} sinh viên',
-=======
-                      '${classModel.studentCount} SV',
->>>>>>> main
                       Colors.blue[600]!,
                     ),
                     const SizedBox(width: 16),
                     _buildDetailItem(
-<<<<<<< HEAD
                       classModel.loaiMon == 0
                           ? Icons
                                 .menu_book_outlined // Icon cho Lý thuyết
                           : Icons.handyman_outlined, // Icon cho Thực hành
                       classModel.loaiMon == 0 ? 'Lý thuyết' : 'Thực hành',
                       Colors.deepOrange[600]!,
-=======
-                      Icons.schedule_outlined,
-                      classModel.schedule,
-                      Colors.green[600]!,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-
-                Row(
-                  children: [
-                    _buildDetailItem(
-                      Icons.location_on_outlined,
-                      classModel.room,
-                      Colors.orange[600]!,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildDetailItem(
-                      Icons.calendar_today_outlined,
-                      classModel.semester,
-                      Colors.purple[600]!,
->>>>>>> main
                     ),
                   ],
                 ),
 
                 const SizedBox(height: 12),
-<<<<<<< HEAD
-=======
-
-                // Action Button
->>>>>>> main
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -196,18 +120,6 @@ class ClassItemCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-<<<<<<< HEAD
-=======
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
->>>>>>> main
                     ),
                   ],
                 ),
@@ -219,7 +131,6 @@ class ClassItemCard extends StatelessWidget {
     );
   }
 
-<<<<<<< HEAD
   String _getTrangThaiText(int? TrangThaiNopDiem) {
     switch (TrangThaiNopDiem) {
       case 0:
@@ -235,15 +146,12 @@ class ClassItemCard extends StatelessWidget {
     }
   }
 
-=======
->>>>>>> main
   Widget _buildStatusBadge(String status) {
     Color backgroundColor;
     Color textColor;
 
     switch (status.toLowerCase()) {
       case 'đang diễn ra':
-<<<<<<< HEAD
         backgroundColor = Colors.green[100]!;
         textColor = Colors.green[700]!;
         break;
@@ -252,19 +160,6 @@ class ClassItemCard extends StatelessWidget {
         textColor = Colors.white;
         break;
       case 'chưa diễn ra':
-=======
-      case 'active':
-        backgroundColor = Colors.green[100]!;
-        textColor = Colors.green[700]!;
-        break;
-      case 'đã kết thúc':
-      case 'completed':
-        backgroundColor = Colors.grey[100]!;
-        textColor = Colors.grey[700]!;
-        break;
-      case 'sắp diễn ra':
-      case 'upcoming':
->>>>>>> main
         backgroundColor = Colors.blue[100]!;
         textColor = Colors.blue[700]!;
         break;

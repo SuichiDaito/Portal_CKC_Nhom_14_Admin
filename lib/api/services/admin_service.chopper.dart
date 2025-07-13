@@ -44,7 +44,6 @@ final class _$AdminService extends AdminService {
   }
 
   @override
-
   Future<Response<Map<String, dynamic>>> changePassword(
     Map<String, dynamic> body,
   ) {
@@ -66,7 +65,6 @@ final class _$AdminService extends AdminService {
   }
 
   @override
-
   Future<Response<Map<String, dynamic>>> getRooms() {
     final Uri $url = Uri.parse('/admin/phong');
     final Request $request = Request('GET', $url, client.baseUrl);
@@ -100,7 +98,6 @@ final class _$AdminService extends AdminService {
   }
 
   @override
-
   Future<Response<Map<String, dynamic>>> getLopList() {
     final Uri $url = Uri.parse('/admin/lop-chu-nhiem');
     final Request $request = Request('GET', $url, client.baseUrl);

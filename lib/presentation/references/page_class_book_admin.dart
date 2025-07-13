@@ -1,194 +1,349 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/api/model/admin_phong.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/phieu_len_lop_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/phong_bloc.dart';
+import 'package:portal_ckc/bloc/event/lop_hoc_phan_event.dart';
+import 'package:portal_ckc/bloc/event/phieu_len_lop_event.dart';
+import 'package:portal_ckc/bloc/event/phong_event.dart';
+import 'package:portal_ckc/bloc/state/lop_hoc_phan_state.dart';
+import 'package:portal_ckc/bloc/state/phieu_len_lop_state.dart';
+import 'package:portal_ckc/bloc/state/phong_state.dart';
+import 'package:portal_ckc/presentation/sections/button/action_button.dart';
+import 'package:portal_ckc/presentation/sections/card/class_book_common_dropdown_field.dart';
+import 'package:portal_ckc/presentation/sections/card/class_book_si_so_section.dart';
+import 'package:portal_ckc/presentation/sections/card/class_book_tiet_row_section.dart';
+import 'package:portal_ckc/presentation/sections/card/custom_text_field.dart';
 
-class PageSolenlopAdmin extends StatefulWidget {
-  const PageSolenlopAdmin({super.key});
+class PageClassBookAdmin extends StatefulWidget {
+  const PageClassBookAdmin({super.key});
 
   @override
-  State<PageSolenlopAdmin> createState() => _PageSolenlopAdminState();
+  State<PageClassBookAdmin> createState() => _PageClassBookAdminState();
 }
 
-class _PageSolenlopAdminState extends State<PageSolenlopAdmin> {
-  final _lopController = TextEditingController();
-  final _siSoController = TextEditingController();
-  final _noiDungController = TextEditingController();
+class _PageClassBookAdminState extends State<PageClassBookAdmin> {
+  String? selectedLop;
+  String? selectedMon;
+  int? selectedLopHocPhanId;
+  int? selectedPhongId;
 
-  String? _monDay;
-  String? _tietTu;
-  String? _tietDen;
+  String? selectedPhong;
+  List<Room> allRooms = [];
+  final TextEditingController noiDungController = TextEditingController();
+  final TextEditingController tietTuController = TextEditingController(
+    text: '1',
+  );
+  final TextEditingController tietDenController = TextEditingController(
+    text: '2',
+  );
+  final TextEditingController siSoController = TextEditingController(
+    text: '30',
+  );
+  final TextEditingController hienDienController = TextEditingController(
+    text: '30',
+  );
 
-  final List<String> _monList = ['Toán', 'Lý', 'Hóa'];
-  final List<String> _tietList = ['1', '2', '3', '4', '5'];
+  double tietTu = 1;
+  double tietDen = 2;
+  double hienDien = 30;
+
+  List<LopHocPhan> allLopHocPhan = [];
+  List<String> danhSachLop = [];
+  List<String> danhSachMon = [];
 
   @override
-  void dispose() {
-    _lopController.dispose();
-    _siSoController.dispose();
-    _noiDungController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    context.read<LopHocPhanBloc>().add(FetchLopHocPhan());
+    context.read<PhongBloc>().add(FetchRoomsEvent());
+  }
+
+  void updateMonTheoLop(String? tenLop) {
+    if (tenLop == null) return;
+    final filtered = allLopHocPhan.where((lhp) => lhp.lop.tenLop == tenLop);
+    final monSet = <String>{};
+    for (var lhp in filtered) {
+      monSet.add(lhp.tenHocPhan);
+    }
+
+    setState(() {
+      danhSachMon = monSet.toList();
+      selectedMon = null;
+      selectedLopHocPhanId = null;
+    });
+  }
+
+  void autoFillFields(String? mon) {
+    if (mon == null || selectedLop == null) return;
+
+    LopHocPhan? lhp;
+
+    try {
+      lhp = allLopHocPhan.firstWhere((item) => item.tenHocPhan == mon && item.lop.tenLop == selectedLop,
+      );
+    } catch (_) {
+      lhp = null;
+    }
+
+    if (lhp == null) return;
+
+    setState(() {
+      siSoController.text = lhp!.soLuongDangKy.toString();
+      hienDienController.text = lhp.soLuongDangKy.toString();
+      hienDien = lhp.soLuongDangKy.toDouble();
+      selectedLopHocPhanId = lhp.id;
+    });
+  }
+
+  void savePhieu() {
+    if (selectedLopHocPhanId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Vui lòng chọn lớp và môn")));
+      return;
+    }
+
+    final payload = {
+      "id_lop_hoc_phan": selectedLopHocPhanId,
+      "tiet_bat_dau": int.tryParse(tietTuController.text),
+      "so_tiet":
+          (int.tryParse(tietDenController.text) ?? 0) -
+          (int.tryParse(tietTuController.text) ?? 0) +
+          1,
+      "ngay": DateTime.now().toIso8601String().split('T')[0],
+      "id_phong": selectedPhongId,
+      "si_so": int.tryParse(siSoController.text),
+      "hien_dien": int.tryParse(hienDienController.text),
+      "noi_dung": noiDungController.text,
+    };
+
+    debugPrint("📤 Gửi tạo phiếu: $payload");
+    context.read<PhieuLenLopBloc>().add(CreatePhieuLenLop(payload));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Sổ lên lớp')),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            width: 350,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade300,
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // const Text(
-                //   'Sổ lên lớp',
-                //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                // ),
-                // const SizedBox(height: 16),
-                _buildDropdown('Lớp dạy:*', _monList, _monDay, (value) {
-                  setState(() => _monDay = value);
-                }),
-
-                _buildDropdown('Môn dạy:*', _monList, _monDay, (value) {
-                  setState(() => _monDay = value);
-                }),
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDropdown('Từ tiết:*', _tietList, _tietTu, (
-                        value,
-                      ) {
-                        setState(() => _tietTu = value);
-                      }),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _buildDropdown('Đến tiết:*', _tietList, _tietDen, (
-                        value,
-                      ) {
-                        setState(() => _tietDen = value);
-                      }),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                _buildTextField('Sĩ số:*', _siSoController),
-                const SizedBox(height: 12),
-
-                const Text('Nội dung:*'),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: _noiDungController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Tóm tắt nội dung giảng dạy',
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero, // Không bo góc
-                          ),
-                        ),
-                        onPressed: () {
-                          //api lưu mật khẩu
-                        },
-                        child: const Text(
-                          'Lưu',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero, // Không bo góc
-                          ),
-                        ),
-                        onPressed: () {
-                          context.go('/home');
-                        },
-                        child: const Text(
-                          'Thay đổi mật khẩu',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+    return BlocListener<PhieuLenLopBloc, PhieuLenLopState>(
+      listener: (context, state) {
+        if (state is PhieuLenLopSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+          Navigator.pop(context);
+        } else if (state is PhieuLenLopError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("❌ ${state.error}")));
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text(
+            "Sổ Lên Lớp",
+            style: TextStyle(color: Colors.white),
           ),
+          backgroundColor: Colors.blue,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: BlocBuilder<PhongBloc, PhongState>(
+          builder: (context, phongState) {
+            if (phongState is PhongLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (phongState is PhongError) {
+              return Center(
+                child: Text(
+                  "Không thể truy cập chức năng này, vui lòng thử lại sau.",
+                ),
+              );
+            }
+
+            if (phongState is PhongLoaded) {
+              allRooms = phongState.rooms;
+              final danhSachPhong = allRooms.map((e) => e.ten).toList();
+
+              return BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
+                builder: (context, state) {
+                  if (state is LopHocPhanLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }if (state is LopHocPhanError) {
+                    return Center(child: Text("${state.message}"));
+                  }
+
+                  if (state is LopHocPhanLoaded) {
+                    allLopHocPhan = state.lopHocPhans;
+                    final lopSet = <String>{};
+                    for (var lhp in allLopHocPhan) {
+                      lopSet.add(lhp.lop.tenLop);
+                    }
+                    danhSachLop = lopSet.toList();
+
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              CommonDropdownField(
+                                label: "Lớp dạy",
+                                items: danhSachLop,
+                                selectedValue: selectedLop,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedLop = value;
+                                    updateMonTheoLop(value);
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              CommonDropdownField(
+                                label: "Môn dạy",
+                                items: danhSachMon,
+                                selectedValue: selectedMon,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedMon = value;
+                                    autoFillFields(value);
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              CommonDropdownField(
+                                label: "Phòng học",
+                                items:
+                                    danhSachPhong, // danh sách ['Phòng A1', 'Phòng B2', ...]
+                                selectedValue: selectedPhong,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedPhong = value;
+
+                                    // 🔍 Tìm Room theo tên để lấy ID
+                                    final selectedRoom = allRooms.firstWhere(
+                                      (room) => room.ten == value,
+                                      orElse: () => Room(
+                                        id: 0,ten: '',
+                                        soLuong: 0,
+                                        loaiPhong: 0,
+                                      ),
+                                    );
+                                    selectedPhongId = selectedRoom.id;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              TietRowSection(
+                                tietTuController: tietTuController,
+                                tietDenController: tietDenController,
+                                onTietTuMinus: () {
+                                  setState(() {
+                                    tietTu = (tietTu > 1) ? tietTu - 1 : 1;
+                                    tietTuController.text = tietTu
+                                        .toInt()
+                                        .toString();
+                                  });
+                                },
+                                onTietTuPlus: () {
+                                  setState(() {
+                                    tietTu += 1;
+                                    tietTuController.text = tietTu
+                                        .toInt()
+                                        .toString();
+                                  });
+                                },
+                                onTietDenMinus: () {
+                                  setState(() {
+                                    tietDen = (tietDen > tietTu)
+                                        ? tietDen - 1
+                                        : tietTu;
+                                    tietDenController.text = tietDen
+                                        .toInt()
+                                        .toString();
+                                  });
+                                },
+                                onTietDenPlus: () {
+                                  setState(() {
+                                    tietDen += 1;
+                                    tietDenController.text = tietDen
+                                        .toInt()
+                                        .toString();
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              SiSoRowSection(
+                                siSoController: siSoController,
+                                hienDienController: hienDienController,
+                                onHienDienMinus: () {
+                                  setState(() {
+                                    if (hienDien > 0) {
+                                      hienDien -= 1;
+                                      hienDienController.text = hienDien
+                                          .toInt()
+                                          .toString();}
+                                  });
+                                },
+                                onHienDienPlus: () {
+                                  setState(() {
+                                    double maxSiSo =
+                                        double.tryParse(siSoController.text) ??
+                                        0;
+                                    if (hienDien < maxSiSo) {
+                                      hienDien++;
+                                      hienDienController.text = hienDien
+                                          .toInt()
+                                          .toString();
+                                    }
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              CustomTextField(
+                                label: "Nội dung giảng dạy",
+                                controller: noiDungController,
+                                inputType: TextInputType.multiline,
+                                maxLines: 4,
+                              ),
+                              const SizedBox(height: 20),
+                              ActionButtons(
+                                onSave: savePhieu,
+                                onExit: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return const SizedBox();
+                },
+              );
+            }
+            return const SizedBox();
+          },
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: '',
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDropdown(
-    String label,
-    List<String> items,
-    String? selectedValue,
-    void Function(String?) onChanged,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<String>(
-          value: selectedValue,
-          hint: Text('==${label.replaceAll(':*', '')}=='),
-          decoration: const InputDecoration(border: OutlineInputBorder()),
-          items: items.map((item) {
-            return DropdownMenuItem(value: item, child: Text(item));
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ],
-    );
+  @override
+  void dispose() {
+    tietTuController.dispose();
+    tietDenController.dispose();
+    siSoController.dispose();
+    hienDienController.dispose();
+    noiDungController.dispose();
+    super.dispose();
   }
 }
