@@ -27,13 +27,13 @@ class DropdownSelector extends StatelessWidget {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: Colors.blue,
             ),
           ),
           const SizedBox(height: 6),
           DropdownButtonFormField<DropdownItem>(
             isExpanded: true,
-            value: selectedItem,
+            value: items.contains(selectedItem) ? selectedItem : null,
             icon: const Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
             onChanged: onChanged,
             items: items.map((item) {
@@ -43,7 +43,14 @@ class DropdownSelector extends StatelessWidget {
                   children: [
                     Icon(item.icon, size: 20, color: Colors.blueAccent),
                     const SizedBox(width: 8),
-                    Text(item.label),
+                    Flexible(
+                      child: Text(
+                        item.label,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
                   ],
                 ),
               );

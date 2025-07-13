@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/auth_bloc.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
 
 class PageThongtinAdmin extends StatelessWidget {
@@ -96,6 +97,11 @@ class PageThongtinAdmin extends StatelessWidget {
                                   ),
                                   onPressed: () {
                                     // TODO: xử lý đăng xuất
+
+                                    context.read<AuthBloc>().add(LoggedOut());
+                                    context.go(
+                                      '/login',
+                                    ); // hoặc route tương ứng màn hình đăng nhập
                                   },
                                   child: const Text(
                                     'Đăng xuất',

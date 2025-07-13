@@ -1,4 +1,17 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+import 'package:portal_ckc/api/model/admin_hoc_ky.dart';
+
+class CourseInfoSection extends StatelessWidget {
+  final String? selectedNienKhoaId;
+  final HocKy? selectedHocKy;
+  final List<String> subjects;
+  final List<dynamic> nienKhoas;
+  final List<HocKy> hocKyList;
+  final Function(String) onNienKhoaChanged;
+  final Function(HocKy) onHocKyChanged;
+  final String selectedSubject;
+=======
 
 class CourseInfoSection extends StatelessWidget {
   final String selectedAcademicYear;
@@ -6,24 +19,39 @@ class CourseInfoSection extends StatelessWidget {
   final String selectedSubject;
   final Function(String) onAcademicYearChanged;
   final Function(String) onSemesterChanged;
+>>>>>>> main
   final Function(String) onSubjectChanged;
   final VoidCallback onSave;
 
   const CourseInfoSection({
     Key? key,
+<<<<<<< HEAD
+    required this.selectedNienKhoaId,
+    required this.selectedHocKy,
+    required this.subjects,
+    required this.nienKhoas,
+    required this.hocKyList,
+    required this.onNienKhoaChanged,
+    required this.onHocKyChanged,
+    required this.selectedSubject,
+=======
     required this.selectedAcademicYear,
     required this.selectedSemester,
     required this.selectedSubject,
     required this.onAcademicYearChanged,
     required this.onSemesterChanged,
+>>>>>>> main
     required this.onSubjectChanged,
     required this.onSave,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+=======
     final academicYears = ['2022-2023', '2023-2024', '2024-2025'];
 
+>>>>>>> main
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
@@ -31,7 +59,11 @@ class CourseInfoSection extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 600),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
+<<<<<<< HEAD
+            color: const Color.fromARGB(255, 37, 121, 189),
+=======
             color: const Color.fromARGB(255, 37, 121, 189), // Nền xanh
+>>>>>>> main
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -44,7 +76,10 @@ class CourseInfoSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+<<<<<<< HEAD
+=======
               // Header
+>>>>>>> main
               Row(
                 children: [
                   Container(
@@ -72,19 +107,36 @@ class CourseInfoSection extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
+<<<<<<< HEAD
+=======
               // Academic Year Dropdown
+>>>>>>> main
               _buildInputField(
                 label: 'Niên khóa',
                 labelColor: Colors.white,
                 child: DropdownButtonFormField<String>(
                   dropdownColor: Colors.white,
+<<<<<<< HEAD
+                  value: selectedNienKhoaId,
+=======
                   value: selectedAcademicYear.isNotEmpty
                       ? selectedAcademicYear
                       : null,
+>>>>>>> main
                   decoration: _dropdownDecoration(Icons.calendar_today),
                   style: const TextStyle(color: Colors.blue),
                   iconEnabledColor: Colors.blue,
                   hint: const Text('Chọn niên khóa'),
+<<<<<<< HEAD
+                  items: nienKhoas.map((nk) {
+                    return DropdownMenuItem<String>(
+                      value: nk.id.toString(),
+                      child: Text(nk.tenNienKhoa),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) onNienKhoaChanged(value);
+=======
                   items: academicYears.map((year) {
                     return DropdownMenuItem<String>(
                       value: year,
@@ -93,11 +145,79 @@ class CourseInfoSection extends StatelessWidget {
                   }).toList(),
                   onChanged: (value) {
                     if (value != null) onAcademicYearChanged(value);
+>>>>>>> main
                   },
                 ),
               ),
               const SizedBox(height: 16),
 
+<<<<<<< HEAD
+              _buildInputField(
+                label: 'Học kì',
+                labelColor: Colors.white,
+                child: DropdownButtonFormField<HocKy>(
+                  dropdownColor: Colors.white,
+                  value: selectedHocKy,
+                  decoration: _dropdownDecoration(Icons.schedule),
+                  style: const TextStyle(color: Colors.blue),
+                  iconEnabledColor: Colors.blue,
+                  hint: const Text('Chọn học kỳ'),
+                  items: hocKyList.map((hk) {
+                    return DropdownMenuItem<HocKy>(
+                      value: hk,
+                      child: Text(hk.tenHocKy),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) onHocKyChanged(value);
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              _buildInputField(
+                label: 'Môn học',
+                labelColor: Colors.white,
+
+                child: DropdownButtonFormField<String>(
+                  dropdownColor: Colors.white,
+                  value:
+                      (selectedSubject.isNotEmpty &&
+                          subjects.contains(selectedSubject))
+                      ? selectedSubject
+                      : null,
+
+                  isExpanded: true,
+                  decoration: _dropdownDecoration(Icons.book),
+                  style: const TextStyle(color: Colors.blue),
+                  iconEnabledColor: Colors.blue,
+                  hint: const Text('Chọn môn học'),
+                  items: subjects.toSet().map((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, overflow: TextOverflow.ellipsis),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) onSubjectChanged(value);
+                  },
+                ),
+              ),
+              // const SizedBox(height: 20),
+
+              // Align(
+              //   alignment: Alignment.centerRight,
+              //   child: ElevatedButton.icon(
+              //     onPressed: onSave,
+              //     icon: const Icon(Icons.save),
+              //     label: const Text('Lưu'),
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: Colors.white,
+              //       foregroundColor: const Color(0xFF1976D2),
+              //     ),
+              //   ),
+              // ),
+=======
               // Semester and Subject Row
               Row(
                 children: [
@@ -174,6 +294,7 @@ class CourseInfoSection extends StatelessWidget {
                   ),
                 ),
               ),
+>>>>>>> main
             ],
           ),
         );
@@ -197,7 +318,11 @@ class CourseInfoSection extends StatelessWidget {
         borderSide: const BorderSide(color: Colors.white, width: 2),
       ),
       filled: true,
+<<<<<<< HEAD
+      fillColor: Colors.white,
+=======
       fillColor: Colors.white, // Dropdown bên trong vẫn nền trắng
+>>>>>>> main
     );
   }
 

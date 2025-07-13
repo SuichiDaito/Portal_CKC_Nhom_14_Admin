@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
-import 'package:portal_ckc/api/model/admin_thongtin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
 import 'package:portal_ckc/bloc/event/admin_event.dart';
 import 'package:portal_ckc/bloc/state/admin_state.dart';
 import 'package:portal_ckc/presentation/sections/button/buttons_class_action_class_management.dart';
-import 'package:portal_ckc/presentation/sections/card/class_management_card.dart';
-import 'package:portal_ckc/presentation/sections/card/class_management_dialogs.dart';
+import 'package:portal_ckc/presentation/sections/dialogs/class_management_dialogs.dart';
 import 'package:portal_ckc/presentation/sections/card/class_management_teacher_info_card.dart';
+import 'package:portal_ckc/presentation/sections/dialogs/class_meeting_minutes_dialog.dart'
+    hide showClassDetailsDialog;
 import 'package:portal_ckc/presentation/sections/class_management_class_list_section.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -94,8 +94,12 @@ class _PageClassManagementAdminState extends State<PageClassManagementAdmin> {
                   children: [
                     Expanded(
                       child: ButtonsClassActionClassManagementReport(
-                        onTap: () {
-                          context.push('/admin/meeting_minutes_admin');
+                        onOpenClassList: () {
+                          showClassMeetingListDialog(
+                            context,
+                            _classList,
+                            (selectedClass) {},
+                          );
                         },
                       ),
                     ),
@@ -103,11 +107,11 @@ class _PageClassManagementAdminState extends State<PageClassManagementAdmin> {
                     Expanded(
                       child: ClassActionButtons(
                         onOpenClassList: () {
-                          showClassListDialog(context, _classList, (
-                            selectedClass,
-                          ) {
-                            showClassDetailsDialog(context, selectedClass);
-                          });
+                          showClassListDialog(
+                            context,
+                            _classList,
+                            (selectedClass) {},
+                          );
                         },
                       ),
                     ),

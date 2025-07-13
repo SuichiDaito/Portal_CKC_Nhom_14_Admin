@@ -1,34 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/api/model/admin_phieu_len_lop.dart';
+import 'package:portal_ckc/api/model/admin_phong.dart';
+import 'package:portal_ckc/api/model/admin_thoi_khoa_bieu.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/thoi_khoa_bieu_bloc.dart';
+import 'package:portal_ckc/bloc/event/thoi_khoa_bieu_event.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_class_info_display.dart';
 import 'package:portal_ckc/presentation/sections/card/schedule_management_day_time_picker.dart';
-import 'package:portal_ckc/presentation/sections/card/schedule_management_detail_model.dart';
 
 class ScheduleDetailEditor extends StatefulWidget {
-  final ClassSchedule classSchedule;
+  final LopHocPhan classSchedule;
   final ValueChanged<ScheduleDetail> onSave;
+  final List<Room> rooms;
+  final int selectedWeekId;
+  final DateTime ngayBatDauTuan;
+  final int lhpId;
+  final Map<String, List<ThoiKhoaBieu>> tkbTheoThu;
+  final bool canEdit;
 
   const ScheduleDetailEditor({
     Key? key,
     required this.classSchedule,
     required this.onSave,
+    required this.rooms,
+    required this.selectedWeekId,
+    required this.ngayBatDauTuan,
+    required this.lhpId,
+    required this.tkbTheoThu,
+    required this.canEdit,
   }) : super(key: key);
 
   @override
-  _ScheduleDetailEditorState createState() => _ScheduleDetailEditorState();
+  State<ScheduleDetailEditor> createState() => _ScheduleDetailEditorState();
 }
 
 class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
-  late ScheduleDetail _currentDetails;
   late TextEditingController _roomController;
+  late List<ScheduleTime> _editedSchedules;
+  int? selectedRoomId;
+  bool get canEdit {
+    final now = DateTime.now();
+    return now.isBefore(widget.ngayBatDauTuan);
+  }
+
   bool _isEditing = false;
+  DateTime? getDateFromWeekAndDay(String thu, DateTime ngayBatDau) {
+    final thuMap = {
+      'Thứ 2': 0,
+      'Thứ 3': 1,
+      'Thứ 4': 2,
+      'Thứ 5': 3,
+      'Thứ 6': 4,
+      'Thứ 7': 5,
+      'Chủ nhật': 6,
+    };
+    final index = thuMap[thu];
+    if (index == null) return null;
+    return ngayBatDau.add(Duration(days: index));
+  }
 
   @override
   void initState() {
     super.initState();
-    // Tạo bản sao để chỉnh sửa, không ảnh hưởng trực tiếp đến dữ liệu gốc
-    _currentDetails = widget.classSchedule.details.copyWith();
-    _roomController = TextEditingController(text: _currentDetails.room);
+    final List<ScheduleTime> schedulesFromTkb = [];
+
+    widget.tkbTheoThu.forEach((thu, tkbList) {
+      for (var tkb in tkbList) {
+        schedulesFromTkb.add(
+          ScheduleTime(
+            id: tkb.id,
+            ngay: '',
+            thu: thu,
+            tietBatDau: tkb.tietBatDau,
+            tietKetThuc: tkb.tietKetThuc,
+            phong: tkb.phong?.ten ?? '',
+          ),
+        );
+      }
+    });
+
+    _roomController = TextEditingController(
+      text: schedulesFromTkb.isNotEmpty ? schedulesFromTkb.first.phong : '',
+    );
+    _editedSchedules = schedulesFromTkb;
+
+    selectedRoomId = widget.rooms
+        .firstWhere(
+          (room) => room.ten == _roomController.text,
+          orElse: () => widget.rooms.isNotEmpty
+              ? widget.rooms.first
+              : Room(id: 0, ten: 'Không xác định', soLuong: 0, loaiPhong: 0),
+        )
+        .id;
   }
 
   @override
@@ -40,30 +105,97 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
   void _toggleEditMode() {
     setState(() {
       _isEditing = !_isEditing;
+
       if (!_isEditing) {
-        // Reset về trạng thái ban đầu nếu hủy chỉnh sửa (có thể thêm confirm dialog)
-        _currentDetails = widget.classSchedule.details.copyWith();
-        _roomController.text = _currentDetails.room;
+        final List<ScheduleTime> schedulesFromTkb = [];
+
+        widget.tkbTheoThu.forEach((thu, tkbList) {
+          for (var tkb in tkbList) {
+            schedulesFromTkb.add(
+              ScheduleTime(
+                id: tkb.id,
+                ngay: tkb.ngay,
+                thu: thu,
+                tietBatDau: tkb.tietBatDau,
+                tietKetThuc: tkb.tietKetThuc,
+                phong: tkb.phong?.ten ?? '',
+              ),
+            );
+          }
+        });
+
+        _roomController = TextEditingController(
+          text: schedulesFromTkb.isNotEmpty ? schedulesFromTkb.first.phong : '',
+        );
+        _editedSchedules = schedulesFromTkb;
       }
     });
   }
 
   void _saveChanges() {
+    final selectedRoom = widget.rooms.firstWhere(
+      (room) => room.id == selectedRoomId,
+      orElse: () =>
+          Room(id: 0, ten: 'Không xác định', soLuong: 0, loaiPhong: 0),
+    );
+    final updatedSchedules = _editedSchedules
+        .where((e) => e.thu.isNotEmpty)
+        .map((e) {
+          return e.copyWith(phong: selectedRoom.ten);
+        })
+        .toList();
+
+    final newDetail = ScheduleDetail(
+      room: selectedRoom.ten,
+      schedules: updatedSchedules,
+    );
+
+    widget.onSave(newDetail);
+
+    for (final s in _editedSchedules) {
+      if (s.thu.isEmpty) {
+        debugPrint(
+          '❌ Bỏ qua lịch học thiếu thứ: Tiết ${s.tietBatDau} - ${s.tietKetThuc}',
+        );
+        continue;
+      }
+
+      final ngayDay = getDateFromWeekAndDay(s.thu, widget.ngayBatDauTuan);
+
+      if (ngayDay == null) {
+        debugPrint('❌ Không xác định được ngày cho tiết học ${s.thu}');
+        continue;
+      }
+
+      final newTKB = ThoiKhoaBieu(
+        id: 0,
+        idLopHocPhan: widget.classSchedule.id,
+        idPhong: selectedRoom.id,
+        tietBatDau: s.tietBatDau,
+        tietKetThuc: s.tietKetThuc,
+        ngay: ngayDay.toIso8601String().substring(0, 10),
+        idTuan: widget.selectedWeekId,
+        phong: Room.empty(),
+        lopHocPhan: LopHocPhan.empty(),
+        tuan: Tuan.empty(),
+      );
+
+      debugPrint(
+        '✅ Gửi lịch: ${s.thu} | Tiết ${s.tietBatDau} - ${s.tietKetThuc} | Ngày $ngayDay',
+      );
+
+      context.read<ThoiKhoaBieuBloc>().add(CreateThoiKhoaBieuEvent(newTKB));
+    }
+
     setState(() {
-      _currentDetails.room = _roomController.text;
-      widget.onSave(_currentDetails); // Truyền dữ liệu đã cập nhật lên parent
       _isEditing = false;
     });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Đã lưu thay đổi lịch học!')));
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       elevation: 2.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Padding(
@@ -81,46 +213,42 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
                 color: Colors.blueAccent,
               ),
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _roomController,
-              enabled: _isEditing,
-              decoration: InputDecoration(
-                labelText: 'Phòng',
-                border: const OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: _isEditing
-                        ? Colors.blueAccent
-                        : Colors.grey.shade300,
-                  ),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-                filled: true,
-                fillColor: _isEditing ? Colors.white : Colors.grey.shade100,
-              ),
-            ),
+
             const SizedBox(height: 12),
             DayTimePicker(
               enabled: _isEditing,
-              schedules: _currentDetails.schedules,
+              schedules: _editedSchedules,
               onScheduleChanged: (schedules) {
                 if (_isEditing) {
                   setState(() {
-                    _currentDetails.schedules = schedules;
+                    _editedSchedules = schedules;
                   });
                 }
               },
+              rooms: widget.rooms,
+              selectedRoomId: selectedRoomId,
+              onRoomChanged: (value) {
+                setState(() {
+                  selectedRoomId = value;
+                });
+              },
             ),
-
-            const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: CustomButton(
                 text: _isEditing ? 'Lưu' : 'Thay đổi',
                 onPressed: () {
+                  if (!widget.canEdit) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Không thể thay đổi lịch học do lớp đã nhập điểm hoặc tuần này đã bắt đầu!',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
                   if (_isEditing) {
                     _saveChanges();
                   } else {

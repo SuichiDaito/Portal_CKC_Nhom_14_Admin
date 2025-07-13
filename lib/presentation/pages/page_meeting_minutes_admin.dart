@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portal_ckc/api/model/admin_bien_bang_shcn.dart';
+import 'package:portal_ckc/api/model/admin_lop.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/bien_bang_shcn_bloc.dart';
+import 'package:portal_ckc/bloc/event/bien_bang_shcn_event.dart';
+import 'package:portal_ckc/bloc/state/bien_bang_shcn_state.dart';
 
-class BienBanModel {
-  final String tenLop;
-  final String tenGVCN;
-  final String tenThuKy;
-  final int tuan;
-  final String ngayThang;
-  final String trangThai;
-
-  BienBanModel({
-    required this.tenLop,
-    required this.tenGVCN,
-    required this.tenThuKy,
-    required this.tuan,
-    required this.ngayThang,
-    required this.trangThai,
-  });
-}
-
-//TRANG DANH SÁCH BIÊN BẢNG CHỦ NHIỆM
 class PageMeetingMinutesAdmin extends StatefulWidget {
-  const PageMeetingMinutesAdmin({super.key});
+  final Lop lop;
+
+  const PageMeetingMinutesAdmin({super.key, required this.lop});
 
   @override
   State<PageMeetingMinutesAdmin> createState() =>
@@ -29,39 +18,53 @@ class PageMeetingMinutesAdmin extends StatefulWidget {
 }
 
 class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
-  String selectedClass = 'CTK45A';
-  String selectedWeek = '1';
+  DateTime? selectedDate;
 
-  List<String> classes = ['CTK45A', 'CTK45B', 'CTK45C'];
-  List<String> weeks = List.generate(20, (i) => '${i + 1}');
+  @override
+  void initState() {
+    super.initState();
+    _loadBienBan();
+  }
 
-  List<BienBanModel> bienBans = [
-    BienBanModel(
-      tenLop: 'CTK45A',
-      tenGVCN: 'Nguyễn Văn A',
-      tenThuKy: 'Trần Thị B',
-      tuan: 1,
-      ngayThang: '03/06/2025',
-      trangThai: 'Chờ duyệt',
-    ),
-    BienBanModel(
-      tenLop: 'CTK45A',
-      tenGVCN: 'Nguyễn Văn A',
-      tenThuKy: 'Trần Thị B',
-      tuan: 2,
-      ngayThang: '10/06/2025',
-      trangThai: 'Đã duyệt',
-    ),
-  ];
+  void _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() => selectedDate = picked);
+    }
+  }
+
+  void _loadBienBan() {
+    context.read<BienBangShcnBloc>().add(FetchBienBan(widget.lop.id));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Biên bản chủ nhiệm'),
+        title: const Text('Biên bản sinh hoạt chủ nhiệm'),
         backgroundColor: const Color(0xFF1976D2),
         foregroundColor: Colors.white,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_alt),
+            tooltip: 'Lọc theo ngày',
+            onPressed: _pickDate,
+          ),
+          if (selectedDate != null)
+            IconButton(
+              icon: const Icon(Icons.clear),
+              tooltip: 'Bỏ lọc',
+              onPressed: () {
+                setState(() => selectedDate = null);
+              },
+            ),
+        ],
       ),
       backgroundColor: const Color(0xFFF4F6F9),
       body: Column(
@@ -80,148 +83,165 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                 ),
               ],
             ),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF1976D2), Color(0xFF42A5F5)],
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'THÔNG TIN LỚP ',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  const Text('Lớp:', style: TextStyle(color: Colors.white)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: selectedClass,
-                          dropdownColor: Colors.white,
-                          style: const TextStyle(color: Colors.black),
-                          iconEnabledColor: Colors.blue,
-                          items: classes
-                              .map(
-                                (c) =>
-                                    DropdownMenuItem(value: c, child: Text(c)),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() => selectedClass = value!);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Text('Tuần:', style: TextStyle(color: Colors.white)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          isExpanded: true,
-                          value: selectedWeek,
-                          dropdownColor: Colors.white,
-                          style: const TextStyle(color: Colors.black),
-                          iconEnabledColor: Colors.blue,
-                          items: weeks
-                              .map(
-                                (w) =>
-                                    DropdownMenuItem(value: w, child: Text(w)),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() => selectedWeek = value!);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                Divider(),
+                const SizedBox(height: 8),
+
+                Text(
+                  'Lớp: ${widget.lop.tenLop}',
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Niên khóa: ${widget.lop.nienKhoa.tenNienKhoa ?? 'Chưa cập nhật'}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+
+                Text(
+                  'Sĩ số: ${widget.lop.siSo ?? 'Chưa cập nhật'}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: bienBans.length,
-              itemBuilder: (context, index) {
-                final bienBan = bienBans[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.blue.shade100),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    title: Text(
-                      '${bienBan.tenLop} - Tuần ${bienBan.tuan}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('GVCN: ${bienBan.tenGVCN}'),
-                        Text('Thư ký: ${bienBan.tenThuKy}'),
-                        Text('Ngày: ${bienBan.ngayThang}'),
-                        Text(
-                          'Trạng thái: ${bienBan.trangThai}',
-                          style: TextStyle(
-                            color: bienBan.trangThai == 'Đã duyệt'
-                                ? Colors.green
-                                : Colors.orange,
-                            fontWeight: FontWeight.bold,
+            child: BlocBuilder<BienBangShcnBloc, BienBanState>(
+              builder: (context, state) {
+                print('STATE HIỆN TẠI: $state');
+                if (state is BienBanLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is BienBanLoaded) {
+                  List<BienBanSHCN> bienBans = state.bienBanList;
+                  print(
+                    ' ==================Tổng biên bản: ${state.bienBanList.length}',
+                  );
+                  //LỌC THEO NGÀY
+                  if (selectedDate != null) {
+                    bienBans = bienBans.where((bienBan) {
+                      return bienBan.thoiGianBatDau.year ==
+                              selectedDate!.year &&
+                          bienBan.thoiGianBatDau.month == selectedDate!.month &&
+                          bienBan.thoiGianBatDau.day == selectedDate!.day;
+                    }).toList();
+                  }
+
+                  if (bienBans.isEmpty) {
+                    return const Center(child: Text('Không có biên bản nào.'));
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: bienBans.length,
+                    itemBuilder: (context, index) {
+                      final bienBan = bienBans[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.blue.shade100),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16),
+
+                          title: Text(
+                            '${bienBan.lop.tenLop} - ${bienBan.tieuDe}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('GVCN: ${bienBan.gvcn.hoSo?.hoTen ?? ""}'),
+                              Text(
+                                'Thư ký: ${bienBan.thuky.hoSo?.hoTen ?? ""}',
+                              ),
+                              Text(
+                                'Ngày: ${bienBan.thoiGianBatDau.day}/${bienBan.thoiGianBatDau.month}/${bienBan.thoiGianBatDau.year}',
+                              ),
+                              Text(
+                                'Trạng thái: ${bienBan.trangThai == 0 ? 'Chưa duyệt' : 'Đã duyệt'}',
+                                style: TextStyle(
+                                  color: bienBan.trangThai == 'Đã duyệt'
+                                      ? Colors.orange
+                                      : Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: ElevatedButton(
+                            onPressed: () async {
+                              final result = await context.push(
+                                '/admin/report_detail_admin',
+                                extra: {'bienBan': bienBan},
+                              );
+
+                              if (result == 'refresh' && mounted) {
+                                _loadBienBan();
+                              }
+                            },
+
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1976D2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Chi tiết',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        // Xử lý xem chi tiết
-                        context.push(
-                          '/admin/report_detail_admin',
-                          extra: {'isApproved': false},
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1976D2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Chi tiết',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                );
+                      );
+                    },
+                  );
+                } else if (state is BienBanError) {
+                  print(
+                    'Không thể truy cập chức năng này, vui lòng thử lại sau',
+                  );
+                  return Center(child: Text(state.message));
+                }
+
+                return const SizedBox.shrink();
               },
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final result = await context.push(
+            '/admin/create_meeting_minutes_admin',
+            extra: widget.lop,
+          );
+
+          if (result == 'refresh' && mounted) {
+            _loadBienBan();
+          }
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Tạo biên bản'),
+        backgroundColor: const Color(0xFF1976D2),
       ),
     );
   }

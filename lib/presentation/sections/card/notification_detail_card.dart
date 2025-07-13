@@ -4,6 +4,24 @@ import 'package:portal_ckc/presentation/sections/notification_footer_detail.dart
 import 'package:portal_ckc/presentation/sections/notification_sender_information_detail.dart';
 
 class NotificationDetailCard extends StatelessWidget {
+  final String typeNotificationSender;
+  final String date;
+  final String headerNotification;
+  final String contentNotification;
+  final String lengthComment;
+  final List<Map<String, String>>
+  files; // [{ten_file: 'abc.pdf', url: 'storage/thong_bao/abc.pdf'}, ...]
+
+  const NotificationDetailCard({
+    Key? key,
+    required this.typeNotificationSender,
+    required this.date,
+    required this.headerNotification,
+    required this.contentNotification,
+    required this.lengthComment,
+    required this.files,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,25 +41,45 @@ class NotificationDetailCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           NotificationSenderInformationDetail(
-            typeNotificationSender: 'Phòng Công Tác Chính Trị',
-            date: '24/09/2025',
+            typeNotificationSender: typeNotificationSender,
+            date: date,
           ),
           NotificationContentDetail(
-            headerNotification: 'Thông báo quan trọng',
+            headerNotification: headerNotification,
             linkImage: '',
-            contentNotification:
-                'Phòng Công tác Chính trị thông báo về việc tổ chức Hội nghị tổng kết công tác năm 2025 và triển khai nhiệm vụ năm 2026. Hội nghị sẽ được tổ chức vào:\n\n'
-                '• Thời gian: 8h00 ngày 25/06/2025\n'
-                '• Địa điểm: Hội trường lớn - Tầng 2\n'
-                '• Đối tượng tham dự: Toàn thể cán bộ công chức viên chức\n\n'
-                'Nội dung chính của hội nghị bao gồm:\n'
-                '1. Báo cáo tổng kết công tác năm 2025\n'
-                '2. Đánh giá kết quả thực hiện các mục tiêu đề ra\n'
-                '3. Triển khai kế hoạch công tác năm 2026\n'
-                '4. Biểu dương khen thưởng các tập thể, cá nhân xuất sắc\n\n'
-                'Đề nghị các đồng chí sắp xếp công việc để tham dự đầy đủ, đúng giờ.',
+            contentNotification: contentNotification,
           ),
-          NotificationFooterDetail(lengthComment: '2'),
+          if (files.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'File đính kèm:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ...files.map(
+                    (file) => GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        file['ten_file'] ?? '',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          NotificationFooterDetail(lengthComment: lengthComment),
         ],
       ),
     );

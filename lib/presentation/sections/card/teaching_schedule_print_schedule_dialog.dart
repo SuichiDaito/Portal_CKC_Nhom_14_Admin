@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:portal_ckc/api/model/admin_tuan.dart';
 
 class PrintScheduleDialog extends StatefulWidget {
   final int fromWeek;
   final int toWeek;
   final void Function(int from, int to) onPrint;
-
+  final List<TuanModel> tuanList;
   const PrintScheduleDialog({
     Key? key,
     required this.fromWeek,
     required this.toWeek,
     required this.onPrint,
+    required this.tuanList,
   }) : super(key: key);
 
   @override
@@ -19,7 +22,6 @@ class PrintScheduleDialog extends StatefulWidget {
 class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
   late int fromWeek;
   late int toWeek;
-
   @override
   void initState() {
     super.initState();
@@ -65,12 +67,12 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
                 if (toWeek < fromWeek) toWeek = fromWeek;
               });
             }),
-            SizedBox(height: 12),
             _buildWeekDropdown('Đến tuần:', toWeek, (val) {
               setState(() {
                 toWeek = val;
               });
-            }, minWeek: fromWeek),
+            }, minWeekId: fromWeek),
+n
             SizedBox(height: 16),
             _buildSummary(),
           ],
@@ -104,8 +106,12 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
     String label,
     int value,
     ValueChanged<int> onChanged, {
-    int minWeek = 1,
+    int? minWeekId,
   }) {
+    final filteredTuan = minWeekId != null
+        ? widget.tuanList.where((t) => t.id >= minWeekId).toList()
+        : widget.tuanList;
+
     return Row(
       children: [
         Expanded(flex: 2, child: Text(label, style: TextStyle(fontSize: 14))),
@@ -118,15 +124,14 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: DropdownButton<int>(
-              value: value,
+              value: filteredTuan.any((t) => t.id == value) ? value : null,
               isExpanded: true,
               underline: SizedBox(),
-              items: List.generate(52, (i) => i + 1)
-                  .where((week) => week >= minWeek)
+              items: filteredTuan
                   .map(
-                    (week) => DropdownMenuItem(
-                      value: week,
-                      child: Text('Tuần $week'),
+                    (t) => DropdownMenuItem<int>(
+                      value: t.id,
+                      child: Text('Tuần ${t.tuan}'),
                     ),
                   )
                   .toList(),
@@ -141,6 +146,23 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
   }
 
   Widget _buildSummary() {
+    final fromTuan = widget.tuanList.firstWhere(
+      (t) => t.id == fromWeek,
+      orElse: () => widget.tuanList.first,
+    );
+    final toTuan = widget.tuanList.firstWhere(
+      (t) => t.id == toWeek,
+      orElse: () => widget.tuanList.last,
+    );
+
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final String fromDateStr = fromTuan.ngayBatDau != null
+        ? dateFormat.format(fromTuan.ngayBatDau!)
+        : '---';
+    final String toDateStr = toTuan.ngayKetThuc != null
+        ? dateFormat.format(toTuan.ngayKetThuc!)
+        : '---';
+
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -166,11 +188,11 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
           ),
           SizedBox(height: 4),
           Text(
-            '• Số tuần: ${toWeek - fromWeek + 1} tuần',
+            '• Số tuần: ${toWeek == fromWeek ? 1 : widget.tuanList.where((t) => t.id >= fromWeek && t.id <= toWeek).length} tuần',
             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
           Text(
-            '• Thời gian: Tuần $fromWeek - Tuần $toWeek',
+            '• Thời gian: $fromDateStr - $toDateStr',
             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
         ],

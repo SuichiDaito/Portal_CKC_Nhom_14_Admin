@@ -29,3 +29,21 @@ class FetchStudentList extends AdminEvent {
 
   FetchStudentList(this.lopId);
 }
+
+class ChangePasswordEvent extends AdminEvent {
+  final String currentPassword;
+  final String newPassword;
+  final String confirmPassword;
+
+  ChangePasswordEvent({
+    required this.currentPassword,
+    required this.newPassword,
+    required this.confirmPassword,
+  });
+}
+
+class ForgotPasswordRequested extends AdminEvent {
+  final String email;
+
+  ForgotPasswordRequested(this.email);
+}

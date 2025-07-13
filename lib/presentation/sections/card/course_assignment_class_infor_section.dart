@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+
+class ClassListSection extends StatefulWidget {
+  final List<dynamic> classes;
+
+  final Function(String, String, String) onClassInfoChanged;
+  final List<User> instructors;
+=======
 import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
 
 class ClassListSection extends StatefulWidget {
   final List<ClassInfoAssignment> classes;
   final Function(String, String, String) onClassInfoChanged;
 
+>>>>>>> main
   const ClassListSection({
     Key? key,
     required this.classes,
     required this.onClassInfoChanged,
+<<<<<<< HEAD
+    required this.instructors,
+=======
+>>>>>>> main
   }) : super(key: key);
 
   @override
@@ -77,6 +92,13 @@ class _ClassListSectionState extends State<ClassListSection> {
     );
   }
 
+<<<<<<< HEAD
+  Widget _buildClassCard(BuildContext context, LopHocPhan classInfo) {
+    final key = classInfo.id.toString();
+    final isEditing = _editingStates[key] ?? false;
+    final instructorItems = widget.instructors;
+    final bool isLocked = classInfo.trangThaiNopBangDiem != 0;
+=======
   Widget _buildClassCard(BuildContext context, ClassInfoAssignment classInfo) {
     final isEditing = _editingStates[classInfo.id] ?? false;
 
@@ -86,6 +108,7 @@ class _ClassListSectionState extends State<ClassListSection> {
       'Phạm Văn C',
       'Lê Thị D',
     ];
+>>>>>>> main
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -103,9 +126,14 @@ class _ClassListSectionState extends State<ClassListSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+<<<<<<< HEAD
+          Text(
+            classInfo.lop.tenLop,
+=======
           // Tên lớp
           Text(
             classInfo.className,
+>>>>>>> main
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -114,12 +142,18 @@ class _ClassListSectionState extends State<ClassListSection> {
           ),
           const SizedBox(height: 12),
 
+<<<<<<< HEAD
+=======
           // Môn học + Loại lớp
+>>>>>>> main
           Row(
             children: [
               Expanded(
                 child: _buildInfoRow(
                   Icons.menu_book_outlined,
+<<<<<<< HEAD
+                  classInfo.tenHocPhan,
+=======
                   classInfo.subject,
                 ),
               ),
@@ -138,19 +172,41 @@ class _ClassListSectionState extends State<ClassListSection> {
                 child: _buildInfoRow(
                   Icons.account_tree_outlined,
                   classInfo.department,
+>>>>>>> main
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildInfoRow(
-                  Icons.calendar_today_outlined,
-                  'Niên khóa: ${classInfo.academicYear}',
+<<<<<<< HEAD
+                  Icons.category_outlined,
+                  classInfo.loaiMon.toString(),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
 
+          Row(
+            children: [
+              Expanded(
+                child: _buildInfoRow(
+                  Icons.calendar_today_outlined,
+                  'Niên khóa: ${classInfo.lop.nienKhoa.tenNienKhoa ?? "Khong co"}',
+=======
+                  Icons.calendar_today_outlined,
+                  'Niên khóa: ${classInfo.academicYear}',
+>>>>>>> main
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+
+<<<<<<< HEAD
+          const SizedBox(height: 6),
+
+=======
           // Học kỳ
           _buildInfoRow(
             Icons.date_range_outlined,
@@ -159,6 +215,7 @@ class _ClassListSectionState extends State<ClassListSection> {
           const SizedBox(height: 6),
 
           // Giảng viên + chỉnh sửa
+>>>>>>> main
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -166,6 +223,28 @@ class _ClassListSectionState extends State<ClassListSection> {
               const SizedBox(width: 6),
               Expanded(
                 child: AbsorbPointer(
+<<<<<<< HEAD
+                  absorbing: !isEditing || isLocked,
+                  child: DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value: classInfo.gv?.id != null
+                        ? classInfo.gv!.id.toString()
+                        : null,
+                    items: instructorItems.map((instructor) {
+                      return DropdownMenuItem<String>(
+                        value: instructor.id.toString(),
+                        child: Text(
+                          instructor.hoSo?.hoTen ?? 'Không tên',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null && !isLocked) {
+                        widget.onClassInfoChanged(
+                          classInfo.id.toString(),
+                          'id_giang_vien',
+=======
                   absorbing: !isEditing,
                   child: DropdownButtonFormField<String>(
                     value: instructors.contains(classInfo.instructor.trim())
@@ -182,6 +261,7 @@ class _ClassListSectionState extends State<ClassListSection> {
                         widget.onClassInfoChanged(
                           classInfo.id,
                           'instructor',
+>>>>>>> main
                           value,
                         );
                       }
@@ -195,8 +275,15 @@ class _ClassListSectionState extends State<ClassListSection> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+<<<<<<< HEAD
+                      filled: !isEditing || isLocked,
+                      fillColor: (!isEditing || isLocked)
+                          ? Colors.grey.shade100
+                          : null,
+=======
                       filled: !isEditing,
                       fillColor: !isEditing ? Colors.grey.shade100 : null,
+>>>>>>> main
                     ),
                   ),
                 ),
@@ -205,6 +292,32 @@ class _ClassListSectionState extends State<ClassListSection> {
               IconButton(
                 icon: Icon(
                   isEditing ? Icons.check : Icons.edit,
+<<<<<<< HEAD
+                  color: isEditing
+                      ? Colors.green
+                      : (isLocked ? Colors.grey.shade400 : Colors.grey),
+                ),
+                tooltip: isLocked
+                    ? 'Không thể chỉnh sửa (Đã nộp bảng điểm)'
+                    : (isEditing ? 'Xác nhận' : 'Chỉnh sửa'),
+                onPressed: isLocked
+                    ? () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text(
+                              'Lớp này đã nộp bảng điểm, không thể chỉnh sửa giảng viên!',
+                            ),
+                            backgroundColor: Colors.redAccent,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    : () {
+                        setState(() {
+                          _editingStates[key] = !isEditing;
+                        });
+                      },
+=======
                   color: isEditing ? Colors.green : Colors.grey,
                 ),
                 tooltip: isEditing ? 'Xác nhận' : 'Chỉnh sửa',
@@ -213,6 +326,7 @@ class _ClassListSectionState extends State<ClassListSection> {
                     _editingStates[classInfo.id] = !isEditing;
                   });
                 },
+>>>>>>> main
               ),
             ],
           ),

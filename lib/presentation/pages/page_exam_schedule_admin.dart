@@ -1,61 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_lich_thi.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/admin_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/lich_thi_bloc.dart';
+import 'package:portal_ckc/bloc/event/admin_event.dart';
+import 'package:portal_ckc/bloc/event/lich_thi_event.dart';
+import 'package:portal_ckc/bloc/state/admin_state.dart';
+import 'package:portal_ckc/bloc/state/lich_thi_state.dart';
 import 'package:portal_ckc/presentation/sections/card/class_management_teacher_info_card.dart';
 import 'package:portal_ckc/presentation/sections/card/exam_schedule_view.dart';
-import 'package:portal_ckc/presentation/sections/card/teaching_schedule_print_schedule_dialog.dart';
-
-class ExamDuty {
-  final String invigilator1;
-  final String invigilator2;
-  final String examDate;
-  final String startTime;
-  final String duration;
-  final String room;
-  final String status;
-
-  ExamDuty({
-    required this.invigilator1,
-    required this.invigilator2,
-    required this.examDate,
-    required this.startTime,
-    required this.duration,
-    required this.room,
-    required this.status,
-  });
-}
-
-final Map<String, List<ExamDuty>> examSchedule = {
-  '17/06/2025': [
-    ExamDuty(
-      invigilator1: 'Nguyễn Văn A',
-      invigilator2: 'Trần Thị B',
-      examDate: '17/06/2025',
-      startTime: '07:00',
-      duration: '90 phút',
-      room: 'P.201',
-      status: 'Chưa diễn ra',
-    ),
-    ExamDuty(
-      invigilator1: 'Nguyễn Văn C',
-      invigilator2: 'Lê Thị D',
-      examDate: '17/06/2025',
-      startTime: '09:00',
-      duration: '90 phút',
-      room: 'P.202',
-      status: 'Đã hoàn thành',
-    ),
-  ],
-  '18/06/2025': [
-    ExamDuty(
-      invigilator1: 'Nguyễn Văn E',
-      invigilator2: 'Trần Thị F',
-      examDate: '18/06/2025',
-      startTime: '07:00',
-      duration: '60 phút',
-      room: 'P.301',
-      status: 'Chưa diễn ra',
-    ),
-  ],
-};
+import 'package:portal_ckc/presentation/sections/card/show_dialog_print_exam.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PageExamScheduleAdmin extends StatefulWidget {
   @override
@@ -64,19 +19,40 @@ class PageExamScheduleAdmin extends StatefulWidget {
 
 class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
   String? selectedStatus;
-  final String teacherName = "TS. Nguyễn Văn An";
-  final String teacherId = "GV001";
-  final String department = "Khoa Công Nghệ Thông Tin";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAdminInfo();
+    _fetchExamScheduleByTeacher();
+  }
+
+  Future<void> _fetchExamScheduleByTeacher() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    if (userId != null) {
+      context.read<LichThiBloc>().add(FetchLichThiByGiangVienId(userId));
+    }
+  }
+
+  Future<void> _fetchAdminInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    if (userId != null) {
+      context.read<AdminBloc>().add(FetchAdminDetail(userId));
+    } else {
+      print('⚠️ Không tìm thấy user_id trong SharedPreferences');
+    }
+  }
+
   void _showPrintDialog() {
     showDialog(
       context: context,
-      builder: (_) => PrintScheduleDialog(
-        fromWeek: 1,
-        toWeek: 1,
+      builder: (_) => PrintExamDialog(
+        initialFromDate: DateTime.now(),
+        initialToDate: DateTime.now(),
         onPrint: (from, to) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('In lịch từ $from đến $to')));
+          print('In từ ${from.toIso8601String()} đến ${to.toIso8601String()}');
         },
       ),
     );
@@ -84,14 +60,6 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredSchedule = examSchedule.map((date, duties) {
-      final filteredDuties =
-          selectedStatus == null || selectedStatus == 'Tất cả'
-          ? duties
-          : duties.where((d) => d.status == selectedStatus).toList();
-      return MapEntry(date, filteredDuties);
-    })..removeWhere((_, duties) => duties.isEmpty);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -119,11 +87,34 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
         ),
         child: Column(
           children: [
-            TeacherInfoCard(
-              teacherName: teacherName,
-              teacherId: teacherId,
-              department: department,
+            BlocBuilder<AdminBloc, AdminState>(
+              builder: (context, state) {
+                if (state is AdminLoaded || state is AdminSuccess) {
+                  final user = state is AdminLoaded
+                      ? state.user
+                      : (state as AdminSuccess).user;
+                  return TeacherInfoCard(
+                    teacherName: user.hoSo?.hoTen ?? 'Không rõ',
+                    teacherId: '${user.id}',
+                    department:
+                        user.boMon?.chuyenNganh?.khoa?.tenKhoa ??
+                        'Chưa có thông tin',
+                  );
+                } else if (state is AdminLoading) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return TeacherInfoCard(
+                    teacherName: 'Không rõ',
+                    teacherId: '---',
+                    department: '---',
+                  );
+                }
+              },
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Wrap(
@@ -150,22 +141,63 @@ class _PageExamScheduleAdminState extends State<PageExamScheduleAdmin> {
                     .toList(),
               ),
             ),
-
             Expanded(
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 8),
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: filteredSchedule.isEmpty
-                    ? Center(child: Text('Không có lịch gác thi phù hợp'))
-                    : ExamScheduleView(
-                        selectedDay: null,
-                        scheduleData: filteredSchedule,
-                        onDayTap: (_) {},
+              child: BlocBuilder<LichThiBloc, LichThiState>(
+                builder: (context, state) {
+                  if (state is LichThiLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (state is LichThiLoaded) {
+                    if (state.lichThiList.isEmpty) {
+                      return Center(
+                        child: Text('Không có lịch thi được phân công'),
+                      );
+                    }
+                    final now = DateTime.now();
+                    final filteredList = state.lichThiList.where((lich) {
+                      final ngayThi = DateTime.tryParse(lich.ngayThi);
+                      if (ngayThi == null) return false;
+
+                      if (selectedStatus == null || selectedStatus == 'Tất cả')
+                        return true;
+
+                      if (selectedStatus == 'Chưa diễn ra') {
+                        return ngayThi.isAfter(
+                          DateTime(now.year, now.month, now.day),
+                        );
+                      } else if (selectedStatus == 'Đã hoàn thành') {
+                        return ngayThi.isBefore(
+                          DateTime(now.year, now.month, now.day),
+                        );
+                      } else if (selectedStatus == 'Đang diễn ra') {
+                        return ngayThi.year == now.year &&
+                            ngayThi.month == now.month &&
+                            ngayThi.day == now.day;
+                      }
+
+                      return true;
+                    }).toList();
+                    final Map<String, List<ExamSchedule>> grouped = {};
+                    for (final lich in filteredList) {
+                      final key = lich.ngayThi;
+                      if (!grouped.containsKey(key)) grouped[key] = [];
+                      grouped[key]!.add(lich);
+                    }
+
+                    return ExamScheduleView(
+                      selectedDay: null,
+                      scheduleData: grouped,
+                      onDayTap: (day) {},
+                    );
+                  } else if (state is LichThiError) {
+                    return Center(
+                      child: Text(
+                        "Bạn không chưa được phân công chức năng này",
                       ),
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                },
               ),
             ),
           ],

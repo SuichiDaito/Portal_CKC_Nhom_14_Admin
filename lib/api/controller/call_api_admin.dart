@@ -36,4 +36,3 @@ class AuthHeaderInterceptor implements Interceptor {
     return chain.proceed(updatedRequest);
   }
 }
-

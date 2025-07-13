@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 
 class ClassSearchBar extends StatelessWidget {
   final String searchQuery;
   final String selectedStatus;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onStatusChanged;
-  final List<SinhVien> studentList;
+  final List<StudentWithRole> studentList;
+  final int idClass;
+  final int idNienKhoa;
+
   const ClassSearchBar({
     super.key,
     required this.searchQuery,
@@ -15,6 +18,8 @@ class ClassSearchBar extends StatelessWidget {
     required this.onSearchChanged,
     required this.onStatusChanged,
     required this.studentList,
+    required this.idClass,
+    required this.idNienKhoa,
   });
 
   @override
@@ -50,9 +55,9 @@ class ClassSearchBar extends StatelessWidget {
                 height: 48,
                 child: ElevatedButton.icon(
                   onPressed: () => context.push(
-                    '/admin/conduct_evaluation_admin',
-                    extra: studentList,
+                    '/admin/conduct_evaluation_admin/${idClass}/${idNienKhoa}',
                   ),
+
                   icon: const Icon(Icons.edit, size: 18),
                   label: const Text('Nhập điểm'),
                   style: ElevatedButton.styleFrom(
@@ -64,27 +69,6 @@ class ClassSearchBar extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            const Text(
-              "Trạng thái: ",
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(width: 8),
-            DropdownButton<String>(
-              value: selectedStatus,
-              items: const [
-                DropdownMenuItem(value: "Tất cả", child: Text("Tất cả")),
-                DropdownMenuItem(value: "Đang học", child: Text("Đang học")),
-                DropdownMenuItem(value: "Đã nghỉ", child: Text("Đã nghỉ")),
-              ],
-              onChanged: (value) {
-                if (value != null) onStatusChanged(value);
-              },
             ),
           ],
         ),

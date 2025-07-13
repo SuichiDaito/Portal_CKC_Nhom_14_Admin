@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/studen_model.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/presentation/sections/button/button_custom_button.dart';
 
 class StudentListItem extends StatelessWidget {
-  final Student student;
+  final StudentWithRole student;
   final VoidCallback onDetailPressed;
   final VoidCallback onResetPasswordPressed;
 
@@ -14,29 +14,33 @@ class StudentListItem extends StatelessWidget {
     required this.onResetPasswordPressed,
   }) : super(key: key);
 
-  Color _getStatusColor(StudentStatus status) {
-    switch (status) {
-      case StudentStatus.active:
+  Color _getStatusColor(int? statusIndex) {
+    switch (statusIndex) {
+      case 0:
         return Colors.green;
-      case StudentStatus.inactive:
-        return Colors.orange;
-      case StudentStatus.graduated:
+      case 1:
         return Colors.blueGrey;
-      case StudentStatus.suspended:
+      case 2:
+        return Colors.orange;
+      case 3:
         return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 
-  String _getStatusText(StudentStatus status) {
-    switch (status) {
-      case StudentStatus.active:
+  String _getStatusText(int? statusIndex) {
+    switch (statusIndex) {
+      case 0:
         return 'Đang học';
-      case StudentStatus.inactive:
-        return 'Nghỉ học';
-      case StudentStatus.graduated:
+      case 1:
         return 'Đã tốt nghiệp';
-      case StudentStatus.suspended:
+      case 2:
+        return 'Nghỉ học';
+      case 3:
         return 'Đình chỉ';
+      default:
+        return 'Không rõ';
     }
   }
 
@@ -52,93 +56,120 @@ class StudentListItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Lớp: ${student.className}',
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
               ),
-            ),
-            Divider(color: Colors.grey, thickness: 1, height: 20),
-            Text(
-              'MSSV: ${student.studentCode}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.person, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(
+                        student.sinhVien.hoSo?.hoTen ?? 'Chưa có tên',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 24, thickness: 1),
+
+                  _buildInfoRow(Icons.badge, 'MSSV', student.sinhVien.maSv),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(
+                    Icons.email,
+                    'Email',
+                    student.sinhVien.hoSo?.email,
+                  ),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(
+                    Icons.phone,
+                    'SĐT',
+                    student.sinhVien.hoSo?.soDienThoai,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.info_outline, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Trạng thái:',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(
+                            student.sinhVien.trangThai,
+                          ).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: _getStatusColor(student.sinhVien.trangThai),
+                          ),
+                        ),
+                        child: Text(
+                          _getStatusText(student.sinhVien.trangThai),
+                          style: TextStyle(
+                            color: _getStatusColor(student.sinhVien.trangThai),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomButton(
+                        text: 'Xem chi tiết',
+                        onPressed: onDetailPressed,
+                        backgroundColor: Colors.blue,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Tên: ${student.fullName}',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Row(
-              children: [
-                const Text(
-                  'Trạng thái:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(student.status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: _getStatusColor(student.status)),
-                  ),
-                  child: Text(
-                    _getStatusText(student.status),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _getStatusColor(student.status),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                CustomButton(
-                  text: 'Xem chi tiết',
-                  onPressed: onDetailPressed,
-                  backgroundColor: Colors.blue.shade600,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                CustomButton(
-                  text: 'Đặt lại MK',
-                  onPressed: onResetPasswordPressed,
-                  backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String? value) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.black54, size: 20),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 80,
+          child: Text(
+            '$label:',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value ?? '—',
+            style: const TextStyle(fontSize: 15),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

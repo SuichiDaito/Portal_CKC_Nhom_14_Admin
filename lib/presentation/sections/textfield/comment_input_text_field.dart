@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/comment.dart';
 
 class NotificationDetailInputTextField extends StatefulWidget {
   final TextEditingController commentController;
-  final Function onPressed;
+  final VoidCallback onPressed;
   NotificationDetailInputTextField({
     super.key,
     required this.commentController,
@@ -63,7 +62,7 @@ class InputTextField extends State<NotificationDetailInputTextField> {
                         size: 16,
                       ),
                     ),
-                    onPressed: widget.onPressed(),
+                    onPressed: widget.onPressed,
                   ),
                 ],
               ),

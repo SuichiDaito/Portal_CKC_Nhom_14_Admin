@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:portal_ckc/constant/style_of_widget.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ButtonLogin extends StatefulWidget {
   final VoidCallback onPressed;

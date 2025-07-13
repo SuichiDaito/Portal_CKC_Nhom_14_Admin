@@ -40,20 +40,19 @@ class ClassActionButtons extends StatelessWidget {
 }
 
 class ButtonsClassActionClassManagementReport extends StatelessWidget {
-  final VoidCallback onTap;
+  final VoidCallback onOpenClassList;
 
   const ButtonsClassActionClassManagementReport({
     super.key,
-    required this.onTap,
+    required this.onOpenClassList,
   });
-
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: ElevatedButton(
-            onPressed: onTap,
+            onPressed: onOpenClassList,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D47A1), // Xanh đậm hơn
               foregroundColor: Colors.white,

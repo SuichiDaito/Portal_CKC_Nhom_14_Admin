@@ -86,10 +86,9 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
                             'assets/images/logo.png',
                             width: 48,
                             height: 48,
-                            // fit: BoxFit.contain,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         const Text(
                           'TRƯỜNG CAO ĐẲNG KỸ\nTHUẬT CAO THẮNG',
                           textAlign: TextAlign.center,
@@ -172,7 +171,7 @@ class _PageLoginAdminState extends State<PageLoginAdmin> {
                               controller: _taiKhoanController,
                               style: const TextStyle(fontSize: 14),
                               decoration: InputDecoration(
-                                labelText: 'Email giảng viên',
+                                labelText: 'Tài khoản giảng viên',
                                 prefixIcon: const Icon(Icons.person_outline),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),

@@ -34,18 +34,18 @@ class ContentDetail extends State<NotificationContentDetail> {
             ),
           ),
           const SizedBox(height: 16),
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-              image: DecorationImage(
-                image: NetworkImage(widget.linkImage),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          // Container(
+          //   width: double.infinity,
+          //   height: 200,
+          //   decoration: BoxDecoration(
+          //     color: Colors.grey[100],
+          //     borderRadius: BorderRadius.circular(12),
+          //     image: DecorationImage(
+          //       image: NetworkImage(widget.linkImage),
+          //       fit: BoxFit.cover,
+          //     ),
+          //   ),
+          // ),
           const SizedBox(height: 16),
           const Text(
             'Kính gửi toàn thể cán bộ, công chức, viên chức và người lao động,',

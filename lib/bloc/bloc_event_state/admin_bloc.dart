@@ -1,8 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portal_ckc/api/controller/call_api_admin.dart';
+import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_lop.dart';
 import 'package:portal_ckc/api/model/admin_sinh_vien.dart';
-import 'package:portal_ckc/api/model/admin_thongtin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:portal_ckc/api/services/admin_service.dart';
 
 import 'package:portal_ckc/bloc/event/admin_event.dart';
@@ -17,6 +18,8 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     on<FetchAdminDetail>(_onFetchDetail);
     on<FetchClassList>(_onFetchClassList);
     on<FetchStudentList>(_onFetchStudentList);
+    on<ChangePasswordEvent>(_onChangePassword);
+    on<ForgotPasswordRequested>(_onForgotPasswordRequested);
   }
 
   Future<void> _onLogin(AdminLoginEvent event, Emitter emit) async {
@@ -43,8 +46,52 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
               await prefs.setInt('user_id', user.id);
+              if (user.roles.isNotEmpty) {
+                await prefs.setInt('user_role', user.roles.first.id);
+                await prefs.setString('user_name_role', user.roles.first.name);
+                final roles = userJson['roles'] as List<dynamic>? ?? [];
+                final Set<String> permNamesSet = {};
+
+                for (final role in roles) {
+                  final perms = role['permissions'] as List<dynamic>? ?? [];
+                  for (final p in perms) {
+                    final name = p['name']?.toString();
+                    if (name != null && name.isNotEmpty) {
+                      permNamesSet.add(name);
+                    }
+                  }
+                }
+
+                final permNamesList = permNamesSet.toList();
+                await prefs.setStringList('user_permissions', permNamesList);
+
+                final Set<String> permIdsSet = {};
+                for (final role in roles) {
+                  final perms = role['permissions'] as List<dynamic>? ?? [];
+                  for (final p in perms) {
+                    final id = p['id']?.toString();
+                    if (id != null && id.isNotEmpty) {
+                      permIdsSet.add(id);
+                    }
+                  }
+                }
+                await prefs.setStringList(
+                  'user_permission_ids',
+                  permIdsSet.toList(),
+                );
+              } else {
+                await prefs.setInt('user_role', -1);
+                await prefs.setString('user_name_role', 'Chưa có vai trò');
+              }
+
+              await prefs.setString(
+                'user_name_fullname',
+                user.hoSo?.hoTen ?? "Lỗi khi tải ",
+              );
               print('✅ Token đã được lưu: $token');
               print('✅ User ID đã được lưu: ${user.id}');
+
+              print('✅ User Name đã được lưu: ${user.hoSo?.hoTen}');
             }
             emit(AdminLoaded(user));
           } else {
@@ -83,7 +130,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
           final rolesJson = data['roles'];
 
           final user = User.fromJson({...userJson, 'roles': rolesJson});
-          emit(AdminSuccess(user)); // ✅ Chỉ emit, không add lại event
+          emit(AdminSuccess(user));
         } else {
           emit(AdminError('Phản hồi không đúng định dạng'));
         }
@@ -129,9 +176,11 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         final body = response.body;
         if (body is Map<String, dynamic> && body.containsKey('sinh_viens')) {
           final dataList = body['sinh_viens'] as List<dynamic>;
-          final sinhViens = dataList.map((e) => SinhVien.fromJson(e)).toList();
-          print("✅ Tổng số sinh viên: ${sinhViens.length}");
-          emit(StudentListLoaded(sinhViens));
+          final studentsWithRole = dataList
+              .map((e) => StudentWithRole.fromJson(e))
+              .toList();
+          print("✅ Tổng số sinh viên: ${studentsWithRole.length}");
+          emit(StudentListLoaded(studentsWithRole));
         } else {
           emit(AdminError('Phản hồi không đúng định dạng (thiếu sinh_viens)'));
         }
@@ -140,6 +189,61 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       }
     } catch (e) {
       emit(AdminError('Lỗi lấy danh sách sinh viên: $e'));
+    }
+  }
+
+  Future<void> _onChangePassword(
+    ChangePasswordEvent event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(AdminLoading());
+    try {
+      final response = await service.changePassword({
+        'current_password': event.currentPassword,
+        'new_password': event.newPassword,
+        'new_password_confirmation': event.confirmPassword,
+      });
+
+      if (response.isSuccessful && response.body != null) {
+        final body = response.body!;
+        if (body['status'] == true) {
+          emit(AdminSuccessMessage(body['message']));
+        } else {
+          emit(AdminError(body['message'] ?? 'Đổi mật khẩu thất bại'));
+        }
+      } else {
+        emit(AdminError('Không thể đổi mật khẩu. Vui lòng thử lại.'));
+      }
+    } catch (e) {
+      emit(AdminError('Lỗi hệ thống: $e'));
+    }
+  }
+
+  Future<void> _onForgotPasswordRequested(
+    ForgotPasswordRequested event,
+    Emitter<AdminState> emit,
+  ) async {
+    emit(ForgotPasswordLoading());
+    try {
+      final response = await service.resetPassword({'email': event.email});
+
+      if (response.isSuccessful && response.body != null) {
+        final body = response.body;
+        if (body?['success'] == true && body?['data'] != null) {
+          emit(
+            ForgotPasswordSuccess(
+              hoTen: body?['data']['ho_ten'],
+              email: body?['data']['email'],
+            ),
+          );
+        } else {
+          emit(ForgotPasswordFailure(body?['message'] ?? 'Yêu cầu thất bại'));
+        }
+      } else {
+        emit(ForgotPasswordFailure('Không thể gửi yêu cầu. Vui lòng thử lại.'));
+      }
+    } catch (e) {
+      emit(ForgotPasswordFailure('Lỗi hệ thống: ${e.toString()}'));
     }
   }
 }

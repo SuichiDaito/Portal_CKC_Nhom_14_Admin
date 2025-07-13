@@ -36,7 +36,10 @@ Widget _buildClassCard(Lop classInfo, Function(Lop) onTap) {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     child: InkWell(
       onTap: () => onTap(classInfo),
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
       borderRadius: BorderRadius.circular(10),
       child: Padding(
         padding: const EdgeInsets.all(16),

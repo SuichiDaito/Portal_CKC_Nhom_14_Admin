@@ -1,231 +1,245 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:portal_ckc/api/model/admin_nien_khoa.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/tuan_bloc.dart';
+import 'package:portal_ckc/bloc/event/tuan_event.dart';
+import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
+import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
+import 'package:portal_ckc/bloc/state/tuan_state.dart';
 import 'package:portal_ckc/presentation/sections/button/app_bar_title.dart';
-import 'package:portal_ckc/presentation/sections/button/year_filter_status_buttons.dart';
-import 'package:portal_ckc/presentation/sections/card/academic_year_list_item.dart';
-import 'package:portal_ckc/presentation/sections/card/create_academic_year_bottom_sheet.dart';
-
-enum AcademicYearStatus { initialized, notInitialized }
-
-enum AcademicTerm {
-  term1,
-  term2,
-  summerTerm,
-} // Học kỳ: Học kỳ 1, Học kỳ 2, Học kỳ hè
-
-class AcademicYear {
-  final String id; // ID duy nhất của năm học/học kỳ
-  final String cohort; // Niên khóa (ví dụ: K20, K21)
-  final AcademicTerm term; // Học kỳ
-  final int year; // Năm học
-  final DateTime? startDate; // ✅ nullable
-  AcademicYearStatus status; // Trạng thái: Đã khởi tạo / Chưa khởi tạo
-
-  AcademicYear({
-    required this.id,
-    required this.cohort,
-    required this.term,
-    required this.year,
-    required this.startDate,
-    this.status = AcademicYearStatus.notInitialized,
-  });
-
-  // Helper để tạo bản sao khi cập nhật trạng thái
-  AcademicYear copyWith({
-    String? id,
-    String? cohort,
-    AcademicTerm? term,
-    int? year,
-    DateTime? startDate,
-    AcademicYearStatus? status,
-  }) {
-    return AcademicYear(
-      id: id ?? this.id,
-      cohort: cohort ?? this.cohort,
-      term: term ?? this.term,
-      year: year ?? this.year,
-      startDate: startDate ?? this.startDate,
-      status: status ?? this.status,
-    );
-  }
-}
+import 'package:portal_ckc/presentation/sections/dialogs/show_dialog_academic.dart';
 
 class PageAcademicYearManagement extends StatefulWidget {
-  const PageAcademicYearManagement({Key? key}) : super(key: key);
+  const PageAcademicYearManagement({super.key});
 
   @override
-  _PageAcademicYearManagementState createState() =>
+  State<PageAcademicYearManagement> createState() =>
       _PageAcademicYearManagementState();
 }
 
 class _PageAcademicYearManagementState
     extends State<PageAcademicYearManagement> {
-  // Dữ liệu giả định
-  final List<AcademicYear> _academicYears = [
-    AcademicYear(
-      id: 'AY001',
-      cohort: 'K20',
-      term: AcademicTerm.term1,
-      year: 2023,
-      startDate: DateTime(2023, 9, 5),
-      status: AcademicYearStatus.initialized,
-    ),
-    AcademicYear(
-      id: 'AY002',
-      cohort: 'K20',
-      term: AcademicTerm.term2,
-      year: 2024,
-      startDate: DateTime(2024, 1, 15),
-      status: AcademicYearStatus.initialized,
-    ),
-    AcademicYear(
-      id: 'AY003',
-      cohort: 'K21',
-      term: AcademicTerm.term1,
-      year: 2024,
-      startDate: null,
-      status: AcademicYearStatus.notInitialized,
-    ),
-    AcademicYear(
-      id: 'AY004',
-      cohort: 'K21',
-      term: AcademicTerm.term2,
-      year: 2025,
-      startDate: null,
-      status: AcademicYearStatus.notInitialized,
-    ),
-  ];
+  List<NienKhoa> _allYears = [];
 
-  AcademicYearStatus? _currentFilter = null; // Mặc định hiển thị "Tất cả"
+  void _initializeAcademicYear(DateTime selectedDate) {
+    final dateStr = DateFormat('yyyy-MM-dd').format(selectedDate);
+    context.read<TuanBloc>().add(KhoiTaoTuanEvent(dateStr));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Đã gửi yêu cầu khởi tạo tuần')),
+    );
+  }
 
-  // Getter để lấy danh sách các năm học/học kỳ đã lọc
-  List<AcademicYear> get _filteredAcademicYears {
-    if (_currentFilter == null) {
-      return _academicYears;
-    } else {
-      return _academicYears.where((ay) => ay.status == _currentFilter).toList();
+  void _showCreateDialog() async {
+    final nk = await showNienKhoaDialog(context, _allYears);
+    if (nk == null) return;
+
+    final parts = nk.tenNienKhoa.split('-');
+    final start = int.parse(parts[0]), end = int.parse(parts[1]);
+    final nam = await showNamHocDialog(context, start, end);
+    if (nam == null) return;
+
+    final date = await showDateTrongNamPicker(context, nam);
+    if (date != null) {
+      _initializeAcademicYear(date);
     }
   }
 
-  void _addAcademicYear(AcademicYear newAcademicYear) {
-    setState(() {
-      _academicYears.add(newAcademicYear);
-      // Sắp xếp lại để dễ nhìn, ví dụ theo năm và học kỳ
-      _academicYears.sort((a, b) {
-        int yearCompare = a.year.compareTo(b.year);
-        if (yearCompare != 0) return yearCompare;
-        return a.term.index.compareTo(b.term.index);
-      });
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Đã khởi tạo ${newAcademicYear.cohort} - ${_getTermText(newAcademicYear.term)} - ${newAcademicYear.year} thành công!',
+  // Gọi Tuan dialog:
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<TuanBloc, TuanState>(
+      listener: (context, state) {
+        if (state is TuanSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        } else if (state is TuanError) {
+          final message = state.message.toLowerCase().contains('permission')
+              ? 'Bạn không có quyền thực hiện thao tác này.'
+              : state.message;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 250, 248, 248),
+        appBar: AppBar(
+          title: const CustomAppBarTitle(title: 'Khởi tạo năm học'),
+          backgroundColor: Colors.blueAccent,
+          centerTitle: true,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                "Danh Sách Niên Khóa",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+            Divider(),
+            const SizedBox(height: 8),
+            Expanded(
+              child: BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
+                builder: (context, state) {
+                  if (state is NienKhoaHocKyLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is NienKhoaHocKyLoaded) {
+                    _allYears = state.nienKhoas
+                        .where((nk) => nk.namBatDau.isNotEmpty)
+                        .toList();
+
+                    if (_allYears.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'Không có niên khóa phù hợp.',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: _allYears.length,
+                      itemBuilder: (context, index) {
+                        final nk = _allYears[index];
+
+                        return Card(
+                          elevation: 3,
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: ExpansionTile(
+                              tilePadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              title: Text(
+                                nk.tenNienKhoa,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'Năm bắt đầu: ${nk.namBatDau}',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                              trailing: TextButton.icon(
+                                icon: const Icon(
+                                  Icons.calendar_month,
+                                  size: 20,
+                                ),
+                                label: const Text('Xem tuần'),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  foregroundColor: Colors.blueAccent,
+                                ),
+                                onPressed: () {
+                                  final namBatDau = int.tryParse(nk.namBatDau);
+                                  if (namBatDau != null) {
+                                    context.read<TuanBloc>().add(
+                                      FetchTuanEvent(namBatDau),
+                                    );
+                                    showTuanListDialog(context, namBatDau);
+                                  }
+                                },
+                              ),
+                              children: nk.hocKys.map<Widget>((hk) {
+                                final hasStartDate =
+                                    hk.ngayBatDau != null &&
+                                    hk.ngayBatDau!.isNotEmpty;
+                                return ListTile(
+                                  title: Text(hk.tenHocKy),
+                                  subtitle: Text(
+                                    hasStartDate
+                                        ? 'Ngày bắt đầu: ${hk.ngayBatDau}'
+                                        : 'Chưa khởi tạo ngày bắt đầu',
+                                    style: TextStyle(
+                                      color: hasStartDate
+                                          ? Colors.black87
+                                          : Colors.redAccent,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  trailing: hasStartDate
+                                      ? null
+                                      : IconButton(
+                                          icon: const Icon(Icons.add),
+                                          tooltip: 'Khởi tạo ngày bắt đầu',
+                                          onPressed: () async {
+                                            final selectedDate =
+                                                await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(2000),
+                                                  lastDate: DateTime(2100),
+                                                );
+                                            if (selectedDate != null) {
+                                              _initializeAcademicYear(
+                                                selectedDate,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else if (state is NienKhoaHocKyError) {
+                    return Center(
+                      child: Text(
+                        "Không thể truy cập chức năng này, vui lòng thử lại sau.",
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _showCreateDialog,
+          label: const Text("Khởi tạo tuần"),
+          icon: const Icon(Icons.add),
         ),
       ),
     );
   }
 
-  void _initializeAcademicYear(String academicYearId, DateTime selectedDate) {
-    setState(() {
-      final index = _academicYears.indexWhere((ay) => ay.id == academicYearId);
-      if (index != -1) {
-        _academicYears[index] = _academicYears[index].copyWith(
-          status: AcademicYearStatus.initialized,
-          startDate: selectedDate, // ✅ lưu ngày bắt đầu
-        );
-      }
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Đã cập nhật trạng thái năm học thành "Đã khởi tạo".'),
-      ),
-    );
-  }
-
-  String _getTermText(AcademicTerm term) {
-    switch (term) {
-      case AcademicTerm.term1:
-        return 'Học kỳ 1';
-      case AcademicTerm.term2:
-        return 'Học kỳ 2';
-      case AcademicTerm.summerTerm:
-        return 'Học kỳ hè';
-    }
-  }
-
-  // void _showCreateAcademicYearSheet() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-  //     ),
-  //     builder: (context) {
-  //       return CreateAcademicYearBottomSheet(onCreate: _addAcademicYear);
-  //     },
-  //   );
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomAppBarTitle(title: 'Khởi tạo năm học'),
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: Column(
-        children: [
-          // Các nút lọc theo trạng thái
-          FilterStatusButtons(
-            currentFilter: _currentFilter,
-            onFilterChanged: (status) {
-              setState(() {
-                _currentFilter = status;
-              });
-            },
-          ),
-          const SizedBox(height: 8),
-          // Danh sách các năm học
-          Expanded(
-            child: _filteredAcademicYears.isEmpty
-                ? Center(
-                    child: Text(
-                      _currentFilter == AcademicYearStatus.initialized
-                          ? 'Chưa có năm học nào được khởi tạo.'
-                          : _currentFilter == AcademicYearStatus.notInitialized
-                          ? 'Không có năm học nào chờ khởi tạo.'
-                          : 'Chưa có năm học nào.',
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _filteredAcademicYears.length,
-                    itemBuilder: (context, index) {
-                      final academicYear = _filteredAcademicYears[index];
-                      return AcademicYearListItem(
-                        academicYear: academicYear, // ✅ đúng tên biến
-                        onInitialize: (selectedDate) {
-                          _initializeAcademicYear(
-                            academicYear.id,
-                            selectedDate,
-                          ); // ✅ truyền đúng dữ liệu
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _showCreateAcademicYearSheet,
-      //   tooltip: 'Khởi tạo năm học mới',
-      //   child: const Icon(Icons.add, color: Colors.white),
-      //   backgroundColor: Colors.blueAccent,
-      // ),
-    );
-  }
 }

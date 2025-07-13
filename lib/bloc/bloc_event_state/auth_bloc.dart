@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:portal_ckc/api/model/admin_thongtin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AuthEvent {}
@@ -31,10 +31,8 @@ class LoggedOut extends AuthEvent {}
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthLoading()) {
-    // Gọi kiểm tra khi bắt đầu app
     _checkInitialLogin();
 
-    // Gắn handler cho các sự kiện
     on<AppStarted>(_onAppStarted);
     on<LoggedIn>((event, emit) => emit(Authenticated()));
     on<LoggedOut>((event, emit) async {

@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:portal_ckc/api/model/admin_chuong_trinh_dao_tao.dart';
+import 'package:portal_ckc/api/model/admin_hoc_ky.dart';
+import 'package:portal_ckc/api/model/admin_mon_hoc.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/lop_hoc_phan_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nganh_khoa_bloc.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/user_bloc.dart';
+import 'package:portal_ckc/bloc/event/lop_hoc_phan_event.dart';
+import 'package:portal_ckc/bloc/event/nganh_khoa_event.dart';
+import 'package:portal_ckc/bloc/event/user_event.dart';
+import 'package:portal_ckc/bloc/state/lop_hoc_phan_state.dart';
+import 'package:portal_ckc/bloc/state/nganh_khoa_state.dart';
+import 'package:portal_ckc/bloc/state/user_state.dart';
 import 'package:portal_ckc/presentation/sections/card/course_assignment_class_infor_section.dart';
 import 'package:portal_ckc/presentation/sections/card/course_assignment_info_section.dart';
+import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
+import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
+import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 
-class ClassInfoAssignment {
-  final String id;
-  final String className;
-  String subject;
-  String type;
-  String department;
-  String instructor;
-  bool isSelected;
-
-  String semester;
-  String academicYear;
-
-  ClassInfoAssignment({
-    required this.id,
-    required this.className,
-    required this.subject,
-    required this.type,
-    required this.department,
-    required this.instructor,
-    required this.isSelected,
-    required this.semester,
-    required this.academicYear,
-  });
-}
 
 class PageCourseAssignmentAdmin extends StatefulWidget {
   @override
@@ -35,81 +28,47 @@ class PageCourseAssignmentAdmin extends StatefulWidget {
 
 class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<User> instructors = [];
 
-  // Controllers for course info
-  String _selectedSemester = '1';
-  String _selectedSubject = 'Toán cao cấp';
-
-  // Sample data for classes
-  List<ClassInfoAssignment> _classes = [
-    ClassInfoAssignment(
-      id: '1',
-      className: 'CNTT01',
-      subject: 'Lập trình Java',
-      type: 'LT',
-      department: 'Khoa CNTT',
-      instructor: 'TS. Nguyễn Văn A',
-      isSelected: false,
-      semester: '1',
-      academicYear: '2023-2024',
-    ),
-    ClassInfoAssignment(
-      id: '2',
-      className: 'CNTT02',
-      subject: 'Cơ sở dữ liệu',
-      type: 'TH',
-      department: 'Khoa CNTT',
-      instructor: 'ThS. Trần Thị B',
-      isSelected: false,
-      semester: '1',
-      academicYear: '2023-2024',
-    ),
-    ClassInfoAssignment(
-      id: '3',
-      className: 'CNTT03',
-      subject: 'Mạng máy tính',
-      type: 'LT',
-      department: 'Khoa CNTT',
-      instructor: 'PGS. Lê Văn C',
-      isSelected: false,
-      semester: '1',
-      academicYear: '2023-2024',
-    ),
-  ];
-
+  String? _selectedNienKhoaId;
+  HocKy? _selectedHocKy;
+  MonHoc? _selectedMonHoc;
+  List<HocKy> _hocKyList = [];
   bool _hasUnsavedChanges = false;
 
-  void _updateClassInfo(String id, String field, String value) {
+  List<ChiTietChuongTrinhDaoTao> _allCTCTDT = [];
+  List<MonHoc> _filteredMonHocs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<LopHocPhanBloc>().add(FetchALLLopHocPhan());
+    context.read<UserBloc>().add(FetchUsersEvent());
+    context.read<NienKhoaHocKyBloc>().add(FetchNienKhoaHocKy());
+    context.read<NganhKhoaBloc>().add(FetchCTCTDTEvent());
+  }
+
+  void _onHocKySelected(HocKy hocKy) {
     setState(() {
-      final classIndex = _classes.indexWhere((c) => c.id == id);
-      if (classIndex != -1) {
-        switch (field) {
-          case 'subject':
-            _classes[classIndex].subject = value;
-            break;
-          case 'type':
-            _classes[classIndex].type = value;
-            break;
-          case 'department':
-            _classes[classIndex].department = value;
-            break;
-          case 'instructor':
-            _classes[classIndex].instructor = value;
-            break;
-        }
-        _hasUnsavedChanges = true;
-      }
+      _selectedHocKy = hocKy;
+      _hasUnsavedChanges = true;
+      _filteredMonHocs = _allCTCTDT
+          .where((ct) => ct.idHocKy == hocKy.id && ct.monHoc != null)
+          .map((ct) => ct.monHoc!)
+          .toSet()
+          .toList();
+      _selectedMonHoc = null;
     });
+    _filterSubjectsByHocKy();
+
   }
 
   void _saveChanges() {
     if (_formKey.currentState!.validate()) {
-      // Simulate saving changes
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Đã lưu thay đổi thành công!'),
           backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
         ),
       );
       setState(() {
@@ -118,68 +77,175 @@ class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
     }
   }
 
+  void _filterSubjectsByHocKy() {
+    if (_selectedHocKy == null) return;
+
+    final idHocKy = _selectedHocKy!.id;
+
+    setState(() {
+      _filteredMonHocs = _allCTCTDT
+          .where((ct) => ct.idHocKy == idHocKy && ct.monHoc != null)
+          .map((ct) => ct.monHoc!)
+          .toSet()
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Phân công lớp học phần',
-          style: TextStyle(color: Colors.white), // Chữ đen
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.blue,
-        elevation: 0,
-      ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Course Info Section
-              CourseInfoSection(
-                selectedSemester: _selectedSemester,
-                selectedSubject: _selectedSubject,
-                onSemesterChanged: (value) {
-                  setState(() {
-                    _selectedSemester = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-                onSubjectChanged: (value) {
-                  setState(() {
-                    _selectedSubject = value;
-                    _hasUnsavedChanges = true;
-                  });
-                },
-                selectedAcademicYear: '',
-                onAcademicYearChanged: (String) {},
-                onSave: () {},
-              ),
+    return BlocBuilder<NganhKhoaBloc, NganhKhoaState>(
+      builder: (context, nganhKhoaState) {
+        if (nganhKhoaState is CTCTDTLoaded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {
+              _allCTCTDT = nganhKhoaState.chiTiet;
+              _filterSubjectsByHocKy();
+            });
+          });
+        }
 
-              const SizedBox(height: 20),
-
-              // Class List Section
-              ClassListSection(
-                classes: _classes,
-                onClassInfoChanged: _updateClassInfo,
-              ),
-
-              const SizedBox(height: 20),
-
-              // // Schedule Section
-              // ScheduleSection(
-              //   selectedClasses: _classes.where((c) => c.isSelected).toList(),
-              // ),
-              const SizedBox(height: 30),
-
-              // Save Button
-            ],
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'Phân công lớp học phần',
+              style: TextStyle(color: Colors.white),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.blue,
+            iconTheme: const IconThemeData(color: Colors.white),
           ),
-        ),
-      ),
+
+          body: Form(
+            key: _formKey,
+            child: BlocBuilder<LopHocPhanBloc, LopHocPhanState>(
+              builder: (context, lopState) {
+                if (lopState is LopHocPhanLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (lopState is LopHocPhanError) {
+                  return Center(
+                    child: Text(
+                      'Không thể truy cập chức năng này, vui lòng thử lại sau.',
+                    ),
+                  );
+                }
+                if (lopState is! LopHocPhanLoaded) {
+                  return const Center(child: Text('Đang tải lớp học phần...'));
+                }
+                final classes = lopState.lopHocPhans;
+
+                return BlocBuilder<UserBloc, UserState>(
+                  builder: (context, userState) {
+                    if (userState is UserLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (userState is UserError) {
+                      return Center(child: Text('Lỗi tải giảng viên'));
+                    }
+                    if (userState is UserLoaded) {
+                      instructors = userState.users;
+                    }
+
+                    return BlocBuilder<NienKhoaHocKyBloc, NienKhoaHocKyState>(
+                      builder: (context, nkState) {
+                        if (nkState is NienKhoaHocKyLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (nkState is NienKhoaHocKyError) {
+                          return Center(
+                            child: Text(
+                              'Lỗi tải niên khóa: ${nkState.message}',
+                            ),
+                          );
+                        }
+                        final nienKhoas =
+                            (nkState as NienKhoaHocKyLoaded).nienKhoas;
+                        final filteredClasses = classes.where((lop) {
+                          final okNK = _selectedNienKhoaId == null
+                              ? true
+                              : lop.lop.idNienKhoa.toString() ==
+                                    _selectedNienKhoaId;
+
+                          final okHK = _selectedHocKy == null
+                              ? true
+                              : lop.chuongTrinhDaoTao.chiTiet?.any(
+                                      (ct) => ct.idHocKy == _selectedHocKy!.id,
+                                    ) ??
+                                    false;
+
+                          final okTenMon = _selectedMonHoc == null
+                              ? true
+                              : lop.tenHocPhan.trim().toLowerCase() ==
+                                    _selectedMonHoc!.tenMon
+                                        .trim()
+                                        .toLowerCase();
+
+                          return okNK && okHK && okTenMon;
+                        }).toList();
+
+                        return SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              CourseInfoSection(
+                                selectedNienKhoaId: _selectedNienKhoaId,
+                                selectedHocKy: _selectedHocKy,
+                                subjects: _filteredMonHocs
+                                    .map((m) => m.tenMon)
+                                    .toList(),
+                                nienKhoas: nienKhoas,
+                                hocKyList: _hocKyList,
+                                selectedSubject: _selectedMonHoc?.tenMon ?? '',
+                                onNienKhoaChanged: (value) {
+                                  final sel = nienKhoas.firstWhere(
+                                    (e) => e.id.toString() == value,
+                                  );
+                                  setState(() {
+                                    _selectedNienKhoaId = value;
+                                    _hocKyList = sel.hocKys;
+                                    _selectedHocKy = null;
+                                    _filteredMonHocs.clear();
+                                    _hasUnsavedChanges = true;
+                                  });
+                                },
+                                onHocKyChanged: _onHocKySelected,
+                                onSubjectChanged: (subject) {
+                                  setState(() {
+                                    _selectedMonHoc = _filteredMonHocs
+                                        .firstWhere((m) => m.tenMon == subject);
+                                    _hasUnsavedChanges = true;
+                                  });
+                                },
+                                onSave: _saveChanges,
+                              ),
+                              const SizedBox(height: 20),
+                              ClassListSection(
+                                classes: filteredClasses,
+                                instructors: instructors,
+                                onClassInfoChanged: (lopId, field, value) {
+                                  context.read<LopHocPhanBloc>().add(
+                                    PhanCongGiangVienEvent(
+                                      lopHocPhanId: int.parse(lopId),
+                                      idGiangVien: int.parse(value),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

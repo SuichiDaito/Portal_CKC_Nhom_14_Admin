@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:portal_ckc/api/model/admin_thongtin.dart';
+import 'package:portal_ckc/api/model/admin_thong_tin.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountInfoSection extends StatelessWidget {
   final User user;
 
   const AccountInfoSection({Key? key, required this.user}) : super(key: key);
+
+  Future<String> getRoleName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_name_role') ?? "Không có chức vụ";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +63,20 @@ class AccountInfoSection extends StatelessWidget {
               _buildInfoItem('Mã giảng viên: GV00${user.id}'),
               _buildInfoItem('Họ và tên: ${hoSo?.hoTen ?? 'Chưa có'}'),
               _buildInfoItem(
-                'Phòng/khoa: ${user.boMon?.nganhHoc?.khoa?.tenKhoa ?? "Không xác định"}',
+                'Phòng/khoa: ${user.boMon?.chuyenNganh?.tenChuyenNganh ?? "Không xác định"}',
               ),
-              _buildInfoItem(
-                'Chức vụ: ${user.roles.isNotEmpty ? user.roles.first.name : 'Chưa có'}',
+              FutureBuilder<String>(
+                future: getRoleName(),
+                builder: (context, snapshot) {
+                  String role = snapshot.data ?? "Đang tải...";
+                  return _buildInfoItem('Chức vụ: $role');
+                },
               ),
               _buildInfoItem('Ngày sinh: ${hoSo?.ngaySinh ?? 'Chưa có'}'),
-              _buildInfoItem(
-                'Trạng thái: ${user.trangThai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt'}',
-              ),
 
+              // _buildInfoItem(
+              //   'Trạng thái: ${user.trangThai == 1 ? 'Đã kích hoạt' : 'Chưa kích hoạt'}',
+              // ),
               const SizedBox(height: 20),
 
               Container(
