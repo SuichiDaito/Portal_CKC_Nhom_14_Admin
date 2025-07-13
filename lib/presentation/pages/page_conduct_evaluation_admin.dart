@@ -29,6 +29,7 @@ class PageConductEvaluationAdmin extends StatefulWidget {
 
 class _PageConductEvaluationAdminState
     extends State<PageConductEvaluationAdmin> {
+
   bool selectAll = false;
   String selectedMonth = '1';
   String selectedYear = '2025';
@@ -205,7 +206,6 @@ class _PageConductEvaluationAdminState
         return 'Chưa có';
     }
   }
-
   void _onStudentSelectChanged(bool? value, int index) {
     setState(() {
       students[index].isSelected = value ?? false;

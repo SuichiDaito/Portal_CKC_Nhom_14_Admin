@@ -39,6 +39,7 @@ class HoSo {
       anh: json['anh'] ?? '',
     );
   }
+  
   factory HoSo.empty() {
     return HoSo(
       hoTen: '',

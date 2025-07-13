@@ -52,7 +52,6 @@ class TeacherListItem extends StatelessWidget {
             _buildRoleRow(
               Icons.work,
               'Chức vụ',
-              teacher.roles != null && teacher.roles!.isNotEmpty
                   ? teacher.roles![0].name
                   : 'Không rõ',
             ),
@@ -73,66 +72,6 @@ class TeacherListItem extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String? value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, color: Colors.blueGrey, size: 20),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: 100,
-          child: Text(
-            '$label:',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-          ),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(value ?? '—', style: const TextStyle(fontSize: 15)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRoleRow(IconData icon, String label, String? roleName) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, color: Colors.blueGrey, size: 20),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: 100,
-          child: Text(
-            '$label:',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-          ),
-        ),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.blue.shade100),
-            ),
-            child: Text(
-              roleName ?? 'Không rõ',
-              style: TextStyle(
-                color: Colors.blue.shade300,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-              softWrap: true,
-              overflow: TextOverflow.visible,
-            ),
-          ),
-        ),
-      ],
-    );
+      ),);
   }
 }

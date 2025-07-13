@@ -121,7 +121,11 @@ class ClassListStudenInforClassSection extends StatelessWidget {
           const SizedBox(height: 12),
           _buildInfoCard(
             icon: Icons.credit_card,
+<<<<<<< HEAD
             title: 'Chương trình đào tạo',
+=======
+            title: 'Tổng số tín chỉ',
+>>>>>>> main
             value: '${classInfo.totalCredits}',
             fullWidth: true,
           ),

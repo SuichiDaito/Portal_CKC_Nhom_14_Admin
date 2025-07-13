@@ -61,20 +61,18 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
               ),
             ),
             SizedBox(height: 16),
-
             _buildWeekDropdown('Từ tuần:', fromWeek, (val) {
               setState(() {
                 fromWeek = val;
                 if (toWeek < fromWeek) toWeek = fromWeek;
               });
             }),
-
             _buildWeekDropdown('Đến tuần:', toWeek, (val) {
               setState(() {
                 toWeek = val;
               });
             }, minWeekId: fromWeek),
-
+n
             SizedBox(height: 16),
             _buildSummary(),
           ],

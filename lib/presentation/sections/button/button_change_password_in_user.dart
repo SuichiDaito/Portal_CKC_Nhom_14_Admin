@@ -18,7 +18,6 @@ class ButtonChangePasswordInUser extends StatelessWidget {
           context.read<AdminBloc>().add(FetchAdminDetail(userId));
         }
       },
-
       icon: const Icon(Icons.lock),
       label: const Text('Đổi mật khẩu'),
       style: ElevatedButton.styleFrom(

@@ -213,7 +213,6 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
                 color: Colors.blueAccent,
               ),
             ),
-            const SizedBox(height: 8),
 
             const SizedBox(height: 12),
             DayTimePicker(
@@ -234,7 +233,6 @@ class _ScheduleDetailEditorState extends State<ScheduleDetailEditor> {
                 });
               },
             ),
-
             Align(
               alignment: Alignment.centerRight,
               child: CustomButton(

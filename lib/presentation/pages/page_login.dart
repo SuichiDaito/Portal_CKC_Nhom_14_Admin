@@ -58,7 +58,6 @@ class _LoginScreenState extends State<LoginScreen>
           child: Column(
             children: [
               _buildHeader(),
-
               Expanded(
                 child: Container(
                   margin: EdgeInsets.only(top: 20),
@@ -79,13 +78,13 @@ class _LoginScreenState extends State<LoginScreen>
                   child: Column(
                     children: [
                       _buildTabBar(),
-
                       Expanded(
                         child: TabBarView(
                           controller: _tabController,
                           children: [
                             _buildTeacherLoginForm(),
                             _buildResetPasswordForm(),
+
                           ],
                         ),
                       ),
@@ -243,7 +242,6 @@ class _LoginScreenState extends State<LoginScreen>
               );
             }
           },
-
           builder: (context, state) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -529,47 +527,4 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  // void _handleAdminLogin() {
-  //   String account = _adminAccountController.text.trim();
-  //   String password = _adminPasswordController.text.trim();
-
-  //   if (account.isEmpty || password.isEmpty) {
-  //     // _showToast('Vui lòng nhập đầy đủ thông tin');
-  //     return;
-  //   }
-
-  //   context.read<AdminBloc>().add(
-  //     AdminLoginEvent(taiKhoan: account, password: password),
-  //   );
-  //   // TODO: Implement admin login logic
-  //   _showToast('Đăng nhập thành công!', isError: false);
-  // }
-
-  // void _showToast(String message, {bool isError = true}) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Row(
-  //         children: [
-  //           Icon(
-  //             isError ? Icons.error : Icons.check_circle,
-  //             color: Colors.white,
-  //             size: 20,
-  //           ),
-  //           SizedBox(width: 12),
-  //           Expanded(
-  //             child: Text(
-  //               message,
-  //               style: TextStyle(color: Colors.white, fontSize: 16),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       backgroundColor: isError ? Colors.red[600] : Colors.green[600],
-  //       duration: Duration(seconds: 3),
-  //       behavior: SnackBarBehavior.floating,
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-  //       margin: EdgeInsets.all(16),
-  //     ),
-  //   );
-  // }
 }

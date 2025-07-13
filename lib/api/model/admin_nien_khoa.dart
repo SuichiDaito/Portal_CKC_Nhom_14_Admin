@@ -1,3 +1,4 @@
+
 import 'package:portal_ckc/api/model/admin_hoc_ky.dart';
 
 class NienKhoa {
@@ -14,6 +15,7 @@ class NienKhoa {
     required this.namBatDau,
     required this.namKetThuc,
     required this.trangThai,
+<<<<<<< HEAD
     required this.hocKys,
   });
   factory NienKhoa.fromJson(Map<String, dynamic> json) {

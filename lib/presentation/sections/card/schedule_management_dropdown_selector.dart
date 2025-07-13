@@ -34,7 +34,6 @@ class DropdownSelector extends StatelessWidget {
           DropdownButtonFormField<DropdownItem>(
             isExpanded: true,
             value: items.contains(selectedItem) ? selectedItem : null,
-
             icon: const Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
             onChanged: onChanged,
             items: items.map((item) {

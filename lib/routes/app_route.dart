@@ -267,8 +267,6 @@ class RouteName {
         path: '/admin/decument_request_management_admin',
         builder: (context, state) => PageDocumentRequestManagementAdmin(),
       ),
-      //1
-      //Khởi tạo năm học
       GoRoute(
         path: '/admin/academic_year_management',
         builder: (context, state) => PageAcademicYearManagement(),

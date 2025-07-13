@@ -59,6 +59,7 @@ class _DocumentRequestBodyState extends State<_DocumentRequestBody> {
         _selectedRequestIds.clear();
       });
     }
+
   }
 
   @override

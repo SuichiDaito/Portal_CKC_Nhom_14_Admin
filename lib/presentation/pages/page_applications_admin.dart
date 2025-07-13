@@ -79,6 +79,7 @@ class ApplicationsAdminPage extends StatelessWidget {
     required List<_FeatureItem> gridItems,
     required BuildContext context,
     required List<String> permissions,
+
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -90,6 +91,7 @@ class ApplicationsAdminPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+       // Section Header
           Row(
             children: [
               Container(
@@ -268,6 +270,7 @@ class ApplicationsAdminPage extends StatelessWidget {
         color: Colors.grey,
         value: 'academic_year_management',
         permission: 'tạo tuần',
+
       ),
     ];
   }
@@ -308,6 +311,7 @@ class ApplicationsAdminPage extends StatelessWidget {
         color: Colors.orange,
         value: 'teaching_schedule_admin',
         permission: 'xem lịch dạy',
+
       ),
     ];
   }

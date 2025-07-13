@@ -1,3 +1,4 @@
+
 import 'package:portal_ckc/api/model/admin_danh_sach_lop.dart';
 import 'package:portal_ckc/api/model/admin_diem_ren_luyen_response.dart';
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
@@ -26,10 +27,12 @@ class SinhVien {
     required this.hoSo,
     required this.lop,
     required this.diemRenLuyens,
+
   });
 
   factory SinhVien.fromJson(Map<String, dynamic> json) {
     return SinhVien(
+<<<<<<< HEAD
       id: json['id'] ?? 0,
       maSv: json['ma_sv'] ?? '',
       idLop: json['id_lop'],

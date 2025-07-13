@@ -104,7 +104,6 @@ class ReportDetailReadonlySummaryCard extends StatelessWidget {
               ),
               Text(' - Giáo viên chủ nhiệm (ghi họ và tên): $teacherName'),
               Text(' - Thư ký (ghi họ và tên): $secretaryName'),
-
               Text(
                 ' - Sĩ số: $total       Hiện diện: $present        Vắng mặt: $absent',
               ),

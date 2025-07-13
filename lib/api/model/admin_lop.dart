@@ -19,6 +19,7 @@ class Lop {
     required this.nienKhoa,
     required this.giangVien,
   });
+
   factory Lop.fromJson(Map<String, dynamic> json) {
     return Lop(
       id: json['id'],

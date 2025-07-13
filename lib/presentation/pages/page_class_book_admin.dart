@@ -42,6 +42,7 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
   final TextEditingController siSoController = TextEditingController(
     text: '30',
   );
+
   final TextEditingController hienDienController = TextEditingController(
     text: '30',
   );
@@ -350,5 +351,38 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
     hienDienController.dispose();
     noiDungController.dispose();
     super.dispose();
+
   }
+
+  Widget buildTextField(
+    String label,
+    TextEditingController controller,
+    TextInputType inputType, {
+    int maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: inputType,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    tietTuController.dispose();
+    tietDenController.dispose();
+    siSoController.dispose();
+    hienDienController.dispose();
+    noiDungController.dispose();
+    super.dispose();
+  }
+
 }
