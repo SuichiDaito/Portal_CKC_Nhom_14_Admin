@@ -6,7 +6,6 @@ import 'dart:convert';
 class ModelConverter implements Converter {
   @override
   Request convertRequest(Request request) {
-    // ✅ Nếu là multipart request → không encode lại
     if (request.parts.isNotEmpty) {
       return request;
     }

@@ -11,6 +11,7 @@ import 'package:portal_ckc/bloc/state/cap_nhat_diem_state.dart';
 import 'package:portal_ckc/bloc/state/sinh_vien_lop_hoc_phan_state.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_class_section.dart';
 import 'package:portal_ckc/presentation/sections/card/class_list_student_score_item_section.dart';
+import 'package:portal_ckc/utils/export_to_excel.dart';
 
 class PageCourseSectionStudentList extends StatefulWidget {
   final int idLopHocPhan;
@@ -126,12 +127,11 @@ class _PageCourseSectionStudentListState
                               color: Colors.green,
                             ),
                             tooltip: "Xuất Excel",
-                            onPressed: () {
+                            onPressed: () async {
+                              await ExportToExcel(students);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text(
-                                    "🔄 Đang phát triển tính năng xuất Excel",
-                                  ),
+                                  content: Text("✅ Xuất Excel thành công"),
                                 ),
                               );
                             },

@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
 
 class ScheduleSection extends StatefulWidget {
   final List<LopHocPhan> selectedClasses;
-=======
-import 'package:portal_ckc/presentation/pages/page_course_assignment_admin.dart';
-
-class ScheduleSection extends StatefulWidget {
-  final List<ClassInfoAssignment> selectedClasses;
->>>>>>> main
 
   const ScheduleSection({Key? key, required this.selectedClasses})
     : super(key: key);

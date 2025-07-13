@@ -32,7 +32,6 @@ class SinhVien {
 
   factory SinhVien.fromJson(Map<String, dynamic> json) {
     return SinhVien(
-<<<<<<< HEAD
       id: json['id'] ?? 0,
       maSv: json['ma_sv'] ?? '',
       idLop: json['id_lop'],

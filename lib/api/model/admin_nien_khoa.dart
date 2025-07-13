@@ -15,7 +15,6 @@ class NienKhoa {
     required this.namBatDau,
     required this.namKetThuc,
     required this.trangThai,
-<<<<<<< HEAD
     required this.hocKys,
   });
   factory NienKhoa.fromJson(Map<String, dynamic> json) {

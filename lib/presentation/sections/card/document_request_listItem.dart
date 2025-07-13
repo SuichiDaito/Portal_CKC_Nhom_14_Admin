@@ -1,42 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-<<<<<<< HEAD
 import 'package:portal_ckc/api/model/admin_giay_xac_nhan.dart';
-=======
-import 'package:portal_ckc/presentation/pages/page_document_request_management_admin.dart';
->>>>>>> main
 
 class DocumentRequestListItem extends StatelessWidget {
   final DocumentRequest request;
   final ValueChanged<bool?> onSelected;
-  final VoidCallback onConfirm; // Callback cho nút xác nhận riêng lẻ
+  final VoidCallback onConfirm;
 
   const DocumentRequestListItem({
     Key? key,
     required this.request,
     required this.onSelected,
     required this.onConfirm,
-<<<<<<< HEAD
     required this.isSelected,
   }) : super(key: key);
 
-=======
-  }) : super(key: key);
-
-  String _getDocumentTypeText(DocumentType type) {
-    switch (type) {
-      case DocumentType.transcript:
-        return 'Bảng điểm';
-      case DocumentType.certificate:
-        return 'Giấy chứng nhận';
-      case DocumentType.recommendationLetter:
-        return 'Thư giới thiệu';
-      case DocumentType.other:
-        return 'Giấy tờ khác';
-    }
-  }
-
->>>>>>> main
   Color _getStatusColor(DocumentRequestStatus status) {
     switch (status) {
       case DocumentRequestStatus.pending:
@@ -55,11 +33,8 @@ class DocumentRequestListItem extends StatelessWidget {
     }
   }
 
-<<<<<<< HEAD
   final bool isSelected;
 
-=======
->>>>>>> main
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -74,17 +49,9 @@ class DocumentRequestListItem extends StatelessWidget {
           children: [
             Row(
               children: [
-<<<<<<< HEAD
                 if (request.status == DocumentRequestStatus.pending)
                   Checkbox(
                     value: isSelected,
-=======
-                if (request.status ==
-                    DocumentRequestStatus
-                        .pending) // Chỉ hiện checkbox cho yêu cầu chưa xác nhận
-                  Checkbox(
-                    value: request.isSelectedForAction,
->>>>>>> main
                     onChanged: onSelected,
                     activeColor: Colors.blueAccent,
                   ),
@@ -108,7 +75,6 @@ class DocumentRequestListItem extends StatelessWidget {
                           color: Colors.black87,
                         ),
                       ),
-<<<<<<< HEAD
                       const SizedBox(height: 4),
                       Text(
                         'Loại giấy: ${request.documentName}',
@@ -117,37 +83,21 @@ class DocumentRequestListItem extends StatelessWidget {
                           color: Colors.black87,
                         ),
                       ),
-=======
->>>>>>> main
                     ],
                   ),
                 ),
               ],
-            ),
-<<<<<<< HEAD
+            ),  
             const SizedBox(height: 12),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 8,
               runSpacing: 8,
-=======
-            const SizedBox(height: 8),
-            Text(
-              'Loại giấy: ${_getDocumentTypeText(request.documentType)}',
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            ),
-            const SizedBox(height: 8),
-            Row(
->>>>>>> main
               children: [
                 const Text(
                   'Trạng thái:',
                   style: TextStyle(fontSize: 15, color: Colors.black87),
                 ),
-<<<<<<< HEAD
-=======
-                const SizedBox(width: 8),
->>>>>>> main
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -167,7 +117,6 @@ class DocumentRequestListItem extends StatelessWidget {
                     ),
                   ),
                 ),
-<<<<<<< HEAD
                 if (request.status == DocumentRequestStatus.pending)
                   ElevatedButton.icon(
                     onPressed: onConfirm,
@@ -182,29 +131,6 @@ class DocumentRequestListItem extends StatelessWidget {
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-=======
-                if (request.status ==
-                    DocumentRequestStatus
-                        .pending) // Chỉ hiện nút xác nhận cho yêu cầu chưa xác nhận
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton.icon(
-                        onPressed: onConfirm,
-                        icon: const Icon(Icons.check, size: 18),
-                        label: const Text('Xác nhận'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
->>>>>>> main
                       ),
                     ),
                   ),
