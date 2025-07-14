@@ -43,24 +43,17 @@ class _PageCourseSectionStudentListState
               SinhVienLhpBloc()..add(FetchSinhVienLhp(widget.idLopHocPhan)),
         ),
         BlocProvider(create: (_) => CapNhatDiemBloc()),
-        BlocProvider(
-          create: (_) => ThongBaoBloc(),
-        ), // ✅ Bổ sung Bloc này nếu chưa có
+        BlocProvider(create: (_) => ThongBaoBloc()),
       ],
       child: BlocListener<ThongBaoBloc, ThongBaoState>(
         listener: (context, state) {
           if (state is TBSuccess && state.thongBaoId != null) {
-            // Hiển thị SnackBar tạo thông báo
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
 
-            // ✅ Gửi thông báo đến sinh viên của lớp học phần
             context.read<ThongBaoBloc>().add(
-              SendToStudents(
-                state.thongBaoId!, // đã có ID từ TBSuccess
-                [widget.idLopHocPhan],
-              ),
+              SendToStudents(state.thongBaoId!, [widget.idLopHocPhan]),
             );
           } else if (state is TBFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -184,7 +177,7 @@ class _PageCourseSectionStudentListState
                                         'xls',
                                         'xlsx',
                                         'pdf',
-                                      ], // ✅ đúng định dạng
+                                      ],
                                       withReadStream: true,
                                     );
 
@@ -198,6 +191,9 @@ class _PageCourseSectionStudentListState
 
                                   final extension =
                                       file.extension?.toLowerCase() ?? '';
+                                  print("🧪 File name: ${file.name}");
+                                  print("🧪 File extension: $extension");
+
                                   final contentType =
                                       {
                                         'doc': 'application/msword',
@@ -209,9 +205,12 @@ class _PageCourseSectionStudentListState
                                         'pdf': 'application/pdf',
                                       }[extension] ??
                                       'application/octet-stream';
+                                  print("🧪 Sending file: ${file.name}");
+                                  print("🧪 MIME: $contentType");
+                                  print("🧪 Size: ${file.size}");
 
                                   final multipartFile = http.MultipartFile(
-                                    'files[]', // hoặc 'file_excel' nếu backend yêu cầu
+                                    'files[]',
                                     stream,
                                     length,
                                     filename: file.name,
@@ -226,8 +225,7 @@ class _PageCourseSectionStudentListState
                                           'Đính kèm bảng điểm lớp học phần bạn đã học. Vui lòng kiểm tra.',
                                       capTren: '3',
                                       files: [multipartFile],
-                                      ngayGui:
-                                          '', // có thể để DateTime.now() nếu cần
+                                      ngayGui: '',
                                     ),
                                   );
                                 }
@@ -364,9 +362,7 @@ class _PageCourseSectionStudentListState
                                           ),
                                           ElevatedButton(
                                             onPressed: () {
-                                              Navigator.pop(
-                                                context,
-                                              ); // Đóng dialog
+                                              Navigator.pop(context);
 
                                               final request =
                                                   CapNhatDiemRequest(

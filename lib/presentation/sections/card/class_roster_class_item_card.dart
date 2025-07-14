@@ -92,9 +92,8 @@ class ClassItemCard extends StatelessWidget {
                     const SizedBox(width: 16),
                     _buildDetailItem(
                       classModel.loaiMon == 0
-                          ? Icons
-                                .menu_book_outlined // Icon cho Lý thuyết
-                          : Icons.handyman_outlined, // Icon cho Thực hành
+                          ? Icons.menu_book_outlined
+                          : Icons.handyman_outlined,
                       classModel.loaiMon == 0 ? 'Lý thuyết' : 'Thực hành',
                       Colors.deepOrange[600]!,
                     ),

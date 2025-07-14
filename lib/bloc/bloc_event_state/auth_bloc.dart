@@ -23,7 +23,7 @@ class LoggedIn extends AuthEvent {
 
 Future<void> _onLoggedOut(LoggedOut event, Emitter<AuthState> emit) async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.clear(); // 🧹 Xóa token, userId
+  await prefs.clear();
   emit(Unauthenticated());
 }
 

@@ -38,7 +38,6 @@ class PhieuLenLopError extends PhieuLenLopState {
   @override
   List<Object?> get props => [error];
 }
-// bloc/state/phieu_len_lop_state.dart
 
 class PhieuInitial extends PhieuLenLopState {}
 

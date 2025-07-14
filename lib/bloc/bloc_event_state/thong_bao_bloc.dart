@@ -75,7 +75,7 @@ class ThongBaoBloc extends Bloc<ThongBaoEvent, ThongBaoState> {
 
       if (response.isSuccessful) {
         final body = response.body;
-        final id = body?['data']?['id']; // Lấy ID từ JSON
+        final id = body?['data']?['id'];
 
         emit(TBSuccess('Tạo thông báo thành công', thongBaoId: id));
       } else {

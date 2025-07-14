@@ -255,7 +255,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
                               icon: Icons.calendar_today,
                             );
 
-                            // Auto fetch Lớp học phần
                             selectedWeek =
                                 int.tryParse(_selectedWeek?.value ?? '') ?? 1;
                             context.read<LopHocPhanBloc>().add(
@@ -293,7 +292,6 @@ class _PageTeachingScheduleAdminState extends State<PageTeachingScheduleAdmin> {
               ),
             ),
 
-            // Các phần khác giữ nguyên:
             DaySelector(
               selectedDay: selectedDay,
               onDayTap: (String day) {

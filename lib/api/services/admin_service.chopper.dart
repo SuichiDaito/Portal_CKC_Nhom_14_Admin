@@ -371,7 +371,7 @@ final class _$AdminService extends AdminService {
       PartValue<String>('ngay_gui', ngayGui),
       PartValue<String>('tu_ai', tuAi),
       PartValue<int>('trang_thai', trangThai),
-      PartValue<List<MultipartFile>>('files', files),
+      PartValue<List<MultipartFile>>('files[]', files),
       PartValue<String>('old_files', oldFilesJson),
     ];
     final Request $request = Request(
