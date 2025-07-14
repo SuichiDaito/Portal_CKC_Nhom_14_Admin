@@ -165,7 +165,6 @@ class TeacherInfoCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Contact Info
             Row(
               children: [
                 Expanded(

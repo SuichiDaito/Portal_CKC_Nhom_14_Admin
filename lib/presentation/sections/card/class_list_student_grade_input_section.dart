@@ -238,9 +238,7 @@ class _GradeInputSectionState extends State<GradeInputSection>
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: widget.isSubmitEnabled
-                  ? _submitGrade
-                  : null, // <- đây là chỗ khóa
+              onPressed: widget.isSubmitEnabled ? _submitGrade : null,
               icon: const Icon(Icons.check, size: 20),
               label: const Text(
                 'Nộp điểm',
@@ -253,7 +251,7 @@ class _GradeInputSectionState extends State<GradeInputSection>
               style: ElevatedButton.styleFrom(
                 backgroundColor: widget.isSubmitEnabled
                     ? Colors.green.shade600
-                    : Colors.grey.shade400, // màu khi disable
+                    : Colors.grey.shade400,
                 foregroundColor: Colors.white,
                 elevation: 4,
                 shadowColor: Colors.green.shade200,

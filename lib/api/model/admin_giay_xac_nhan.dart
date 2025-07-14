@@ -67,7 +67,7 @@ class DocumentRequest {
   final String studentCode;
   final String studentName;
   final DateTime requestDate;
-  final String documentName; // <-- dùng trực tiếp từ API
+  final String documentName;
   final DocumentRequestStatus status;
   final bool isSelected;
 
@@ -87,7 +87,7 @@ class DocumentRequest {
       studentCode: model.sinhVien.maSv,
       studentName: model.sinhVien.hoSo?.hoTen ?? 'Không rõ',
       requestDate: DateTime.tryParse(model.ngayDangKy) ?? DateTime.now(),
-      documentName: model.loaiGiay.tenGiay, // ✅ dùng trực tiếp
+      documentName: model.loaiGiay.tenGiay,
       status: model.trangThai == 1
           ? DocumentRequestStatus.confirmed
           : DocumentRequestStatus.pending,

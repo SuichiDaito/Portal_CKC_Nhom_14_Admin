@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart'
@@ -9,17 +10,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:portal_ckc/api/model/admin_thong_bao.dart';
 import 'package:portal_ckc/bloc/bloc_event_state/thong_bao_bloc.dart';
 import 'package:portal_ckc/bloc/event/thong_bao_event.dart';
 import 'package:portal_ckc/bloc/state/thong_bao_state.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:portal_ckc/constant/string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PageCreateNotificationAdmin extends StatefulWidget {
   final ThongBao? thongBao;
@@ -80,9 +77,9 @@ class _PageCreateNotificationAdminState
           headers: {
             'Authorization': 'Bearer $token',
             'Accept': 'application/pdf',
-            'User-Agent': 'FlutterApp/1.0', // tuỳ chọn tránh bị chặn bot
+            'User-Agent': 'FlutterApp/1.0',
           },
-          // Tránh throw nếu gặp lỗi như 403/404
+
           validateStatus: (status) => status != null && status < 500,
         ),
         onReceiveProgress: (received, total) {
@@ -141,6 +138,29 @@ class _PageCreateNotificationAdminState
     });
   }
 
+  MediaType getMediaTypeFromExtension(String ext) {
+    switch (ext.toLowerCase()) {
+      case 'pdf':
+        return MediaType('application', 'pdf');
+      case 'doc':
+        return MediaType('application', 'msword');
+      case 'docx':
+        return MediaType(
+          'application',
+          'vnd.openxmlformats-officedocument.wordprocessingml.document',
+        );
+      case 'xls':
+        return MediaType('application', 'vnd.ms-excel');
+      case 'xlsx':
+        return MediaType(
+          'application',
+          'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+      default:
+        return MediaType('application', 'octet-stream');
+    }
+  }
+
   Future<List<http.MultipartFile>> convertToMultipartFiles(
     List<PlatformFile> files,
   ) async {
@@ -148,16 +168,19 @@ class _PageCreateNotificationAdminState
       files.map((file) async {
         final stream = http.ByteStream(file.readStream!);
         final length = file.size;
-        final mimeType = file.extension == 'pdf'
-            ? 'application/pdf'
-            : 'application/octet-stream';
+
+        final ext = file.extension?.toLowerCase() ?? '';
+        final mediaType = getMediaTypeFromExtension(ext);
+
+        print("🔍 Gửi file: ${file.name}");
+        print("📎 MIME: $mediaType");
 
         return http.MultipartFile(
           'files[]',
           stream,
           length,
           filename: file.name,
-          contentType: MediaType.parse(mimeType),
+          contentType: mediaType, // 👈 CHÍNH XÁC NHẤT Ở ĐÂY
         );
       }),
     );
@@ -205,7 +228,7 @@ class _PageCreateNotificationAdminState
             } else if (state is TBFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(state.error),
+                  content: Text("Không thể tạo khi báo! Vui lòng thử lại"),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -398,10 +421,10 @@ class _PageCreateNotificationAdminState
                               withReadStream: true,
                               type: FileType.custom,
                               allowedExtensions: [
-                                'doc',
-                                'docx',
-                                'xls',
-                                'xlsx',
+                                // 'doc',
+                                // 'docx',
+                                // 'xls',
+                                // 'xlsx',
                                 'pdf',
                               ],
                             );

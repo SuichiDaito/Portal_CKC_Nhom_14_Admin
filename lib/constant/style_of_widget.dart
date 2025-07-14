@@ -10,7 +10,7 @@ class StyleOfWidget {
     FontWeight fw = FontWeight.normal,
   }) => GoogleFonts.roboto(
     textStyle: TextStyle(
-      decoration: TextDecoration.none, //Remove underline
+      decoration: TextDecoration.none,
       fontSize: fs,
       fontWeight: fw,
       color: clr,

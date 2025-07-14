@@ -1,4 +1,3 @@
-// lib/api/model/phieu_len_lop.dart
 import 'package:portal_ckc/api/model/admin_lop_hoc_phan.dart';
 import 'package:portal_ckc/api/model/admin_phong.dart';
 

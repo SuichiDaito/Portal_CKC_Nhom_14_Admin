@@ -198,7 +198,7 @@ abstract class AdminService extends ChopperService {
     @Part('ngay_gui') String ngayGui,
     @Part('tu_ai') String tuAi,
     @Part('trang_thai') int trangThai,
-    @Part('files') List<MultipartFile> files,
+    @Part('files[]') List<MultipartFile> files,
     @Part('old_files') String oldFilesJson,
   );
 

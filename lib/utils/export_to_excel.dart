@@ -1,4 +1,5 @@
 import 'package:excel/excel.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
@@ -8,7 +9,6 @@ Future<void> ExportToExcel(List<SinhVienLopHocPhan> students) async {
   final excel = Excel.createExcel();
   final Sheet sheetObject = excel['DiemSV'];
 
-  // Tiêu đề cột
   sheetObject.appendRow([
     'Mã SV',
     'Họ tên',
@@ -19,7 +19,6 @@ Future<void> ExportToExcel(List<SinhVienLopHocPhan> students) async {
     'Điểm tổng kết',
   ]);
 
-  // Dữ liệu từng sinh viên
   for (var student in students) {
     sheetObject.appendRow([
       student.sinhVien.maSv,
@@ -32,8 +31,7 @@ Future<void> ExportToExcel(List<SinhVienLopHocPhan> students) async {
     ]);
   }
 
-  // Lưu file
-  if (await Permission.storage.request().isGranted) {
+  if (await Permission.manageExternalStorage.request().isGranted) {
     // final dir = await getApplicationDocumentsDirectory(); // ✅ hoạt động được cả Android/iOS/Windows
 
     final dir = await getExternalStorageDirectory();
@@ -43,8 +41,10 @@ Future<void> ExportToExcel(List<SinhVienLopHocPhan> students) async {
     final file = File(filePath);
     await file.writeAsBytes(fileBytes!);
 
-    // Thông báo
+    final result = await OpenFilex.open(filePath);
+
     print("📁 File lưu tại: $filePath");
+    print("📂 Trạng thái mở file: ${result.message}");
   } else {
     print("❌ Không có quyền truy cập bộ nhớ");
   }

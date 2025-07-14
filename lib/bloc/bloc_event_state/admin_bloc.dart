@@ -148,7 +148,6 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
     }
   }
 
-  //Lấy danh sách lớp chủ nhiệm
   Future<void> _onFetchClassList(FetchClassList event, Emitter emit) async {
     try {
       final response = await service.getLopList(); // gọi API
@@ -169,7 +168,6 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
       emit(AdminError('Lỗi lấy danh sách lớp: $e'));
     }
   }
-  // admin_bloc.dart
 
   Future<void> _onFetchStudentList(FetchStudentList event, Emitter emit) async {
     emit(AdminLoading());
