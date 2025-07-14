@@ -75,7 +75,6 @@ class CourseInfoSection extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-
               _buildInputField(
                 label: 'Niên khóa',
                 labelColor: Colors.white,

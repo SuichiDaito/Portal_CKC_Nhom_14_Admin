@@ -98,7 +98,7 @@ class RouteName {
       //Sổ lên lớp
       GoRoute(
         path: '/admin/class_book_admin',
-        builder: (context, state) => const PageClassBookAdmin(),
+        builder: (context, state) => PageClassBookAdmin(),
       ),
       //Đổi mật khẩu
       GoRoute(
@@ -271,8 +271,6 @@ class RouteName {
         path: '/admin/decument_request_management_admin',
         builder: (context, state) => PageDocumentRequestManagementAdmin(),
       ),
-      //1
-      //Khởi tạo năm học
       GoRoute(
         path: '/admin/academic_year_management',
         builder: (context, state) => PageAcademicYearManagement(),

@@ -104,8 +104,7 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
     );
   }
 
-  Widget _buildWeekDropdown(
-    String label,
+  Widget _buildWeekDropdown(String label,
     int value,
     ValueChanged<int> onChanged, {
     int? minWeekId,
@@ -197,8 +196,7 @@ class _PrintScheduleDialogState extends State<PrintScheduleDialog> {
             '• Thời gian: $fromDateStr - $toDateStr',
             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
-        ],
-      ),
+        ],),
     );
   }
 }

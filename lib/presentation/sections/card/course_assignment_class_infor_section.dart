@@ -111,7 +111,6 @@ class _ClassListSectionState extends State<ClassListSection> {
             ),
           ),
           const SizedBox(height: 12),
-
           Row(
             children: [
               Expanded(
@@ -142,9 +141,6 @@ class _ClassListSectionState extends State<ClassListSection> {
             ],
           ),
           const SizedBox(height: 6),
-
-          const SizedBox(height: 6),
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -89,8 +89,7 @@ class TeacherListItem extends StatelessWidget {
             '$label:',
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           ),
-        ),
-        const SizedBox(width: 6),
+        ),const SizedBox(width: 6),
         Expanded(
           child: Text(value ?? '—', style: const TextStyle(fontSize: 15)),
         ),

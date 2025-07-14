@@ -18,7 +18,7 @@ import 'package:portal_ckc/presentation/sections/card/class_book_tiet_row_sectio
 import 'package:portal_ckc/presentation/sections/card/custom_text_field.dart';
 
 class PageClassBookAdmin extends StatefulWidget {
-  const PageClassBookAdmin({super.key});
+  PageClassBookAdmin({super.key});
 
   @override
   State<PageClassBookAdmin> createState() => _PageClassBookAdminState();
@@ -42,6 +42,7 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
   final TextEditingController siSoController = TextEditingController(
     text: '30',
   );
+
   final TextEditingController hienDienController = TextEditingController(
     text: '30',
   );
@@ -342,6 +343,27 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
     );
   }
 
+  Widget buildTextField(
+    String label,
+    TextEditingController controller,
+    TextInputType inputType, {
+    int maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: inputType,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     tietTuController.dispose();
@@ -351,4 +373,5 @@ class _PageClassBookAdminState extends State<PageClassBookAdmin> {
     noiDungController.dispose();
     super.dispose();
   }
+
 }

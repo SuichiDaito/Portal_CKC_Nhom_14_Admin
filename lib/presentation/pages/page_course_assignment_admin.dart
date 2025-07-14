@@ -19,6 +19,7 @@ import 'package:portal_ckc/bloc/bloc_event_state/nienkhoa_hocky_bloc.dart';
 import 'package:portal_ckc/bloc/event/nienkhoa_hocky_event.dart';
 import 'package:portal_ckc/bloc/state/nienkhoa_hocky_state.dart';
 
+
 class PageCourseAssignmentAdmin extends StatefulWidget {
   @override
   _PageCourseAssignmentAdminState createState() =>
@@ -59,6 +60,7 @@ class _PageCourseAssignmentAdminState extends State<PageCourseAssignmentAdmin> {
       _selectedMonHoc = null;
     });
     _filterSubjectsByHocKy();
+
   }
 
   void _saveChanges() {

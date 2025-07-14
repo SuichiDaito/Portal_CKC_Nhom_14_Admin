@@ -87,7 +87,7 @@ class DocumentRequestListItem extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+            ),  
             const SizedBox(height: 12),
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
