@@ -1,7 +1,6 @@
-
 import 'package:portal_ckc/api/model/admin_ho_so.dart';
 import 'package:portal_ckc/api/model/admin_phong_khoa.dart';
-import 'package:portal_ckc/api/model/admin_vaitro.dart';
+import 'package:portal_ckc/api/model/admin_role.dart';
 
 class User {
   final int id;
@@ -25,7 +24,6 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-
     return User(
       id: json['id'],
       idHoSo: json['id_ho_so'] is int ? json['id_ho_so'] : null,

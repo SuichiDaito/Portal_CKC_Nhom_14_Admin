@@ -228,11 +228,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-<<<<<<< HEAD
                         classInfo.tenHocPhan,
-=======
-                        classInfo.className,
->>>>>>> main
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -243,11 +239,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-<<<<<<< HEAD
                         classInfo.chuongTrinhDaoTao.tenChuongTrinhDaoTao,
-=======
-                        classInfo.subject,
->>>>>>> main
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -332,11 +324,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
-<<<<<<< HEAD
                         classInfo.tenHocPhan,
-=======
-                        classInfo.className,
->>>>>>> main
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -347,11 +335,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-<<<<<<< HEAD
                         classInfo.chuongTrinhDaoTao.tenChuongTrinhDaoTao,
-=======
-                        classInfo.subject,
->>>>>>> main
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -366,13 +350,9 @@ class _ScheduleSectionState extends State<ScheduleSection>
                 _buildScheduleRow(
                   icon: Icons.quiz,
                   label: 'Hình thức thi',
-<<<<<<< HEAD
                   value: classInfo.loaiLopHocPhan == 'TH'
                       ? 'Thực hành'
                       : 'Viết',
-=======
-                  value: classInfo.type == 'TH' ? 'Thực hành' : 'Viết',
->>>>>>> main
                 ),
                 _buildScheduleRow(
                   icon: Icons.access_time,
@@ -449,11 +429,7 @@ class _ScheduleSectionState extends State<ScheduleSection>
 
   void _showScheduleDialog(
     BuildContext context,
-<<<<<<< HEAD
     LopHocPhan classInfo,
-=======
-    ClassInfoAssignment classInfo,
->>>>>>> main
     String type,
   ) {
     showDialog(
@@ -470,13 +446,8 @@ class _ScheduleSectionState extends State<ScheduleSection>
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-<<<<<<< HEAD
               Text('Lớp: ${classInfo.tenHocPhan}'),
               // Text('Môn: ${classInfo.}'),
-=======
-              Text('Lớp: ${classInfo.className}'),
-              Text('Môn: ${classInfo.subject}'),
->>>>>>> main
               const SizedBox(height: 16),
               Text(
                 type == 'class'
