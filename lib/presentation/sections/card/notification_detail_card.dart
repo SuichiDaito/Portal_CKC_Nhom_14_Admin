@@ -49,7 +49,6 @@ class _NotificationDetailCardState extends State<NotificationDetailCard> {
         return;
       }
     }
-
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
@@ -93,14 +92,27 @@ class _NotificationDetailCardState extends State<NotificationDetailCard> {
           backgroundColor: Colors.green,
         ),
       );
-
-      await OpenFilex.open(savePath);
     } catch (e) {
       print("❌ Lỗi tải file: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Không thể mở file! Vui lòng kiểm tra lại.'),
+          content: Text('Không thể tải file! Vui lòng kiểm tra lại.'),
         ),
+      );
+      return;
+    }
+
+    try {
+      final result = await OpenFilex.open(
+        '/storage/emulated/0/Download/$tenFile',
+      );
+      if (result.type != ResultType.done) {
+        throw Exception(result.message);
+      }
+    } catch (e) {
+      print("❌ Lỗi mở file: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã tải xong nhưng không mở được file.')),
       );
     }
   }

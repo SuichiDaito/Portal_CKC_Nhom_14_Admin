@@ -47,7 +47,6 @@ class DangKyGiayBloc extends Bloc<DangKyGiayEvent, DangKyGiayState> {
       });
 
       if (response.isSuccessful && response.body['success'] == true) {
-        // Gọi lại API lấy danh sách
         final resFetch = await _service.getDanhSachGiayXacNhan();
         if (resFetch.isSuccessful && resFetch.body['data'] != null) {
           final data = resFetch.body['data'] as List;

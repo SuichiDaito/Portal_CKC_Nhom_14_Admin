@@ -54,7 +54,7 @@ class ButtonsClassActionClassManagementReport extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onOpenClassList,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0D47A1), // Xanh đậm hơn
+              backgroundColor: const Color(0xFF0D47A1),
               foregroundColor: Colors.white,
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -65,7 +65,7 @@ class ButtonsClassActionClassManagementReport extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Icon(Icons.description, size: 24), // Icon biên bản
+                Icon(Icons.description, size: 24),
                 SizedBox(height: 4),
                 Text(
                   'Biên Bản SHCN',

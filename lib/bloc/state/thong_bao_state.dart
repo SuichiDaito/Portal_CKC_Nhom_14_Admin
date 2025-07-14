@@ -26,7 +26,9 @@ class TBDataCapTrenLoaded extends ThongBaoState {
 
 class TBSuccess extends ThongBaoState {
   final String message;
-  TBSuccess(this.message);
+  final int? thongBaoId;
+
+  TBSuccess(this.message, {this.thongBaoId});
 }
 
 class TBFailure extends ThongBaoState {
