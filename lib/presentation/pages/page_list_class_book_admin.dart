@@ -271,6 +271,8 @@ class _PageListClassBookAdminState extends State<PageListClassBookAdmin> {
           }
 
           if (phieuState is PhieuLenLopError) {
+            print("=================");
+            print(phieuState.error);
             return Center(
               child: Text(
                 'Không thể truy cập chức năng này, vui lòng thử lại sau.',

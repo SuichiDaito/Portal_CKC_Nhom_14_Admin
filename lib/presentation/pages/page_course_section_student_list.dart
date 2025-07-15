@@ -19,6 +19,7 @@ import 'package:portal_ckc/presentation/sections/card/class_list_studen_infor_cl
 import 'package:portal_ckc/presentation/sections/card/class_list_student_score_item_section.dart';
 import 'package:portal_ckc/utils/export_to_excel.dart';
 import 'package:http/http.dart' as http;
+import 'package:portal_ckc/utils/read_excel_scores.dart';
 
 class PageCourseSectionStudentList extends StatefulWidget {
   final int idLopHocPhan;
@@ -52,15 +53,31 @@ class _PageCourseSectionStudentListState
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
 
-            context.read<ThongBaoBloc>().add(
-              SendToStudents(state.thongBaoId!, [widget.idLopHocPhan]),
-            );
+            final currentState = context.read<SinhVienLhpBloc>().state;
+            int? idLop;
+            if (currentState is SinhVienLhpLoaded) {
+              idLop = currentState.lopHocPhan?.lop.id;
+            }
+
+            if (idLop != null) {
+              context.read<ThongBaoBloc>().add(
+                SendToStudents(state.thongBaoId!, [idLop]),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Không tìm thấy lớp để gửi thông báo.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           } else if (state is TBFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error), backgroundColor: Colors.red),
             );
           }
         },
+
         child: Scaffold(
           backgroundColor: Colors.grey.shade50,
           appBar: AppBar(
@@ -148,6 +165,18 @@ class _PageCourseSectionStudentListState
                             const SizedBox(width: 8),
                             IconButton(
                               icon: const Icon(
+                                Icons.upload_file,
+                                color: Colors.blue,
+                              ),
+                              tooltip: "Import điểm từ Excel",
+                              onPressed: () async {
+                                await importScoresFromExcel(context, students);
+                              },
+                            ),
+
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(
                                 Icons.file_download,
                                 color: Colors.green,
                               ),
@@ -223,7 +252,7 @@ class _PageCourseSectionStudentListState
                                           'Kết quả học tập lớp học phần ${classInfo!.lop.tenLop} - ${classInfo.tenHocPhan}',
                                       content:
                                           'Đính kèm bảng điểm lớp học phần bạn đã học. Vui lòng kiểm tra.',
-                                      capTren: '3',
+                                      capTren: 'gvbm',
                                       files: [multipartFile],
                                       ngayGui: '',
                                     ),
@@ -306,6 +335,7 @@ class _PageCourseSectionStudentListState
                                       ),
                               ),
                             ),
+
                             Align(
                               alignment: Alignment.centerRight,
                               child: Padding(

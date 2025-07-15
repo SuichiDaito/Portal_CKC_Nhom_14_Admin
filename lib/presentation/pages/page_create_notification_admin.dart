@@ -42,9 +42,9 @@ class _PageCreateNotificationAdminState
   double _downloadProgress = 0.0;
 
   void _downloadFile(FileModel file) async {
-    final url = 'https://ckc-portal.click/storage/${file.url}';
+    final url =
+        'https://ckc-portal.click/api/admin/thongbao/file/download/${file.id}';
     print("⬇️ Bắt đầu tải file: $url");
-
     if (Platform.isAndroid) {
       var status = await Permission.manageExternalStorage.request();
       if (!status.isGranted) {
@@ -127,11 +127,12 @@ class _PageCreateNotificationAdminState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final tb = GoRouterState.of(context).extra as ThongBao?;
       if (tb != null) {
+        final allowedValues = ['khoa', 'phong_ctct', 'gvcn', 'gvbm'];
         setState(() {
           _thongBao = tb;
           _titleController.text = tb.tieuDe;
           _contentController.text = tb.noiDung;
-          _selectedCapTren = tb.tuAi;
+          _selectedCapTren = allowedValues.contains(tb.tuAi) ? tb.tuAi : 'khoa';
           _apiFiles = tb.files;
         });
       }
@@ -164,26 +165,24 @@ class _PageCreateNotificationAdminState
   Future<List<http.MultipartFile>> convertToMultipartFiles(
     List<PlatformFile> files,
   ) async {
-    return Future.wait(
-      files.map((file) async {
-        final stream = http.ByteStream(file.readStream!);
-        final length = file.size;
+    return files.map((file) {
+      if (file.bytes == null) {
+        throw Exception("❌ File '${file.name}' không có dữ liệu bytes!");
+      }
 
-        final ext = file.extension?.toLowerCase() ?? '';
-        final mediaType = getMediaTypeFromExtension(ext);
+      final ext = file.extension?.toLowerCase() ?? '';
+      final mediaType = getMediaTypeFromExtension(ext);
 
-        print("🔍 Gửi file: ${file.name}");
-        print("📎 MIME: $mediaType");
+      print("🔍 Gửi file: ${file.name}");
+      print("📎 MIME: $mediaType");
 
-        return http.MultipartFile(
-          'files[]',
-          stream,
-          length,
-          filename: file.name,
-          contentType: mediaType, // 👈 CHÍNH XÁC NHẤT Ở ĐÂY
-        );
-      }),
-    );
+      return http.MultipartFile.fromBytes(
+        'files[]',
+        file.bytes!,
+        filename: file.name,
+        contentType: mediaType,
+      );
+    }).toList();
   }
 
   @override
@@ -419,12 +418,13 @@ class _PageCreateNotificationAdminState
                             final result = await FilePicker.platform.pickFiles(
                               allowMultiple: true,
                               withReadStream: true,
+                              withData: true,
                               type: FileType.custom,
                               allowedExtensions: [
-                                // 'doc',
-                                // 'docx',
-                                // 'xls',
-                                // 'xlsx',
+                                'doc',
+                                'docx',
+                                'xls',
+                                'xlsx',
                                 'pdf',
                               ],
                             );

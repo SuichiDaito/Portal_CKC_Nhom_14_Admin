@@ -34,12 +34,12 @@ class PhieuLenLop {
     return PhieuLenLop(
       id: json['id'],
       idLopHocPhan: json['id_lop_hoc_phan'],
-      tietBatDau: json['tiet_bat_dau'],
-      soTiet: json['so_tiet'],
+      tietBatDau: int.parse(json['tiet_bat_dau'].toString() ?? "") ?? 0,
+      soTiet: int.parse(json['so_tiet'].toString() ?? "") ?? 0,
       ngay: json['ngay'],
       idPhong: json['id_phong'],
-      siSo: json['si_so'],
-      hienDien: json['hien_dien'],
+      siSo: int.parse(json['si_so'].toString() ?? "") ?? 0,
+      hienDien: int.parse(json['hien_dien'].toString() ?? "") ?? 0,
       noiDung: json['noi_dung'],
       lopHocPhan: json['lop_hoc_phan'] != null
           ? LopHocPhan.fromJson(json['lop_hoc_phan'])
