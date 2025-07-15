@@ -151,7 +151,7 @@ class _PageMeetingMinutesAdminState extends State<PageMeetingMinutesAdmin> {
                 } else if (state is BienBanLoaded) {
                   List<BienBanSHCN> bienBans = state.bienBanList;
                   print(
-                    ' ==================Tổng biên bản: ${state.bienBanList.length}',
+                    '==================Tổng biên bản: ${state.bienBanList.length}',
                   );
                   if (selectedDate != null) {
                     bienBans = bienBans.where((bienBan) {
