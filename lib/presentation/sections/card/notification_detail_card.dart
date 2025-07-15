@@ -35,8 +35,16 @@ class _NotificationDetailCardState extends State<NotificationDetailCard> {
   double _downloadProgress = 0.0;
 
   void _downloadFileFromMap(Map<String, dynamic> file) async {
-    final url = 'https://ckc-portal.click/storage/${file['url']}';
+    final id = file['id'];
+    if (id == null) {
+      print("❌ Không có ID trong file map");
+      return;
+    }
+
     final tenFile = file['ten_file'] ?? 'unknown_file';
+
+    final url =
+        'https://ckc-portal.click/api/admin/thongbao/file/download/${id}';
 
     print("⬇️ Bắt đầu tải file: $url");
 

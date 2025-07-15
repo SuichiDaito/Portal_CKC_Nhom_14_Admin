@@ -61,7 +61,13 @@ class _NotificationDetailPageState extends State<NotificationDetailPage> {
                         contentNotification: tb.noiDung,
                         lengthComment: tb.chiTiet.length.toString(),
                         files: tb.files
-                            .map((f) => {'ten_file': f.tenFile, 'url': f.url})
+                            .map(
+                              (f) => {
+                                'ten_file': f.tenFile,
+                                'url': f.url,
+                                'id': f.id.toString(),
+                              },
+                            )
                             .toList(),
                       ),
 
