@@ -4,7 +4,7 @@ import 'package:portal_ckc/api/model/admin_role.dart';
 
 class User {
   final int id;
-  final int? idHoSo; // ✅ Cho phép null
+  final int? idHoSo;
   final int? idBoMon;
   final String taiKhoan;
   final int trangThai;

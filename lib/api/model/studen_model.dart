@@ -1,12 +1,11 @@
 enum StudentStatus { active, inactive, graduated, suspended }
 
 class Student {
-  final String id; // ID duy nhất của sinh viên (có thể là MSSV)
-  final String studentCode; // Mã số sinh viên
+  final String id;
+  final String studentCode;
   final String fullName;
-  final String className; // Tên lớp (ví dụ: SE1812)
+  final String className;
   StudentStatus status;
-  // Các thông tin chi tiết khác có thể thêm vào sau này (ví dụ: email, số điện thoại...)
   final String email;
   final String phoneNumber;
   final DateTime dateOfBirth;
@@ -22,7 +21,6 @@ class Student {
     required this.dateOfBirth,
   });
 
-  // Helper to create a copy for potential future editing or passing data
   Student copyWith({
     String? id,
     String? studentCode,
