@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http_parser/http_parser.dart';
 
 import 'package:dio/dio.dart';
@@ -165,24 +166,51 @@ class _PageCreateNotificationAdminState
   Future<List<http.MultipartFile>> convertToMultipartFiles(
     List<PlatformFile> files,
   ) async {
-    return files.map((file) {
-      if (file.bytes == null) {
-        throw Exception("❌ File '${file.name}' không có dữ liệu bytes!");
-      }
+    List<http.MultipartFile> multipartFiles = [];
 
+    for (final file in files) {
       final ext = file.extension?.toLowerCase() ?? '';
       final mediaType = getMediaTypeFromExtension(ext);
 
       print("🔍 Gửi file: ${file.name}");
       print("📎 MIME: $mediaType");
 
-      return http.MultipartFile.fromBytes(
-        'files[]',
-        file.bytes!,
-        filename: file.name,
-        contentType: mediaType,
-      );
-    }).toList();
+      if (file.readStream != null) {
+        final stream = http.ByteStream(file.readStream!);
+        multipartFiles.add(
+          http.MultipartFile(
+            'files[]',
+            stream,
+            file.size,
+            filename: file.name,
+            contentType: mediaType,
+          ),
+        );
+      } else if (file.bytes != null) {
+        multipartFiles.add(
+          http.MultipartFile.fromBytes(
+            'files[]',
+            file.bytes!,
+            filename: file.name,
+            contentType: mediaType,
+          ),
+        );
+      } else if (file.path != null) {
+        final bytes = await File(file.path!).readAsBytes();
+        multipartFiles.add(
+          http.MultipartFile.fromBytes(
+            'files[]',
+            bytes,
+            filename: file.name,
+            contentType: mediaType,
+          ),
+        );
+      } else {
+        throw Exception("❌ File '${file.name}' không có dữ liệu hợp lệ.");
+      }
+    }
+
+    return multipartFiles;
   }
 
   @override
@@ -418,7 +446,6 @@ class _PageCreateNotificationAdminState
                             final result = await FilePicker.platform.pickFiles(
                               allowMultiple: true,
                               withReadStream: true,
-                              withData: true,
                               type: FileType.custom,
                               allowedExtensions: [
                                 'doc',
