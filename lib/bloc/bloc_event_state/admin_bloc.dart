@@ -49,12 +49,21 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
               await prefs.setInt('user_info', user.hoSo!.id);
 
               if (user.roles.isNotEmpty) {
-                await prefs.setInt('user_role', user.roles.first.id);
+                // Lưu danh sách ID role
+                final roleIds = user.roles.map((r) => r.id.toString()).toList();
+                await prefs.setStringList('user_roles', roleIds);
 
+                // Lưu danh sách tên role (nếu cần)
+                final roleNames = user.roles.map((r) => r.name).toList();
+                await prefs.setStringList('user_role_names', roleNames);
+
+                // Vẫn giữ lại role đầu tiên nếu cần xử lý mặc định
+                await prefs.setInt('user_role', user.roles.first.id);
                 await prefs.setString('user_name_role', user.roles.first.name);
+
+                // Xử lý permissions như cũ...
                 final roles = userJson['roles'] as List<dynamic>? ?? [];
                 final Set<String> permNamesSet = {};
-
                 for (final role in roles) {
                   final perms = role['permissions'] as List<dynamic>? ?? [];
                   for (final p in perms) {
@@ -64,9 +73,10 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
                     }
                   }
                 }
-
-                final permNamesList = permNamesSet.toList();
-                await prefs.setStringList('user_permissions', permNamesList);
+                await prefs.setStringList(
+                  'user_permissions',
+                  permNamesSet.toList(),
+                );
 
                 final Set<String> permIdsSet = {};
                 for (final role in roles) {

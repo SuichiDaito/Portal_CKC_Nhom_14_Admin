@@ -11,21 +11,30 @@ class ApplicationsAdminPage extends StatelessWidget {
     return permissions.contains(permission);
   }
 
-  Future<List<String>> _getPermissions() async {
+  // Future<List<String>> _getPermissions() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getStringList('user_permissions') ?? [];
+  // }
+  Future<Map<String, dynamic>> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList('user_permissions') ?? [];
+    final permissions = prefs.getStringList('user_permissions') ?? [];
+    final roleIdsStr = prefs.getStringList('user_roles') ?? [];
+    final roleIds = roleIdsStr.map((e) => int.tryParse(e) ?? -1).toList();
+    return {'permissions': permissions, 'roleIds': roleIds};
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<String>>(
-      future: _getPermissions(),
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _loadUserData(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final permissions = snapshot.data!;
+        final permissions = snapshot.data!['permissions'] as List<String>;
+        final roleIds = snapshot.data!['roleIds'] as List<int>;
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(13.0),
           child: Column(
@@ -39,30 +48,37 @@ class ApplicationsAdminPage extends StatelessWidget {
                 backgroundColor: Colors.blue.withOpacity(0.05),
                 borderColor: Colors.blue.withOpacity(0.2),
                 gridItems: _getTeacherFeatures(),
-                permissions: permissions,
+                permissions: [],
+                skipPermissionCheck: true,
               ),
+
               const SizedBox(height: 24),
-              _buildSection(
-                context: context,
-                title: 'Dành cho phòng Công tác',
-                icon: Icons.school,
-                iconColor: Colors.green,
-                backgroundColor: Colors.green.withOpacity(0.05),
-                borderColor: Colors.green.withOpacity(0.2),
-                gridItems: _getCTCTFeatures(),
-                permissions: permissions,
-              ),
+
+              if (roleIds.any((id) => [1, 3, 6].contains(id)))
+                _buildSection(
+                  context: context,
+                  title: 'Dành cho phòng Công tác',
+                  icon: Icons.school,
+                  iconColor: Colors.green,
+                  backgroundColor: Colors.green.withOpacity(0.05),
+                  borderColor: Colors.green.withOpacity(0.2),
+                  gridItems: _getCTCTFeatures(),
+                  permissions: permissions,
+                ),
               const SizedBox(height: 24),
-              _buildSection(
-                context: context,
-                title: 'Dành cho phòng Đào tạo',
-                icon: Icons.school,
-                iconColor: Colors.blueGrey,
-                backgroundColor: Colors.blueGrey.withOpacity(0.05),
-                borderColor: Colors.blueGrey.withOpacity(0.2),
-                gridItems: _getPDTFeatures(),
-                permissions: permissions,
-              ),
+
+              // Hiện PDT nếu có vai trò phù hợp
+              if (roleIds.any((id) => [1, 2, 6].contains(id)))
+                _buildSection(
+                  context: context,
+                  title: 'Dành cho phòng Đào tạo',
+                  icon: Icons.school,
+                  iconColor: Colors.blueGrey,
+                  backgroundColor: Colors.blueGrey.withOpacity(0.05),
+                  borderColor: Colors.blueGrey.withOpacity(0.2),
+                  gridItems: _getPDTFeatures(),
+                  permissions: permissions,
+                ),
             ],
           ),
         );
@@ -79,7 +95,7 @@ class ApplicationsAdminPage extends StatelessWidget {
     required List<_FeatureItem> gridItems,
     required BuildContext context,
     required List<String> permissions,
-
+    bool skipPermissionCheck = false,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -91,7 +107,6 @@ class ApplicationsAdminPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-       // Section Header
           Row(
             children: [
               Container(
@@ -126,7 +141,9 @@ class ApplicationsAdminPage extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final feature = gridItems[index];
-              final hasPermission = permissions.contains(feature.permission);
+              final hasPermission =
+                  skipPermissionCheck ||
+                  permissions.contains(feature.permission);
               return _buildFeatureCard(context, feature, hasPermission);
             },
           ),
@@ -262,7 +279,7 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Quản lý sổ lên lớp',
         color: Colors.pink,
         value: 'class_list_book_admin',
-        permission: 'Sổ lên lớp',
+        permission: 'xem tuần',
       ),
       _FeatureItem(
         icon: Icons.security,
@@ -270,7 +287,6 @@ class ApplicationsAdminPage extends StatelessWidget {
         color: Colors.grey,
         value: 'academic_year_management',
         permission: 'tạo tuần',
-
       ),
     ];
   }
@@ -282,7 +298,7 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Quản lý lớp chủ nhiệm',
         color: Colors.blueAccent,
         value: 'class_management_admin',
-        permission: 'xem lớp học',
+        permission: 'danh sách điểm môn học',
       ),
       _FeatureItem(
         icon: Icons.menu_book,
@@ -296,14 +312,14 @@ class ApplicationsAdminPage extends StatelessWidget {
         title: 'Danh sách lớp học phần',
         color: Colors.teal,
         value: 'class_roster_admin',
-        permission: 'xem lớp học',
+        permission: 'danh sách điểm môn học',
       ),
       _FeatureItem(
         icon: Icons.event_seat,
         title: 'Lịch gác thi',
         color: Colors.deepPurple,
         value: 'exam_schedule_admin',
-        permission: 'lịch thi',
+        permission: 'xem lịch dạy',
       ),
       _FeatureItem(
         icon: Icons.schedule,
@@ -311,7 +327,6 @@ class ApplicationsAdminPage extends StatelessWidget {
         color: Colors.orange,
         value: 'teaching_schedule_admin',
         permission: 'xem lịch dạy',
-
       ),
     ];
   }
