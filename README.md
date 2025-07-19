@@ -1,8 +1,17 @@
 # Graduation Project Name: Portal_CKC
    ## Technology:
    - **UI and Process**: *Dart and Flutter*
-   - **Database**: *SQL*
-   - **Web API**: *.NET*
+   - **Database**: *SQLite*
+   - **Web API**: *Laravel*
+   - **RESTful API**: _Chopper _
+   - **Other Libraries**: _build_runner, flutter_gen, localization, json_serializable,..._
+   ## Describe: 
+   
+   - We use several technologies in our project as follows:
+      - We use the Flutter framework to build the user interface, and apply the BLoC design pattern for state             management throughout the project.
+     - In addition, we utilize Chopper, an HTTP Client Generator library, to simplify, optimize, and                      automatically generate HTTP-related code, making it easier to interact with RESTful APIs.
+      - We also implement libraries such as localizations, along with flutter_gen, which helps generate and                manage asset paths, including image references.
+     
    ## Member: 
    - Tran Thi Ngoc Can - English Name:  `Gill` - **Leader**
    - Le Pham Ngoc Trang - English Name:  `None` - **Member**
