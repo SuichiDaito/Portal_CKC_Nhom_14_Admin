@@ -8,8 +8,8 @@
    ## Describe: 
    
    - We use several technologies in our project as follows:
-      - We use the Flutter framework to build the user interface, and apply the BLoC design pattern for state             management throughout the project.
-     - In addition, we utilize Chopper, an HTTP Client Generator library, to simplify, optimize, and                      automatically generate HTTP-related code, making it easier to interact with RESTful APIs.
+      - We use the **Flutter** framework to build the user interface, and apply the **BLoC** design pattern for            state management throughout the project.
+     - In addition, we utilize **Chopper**, an **HTTP Client Generator** library, to simplify, optimize, and               automatically generate HTTP-related code, making it easier to interact with **RESTful APIs**.
       - We also implement libraries such as localizations, along with flutter_gen, which helps generate and                manage asset paths, including image references.
      
    ## Member: 
